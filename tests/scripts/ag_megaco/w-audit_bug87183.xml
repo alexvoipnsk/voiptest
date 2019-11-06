@@ -1,0 +1,27 @@
+<scenario name="TP_MG_AUDIT">
+
+  <send connection="0">
+  <![CDATA[
+    MEGACO/1 [$$Nodes.0.mid]
+    Transaction = 2 { Context = - { W-AuditValue = * { Audit { Packages } } } }
+   ]]>
+   </send>
+
+  <recv connection="0" timeout="8000">
+    <actions>
+      <catch regexp="MEGACO/1\s*([A-Za-z0-9/_]+)" assign_to="gw_name"/>
+      <catch regexp="Context\s*=\s*([0-9-\$\*]+)" assign_to="context_id"/>
+    </actions>
+  </recv>
+
+  <nop>
+  	<actions>
+  	  <compare first="[$gw_name],[$context_id]" second="[$$Nodes.1.mid],-">
+  	    <exit status="failure" info="Test is unsuccessfully completed"/>
+  	  </compare>
+  	</actions>
+  </nop>
+
+
+</scenario>      
+

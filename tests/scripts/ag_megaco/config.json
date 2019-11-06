@@ -1,0 +1,46 @@
+{
+    "LogDirectory" : "/home/alexander/py_autotest/log/megaco/",
+    "Connections" : [
+         {
+              "id" : 0,
+              "name" : "Link between Call Agent and TAU-72.IP",
+              "from_sock" : 0,
+              "to_sock" : 1
+         }
+     ],
+    "sock" : [
+        {
+             "id" : 0,
+             "name" : "Call Agent",
+             "ipaddr" : "192.168.114.200",
+             "port" : 2944,
+             "transport" : "udp",
+             "proto" : "megaco",
+             "profile" : 0
+        },
+        {
+             "id" : 1,
+             "name" : "TAU-72.IP",
+             "ipaddr" : "192.168.114.199",
+             "port" : 2944,
+             "transport" : "udp",
+             "proto" : "megaco",
+             "profile" : 1  
+        }
+    ],
+    "megaco" : [
+        {
+             "id" : 0,
+             "mid" : "mgc",
+             "encoding" : "full_text"
+        },
+        {
+             "id" : 1,
+             "mid" : "tau72m",
+             "encoding" : "full_text",
+             "terms" : ["p/0", "p/1"]
+
+        }
+    ]
+
+} 

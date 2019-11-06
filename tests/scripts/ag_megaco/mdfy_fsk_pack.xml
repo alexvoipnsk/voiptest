@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario name="TP_MG_AM_BV_01_1">
+
+  <send connection="0">
+  <![CDATA[
+    MEGACO/1 [$$Nodes.0.mid]
+    Transaction = 0001 { Context = - { Modify = p/0 { Media { TerminationState { fsk/fsktype = 1 } }, Signals { al/ri, fsk/fsk {d="2019-01-27",t="16:13:35",c="36599990"} } } } }
+   ]]>
+   </send>
+
+  <recv connection="0" timeout="5000">
+    <actions>
+      <catch regexp="MEGACO/1\s*([A-Za-z0-9/_]+)" assign_to="gw_name"/>
+      <catch regexp="Transaction\s*=\s*(\d+)" assign_to="transaction_id"/>
+      <catch regexp="Context\s*=\s*([0-9-\$\*]+)" assign_to="context_id"/>
+      <catch regexp="ServiceChange\s*=\s*([A-Za-z0-9_/\-\$\*]+)" assign_to="termination_id"/>
+      <catch regexp="Method\s*=\s*([A-Za-z]+)" assign_to="method"/>
+    </actions>
+  </recv>
+
+
+</scenario>

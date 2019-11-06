@@ -1,0 +1,38 @@
+{
+    "LogDirectory" : "/home/alexander/py_autotest/log/mgcp/",
+    "Connections" : [
+         {
+              "id" : 0,
+              "name" : "Link between Call Agent and TAU-72.IP",
+              "from_sock" : 0,
+              "to_sock" : 1
+         }
+     ],
+    "sock" : [
+        {
+             "id" : 0,
+             "name" : "Call Agent",
+             "ipaddr" : "192.168.114.200",
+             "port" : 2727,
+             "transport" : "udp",
+             "proto" : "mgcp",
+             "profile" : 0
+        },
+        {
+             "id" : 1,
+             "name" : "TAU-72.IP",
+             "ipaddr" : "192.168.114.198",
+             "port" : 2427,
+             "transport" : "udp",
+             "proto" : "mgcp",
+             "profile" : 0  
+        }
+    ],
+    "mgcp" : [
+        {
+             "id" : 0,
+             "mid" : "sigmgcp"
+        }
+    ]
+
+} 

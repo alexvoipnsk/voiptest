@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario name="TP_MG_AM_BV_01_1">
+
+  <send connection="0">
+  <![CDATA[
+    MEGACO/1 [$$Nodes.0.mid]
+    Transaction = 5 { Context = $ { Add = p/1 { Media { LocalControl { Mode = SendReceive } }, Signals {al/ri}, Events = 1111 {al/of} }, Add = $ {Media {Stream = 1 {LocalControl {Mode = ReceiveOnly}, Local {
+v=0
+m=audio $ RTP/AVP $
+c=IN IP4 $ 
+a=ptime:20} } } } } }
+   ]]>
+   </send>
+
+  <recv connection="0" timeout="5000">
+    <actions>
+      <catch regexp="MEGACO/1\s*([A-Za-z0-9/_]+)" assign_to="gw_name"/>
+      <catch regexp="Transaction\s*=\s*(\d+)" assign_to="transaction_id"/>
+      <catch regexp="Context\s*=\s*([0-9-\$\*]+)" assign_to="context_id"/>
+      <catch regexp="ServiceChange\s*=\s*([A-Za-z0-9_/\-\$\*]+)" assign_to="termination_id"/>
+      <catch regexp="Method\s*=\s*([A-Za-z]+)" assign_to="method"/>
+    </actions>
+  </recv>
+
+
+</scenario>

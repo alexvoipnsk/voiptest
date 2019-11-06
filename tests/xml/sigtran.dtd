@@ -1,0 +1,39 @@
+<!ELEMENT action ( ereg | exec )+ >
+
+<!ELEMENT ereg EMPTY >
+<!ATTLIST ereg assign_to CDATA #REQUIRED >
+<!ATTLIST ereg check_it (true|false) "false" >
+<!ATTLIST ereg header NMTOKEN #IMPLIED >
+<!ATTLIST ereg regexp CDATA #REQUIRED >
+<!ATTLIST ereg search_in (msg|hdr) "msg" >
+
+<!ELEMENT exec EMPTY >
+<!-- one of command or int_cmd must be present -->
+<!ATTLIST exec command CDATA #IMPLIED>
+<!ATTLIST exec int_cmd (stop_now|stop_gracefully|stop_call) "stop_call" >
+<!ATTLIST exec play_pcap CDATA #IMPLIED>
+<!ATTLIST exec rtp_stream CDATA #IMPLIED>
+
+<!ELEMENT pause EMPTY >
+<!ATTLIST pause milliseconds NMTOKEN #IMPLIED >
+
+<!ELEMENT recv ANY >
+<!ATTLIST recv socket NMTOKEN #REQUIRED >
+<!ATTLIST recv class NMTOKEN #IMPLIED >
+
+<!ELEMENT scenario ( sock_open | sock_close | recv | send | action | pause)* >
+<!ATTLIST scenario name CDATA #REQUIRED >
+
+<!ELEMENT send ANY >
+<!ATTLIST send socket NMTOKEN #REQUIRED >
+<!ATTLIST send class NMTOKEN #IMPLIED >
+
+<!ELEMENT sock_close EMPTY >
+<!ATTLIST sock_close local NMTOKEN #REQUIRED >
+
+<!ELEMENT sock_open EMPTY >
+<!ATTLIST sock_open local NMTOKEN #REQUIRED >
+<!ATTLIST sock_open remote NMTOKEN #REQUIRED >
+<!ATTLIST sock_open transport NMTOKEN #REQUIRED >
+<!ATTLIST sock_open proto NMTOKEN #REQUIRED >
+<!ATTLIST sock_open timeout NMTOKEN #IMPLIED >

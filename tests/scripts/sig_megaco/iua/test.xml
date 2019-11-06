@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<scenario  name="iua_test_01">
+
+	<connect connection="0" mode="client" />
+
+	<send connection="0">
+		<![CDATA[
+		ASP UP(info string="sigtran test")
+		]]>
+	</send>
+
+	<recv connection="0" timeout="6000">
+		<actions>
+			<validate rule="iua">
+				<![CDATA[
+				ERROR(error code="asp identifier required")
+				]]>
+			</validate>
+		</actions>
+	</recv>
+
+</scenario>

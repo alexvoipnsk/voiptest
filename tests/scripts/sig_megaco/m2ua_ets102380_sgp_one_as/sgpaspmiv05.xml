@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<scenario  name="m2ua_sgp_aspm_iv_05">
+
+	<connect connection="0" mode="client" />
+
+	<send connection="0">
+		<![CDATA[
+		ASP UP(ASP identifier=[$$sock.0.asp.0], info string="sigtran test")
+		]]>
+	</send>
+
+	<recv connection="0" timeout="6000">
+		<actions>
+			<validate rule="m2ua">
+				<![CDATA[
+				ASP UP ACK(info string="sigtran test")
+				]]>
+			</validate>
+		</actions>
+	</recv>
+
+	<recv connection="0">
+		<actions>
+			<validate rule="m2ua">
+				<![CDATA[
+				NOTIFY(Status Type/Information="AS state change/as inactive")
+				]]>
+			</validate>
+		</actions>
+	</recv>	
+
+	<send connection="0" stream="0">
+		<![CDATA[
+		ASP ACTIVE(interface identifiers=[[[$$sock.0.iid.0], [$$sock.0.iid.1]]], traffic mode type=1)
+		]]>
+	</send>
+
+	<recv connection="0" timeout="6000">
+		<actions>
+			<validate rule="m2ua">
+				<![CDATA[
+				ERROR(Error code="invalid stream identifier")
+				]]>
+			</validate>
+		</actions>
+	</recv>
+
+	<send connection="0">
+		<![CDATA[
+		ASP DOWN(info string="sigtran test")
+		]]>
+	</send>
+
+	<recv connection="0">
+		<actions>
+			<validate rule="m2ua">
+				<![CDATA[
+				ASP DOWN ACK(info_string="sigtran test")
+				]]>
+			</validate>
+		</actions>	
+	</recv>
+
+</scenario>

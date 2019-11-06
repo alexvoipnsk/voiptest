@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario name="MEGACO_CallerID">
+
+  <recv connection="0" timeout="5000">
+    <actions>
+      <catch regexp="MEGACO/1\s*([A-Za-z0-9/_]+)" assign_to="gw_name"/>
+      <catch regexp="Transaction\s*=\s*(\d+)" assign_to="transaction_id"/>
+      <catch regexp="Context\s*=\s*([0-9-\$\*]+)" assign_to="context_id"/>
+      <catch regexp="ServiceChange\s*=\s*([A-Za-z0-9_/\-\$\*]+)" assign_to="termination_id"/>
+      <catch regexp="Method\s*=\s*([A-Za-z]+)" assign_to="method"/>
+    </actions>
+  </recv>
+
+  <nop>
+  	<actions>
+  	  <compare first="[$gw_name],[$context_id],[$termination_id]" second="[$$sock.1.mid],-,root">
+  	    <exit status="failure" info="Test is unsuccessfully completed"/>
+  	  </compare>
+  	</actions>
+  </nop>
+
+  <send connection="0">
+  <![CDATA[
+    MEGACO/1 [$$sock.0.mid]
+    Reply = [$transaction_id] { Context = [$context_id] { ServiceChange = [$termination_id] } }
+   ]]>
+  </send>
+
+
+
+  <send connection="0">
+  <![CDATA[
+    MEGACO/1 [$$sock.0.mid]
+    Transaction = 3 { Context = [$context_id] { Modify = p/0 { Events = 3 {al/of} } } }
+   ]]>
+  </send>
+
+  <recv connection="0" timeout="5000">
+    <actions>
+      <catch regexp="MEGACO/1\s*([A-Za-z0-9/_]+)" assign_to="gw_name"/>
+      <catch regexp="Reply\s*=\s*(\d+)" assign_to="transaction_id"/>
+    </actions>
+  </recv>
+
+  <nop>
+    <actions>
+      <compare first="[$gw_name],[$transaction_id]" second="[$$sock.1.mid],3">
+        <exit status="failure" info="Test is unsuccessfully completed"/>
+      </compare>
+    </actions>
+  </nop>
+
+
+  <send connection="0">
+  <![CDATA[
+    MEGACO/1 [$$sock.0.mid]
+    Transaction = 31 { Context = - { Modify = [$$sock.1.terms.0] { Events = 8 {al/of}, Signals {andisp/dwa{ddb=040E303431363136323834353031303028} } } } }
+   ]]>
+  </send>
+
+  <recv connection="0" timeout="5000">
+    <actions>
+      <catch regexp="MEGACO/1\s*([A-Za-z0-9/_]+)" assign_to="gw_name"/>
+      <catch regexp="Reply\s*=\s*(\d+)" assign_to="transaction_id"/>
+    </actions>
+  </recv>
+
+  <nop>
+    <actions>
+      <compare first="[$gw_name],[$transaction_id]" second="[$$sock.1.mid],31">
+        <exit status="failure" info="Test is unsuccessfully completed"/>
+      </compare>
+    </actions>
+  </nop>
+
+
+  <recv connection="0" timeout="25000">
+    <actions>
+      <catch regexp="MEGACO/1\s*([A-Za-z0-9/_]+)" assign_to="gw_name"/>
+      <catch regexp="Transaction\s*=\s*(\d+)" assign_to="transaction_id"/>
+      <catch regexp="Context\s*=\s*([0-9-\$\*]+)" assign_to="context_id"/>
+      <catch regexp="Notify\s*=\s*([A-Za-z0-9_/\-\$\*]+)" assign_to="termination_id"/>
+    </actions>
+  </recv>
+
+  <nop>
+    <actions>
+      <compare first="[$gw_name],[$context_id]" second="[$$sock.1.mid],-">
+        <exit status="failure" info="Test is unsuccessfully completed"/>
+      </compare>
+    </actions>
+  </nop>
+
+  <send connection="0">
+  <![CDATA[
+    MEGACO/1 [$$sock.0.mid]
+    Reply = [$transaction_id] { Context = [$context_id] { Notify = [$termination_id] } }
+   ]]>
+  </send>
+
+  <send connection="0">
+  <![CDATA[
+    MEGACO/1 [$$sock.0.mid]
+    Transaction = 6 { Context = [$context_id] { Modify = [$termination_id] { Events = 6 {al/on}, Signals {cg/bt} } } }
+   ]]>
+  </send>
+
+  <recv connection="0" timeout="25000">
+    <actions>
+      <catch regexp="MEGACO/1\s*([A-Za-z0-9/_]+)" assign_to="gw_name"/>
+      <catch regexp="Reply\s*=\s*(\d+)" assign_to="transaction_id"/>
+    </actions>
+  </recv>
+
+  <nop>
+    <actions>
+      <compare first="[$gw_name],[$transaction_id]" second="[$$sock.1.mid],6">
+        <exit status="failure" info="Test is unsuccessfully completed"/>
+      </compare>
+    </actions>
+  </nop>
+
+  <recv connection="0" timeout="15000">
+    <actions>
+      <catch regexp="MEGACO/1\s*([A-Za-z0-9/_]+)" assign_to="gw_name"/>
+      <catch regexp="Transaction\s*=\s*(\d+)" assign_to="transaction_id"/>
+      <catch regexp="Notify\s*=\s*([A-Za-z0-9_/\-\$\*]+)" assign_to="termination_id"/>
+    </actions>
+  </recv>
+
+  <nop>
+    <actions>
+      <compare first="[$gw_name]" second="[$$sock.1.mid]">
+        <exit status="failure" info="Test is unsuccessfully completed"/>
+      </compare>
+    </actions>
+  </nop>
+
+  <send connection="0">
+  <![CDATA[
+    MEGACO/1 [$$sock.0.mid]
+    Reply = [$transaction_id] { Context = [$context_id] { Notify = [$termination_id] } }
+   ]]>
+  </send>
+
+  <send connection="0">
+  <![CDATA[
+    MEGACO/1 [$$sock.0.mid]
+    Transaction = 17 { Context = - { Modify = [$termination_id] { Events = 17 {al/of}, Signals {} } } }
+   ]]>
+  </send>
+
+  <recv connection="0" timeout="5000">
+    <actions>
+      <catch regexp="MEGACO/1\s*([A-Za-z0-9/_]+)" assign_to="gw_name"/>
+      <catch regexp="Reply\s*=\s*(\d+)" assign_to="transaction_id"/>
+    </actions>
+  </recv>
+
+  <nop>
+    <actions>
+      <compare first="[$gw_name],[$transaction_id]" second="[$$sock.1.mid],17">
+        <exit status="failure" info="Test is unsuccessfully completed"/>
+      </compare>
+    </actions>
+  </nop>
+
+</scenario>

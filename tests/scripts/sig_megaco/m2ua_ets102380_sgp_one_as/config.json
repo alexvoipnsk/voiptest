@@ -1,0 +1,62 @@
+{
+  "LogDirectory" : "/home/alexander/py_autotest/log/sigtran/",
+  "Connections" : [
+    {
+      "id" : 0,
+      "name" : "Link between Call Agent and SMG_SIGTRAN",
+      "from_sock" : 0,
+      "to_sock" : 1
+    },
+    {
+      "id" : 1,
+      "name" : "Link between Call Agent and SMG_SIGTRAN sec",
+      "from_sock" : 2,
+      "to_sock" : 3
+    }
+  ], 
+  "sock": [ 
+    {
+      "id": 0,
+      "name" : "Call Agent",
+      "ipaddr": "192.168.114.200",
+      "port": 2904,
+      "transport" : "sctp",
+      "proto" : "m2ua",
+      "profile" : 0  
+    },
+    {
+      "id": 1,
+      "name" : "SMG_SIGTRAN",
+      "ipaddr": "192.168.114.198",
+      "port": 2904,
+      "transport" : "sctp",
+      "proto" : "m2ua",
+      "profile" : 0  
+    },
+    {
+      "id": 2,
+      "name" : "Call Agent",
+      "ipaddr": "192.168.114.200",
+      "port": 2906,
+      "transport" : "sctp",
+      "proto" : "m2ua",
+      "profile" : 0  
+    },
+    {
+      "id": 3,
+      "name" : "SMG_SIGTRAN sec",
+      "ipaddr": "192.168.114.205",
+      "port": 2904,
+      "transport" : "sctp",
+      "proto" : "m2ua",
+      "profile" : 0  
+    }
+  ],  
+  "sigtran": [
+    {
+      "id": 0,
+      "asp": ["10", "11"],
+      "iid": ["10", "11"] 
+    }
+  ]
+}

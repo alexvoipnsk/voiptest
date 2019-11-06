@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<scenario  name="m2ua_sgp_aspm_iv_03">
+
+	<connect connection="0" mode="client" />
+
+	<send connection="0">
+		<![CDATA[
+		ASP UP(ASP identifier=[$$sock.0.asp.0], info string="sigtran test", message_type="19")
+		]]>
+	</send>
+
+	<recv connection="0" timeout="6000">
+		<actions>
+			<validate rule="m2ua">
+				<![CDATA[
+				ERROR(Error code=4)
+				]]>
+			</validate>
+		</actions>
+	</recv>
+
+</scenario>
