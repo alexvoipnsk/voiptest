@@ -1,0 +1,41 @@
+Для работы с программой требуется установка следующих зависимостей:
+
+    интерпретатор Python3 версии 3.5 или выше;
+    пакеты libsctp1, libsctp-dev и lksctp-tools для поддержки SCTP;
+    менеджер пакетов pip3;
+    пакеты PyPI: pyparsing и jsonschema.
+    модуль pysctp для python3.
+
+Актуальную версию интерпретатора Python3 можно найти на официальном: сайте https://www.python.org/downloads/.
+Менеджер пакетов pip3 требуется для работы с репозиторием PyPI, в частности, для загрузки пакетов с этого репозитория. Установка pip3 осуществляется следующей командой:
+
+apt-get install python3-pip
+
+
+Если менеджер пакетов pip3 был установлен ранее, рекомендуется его обновить до последней версии:
+
+pip3 install --upgrade pip
+
+
+Выполнив установку pip3, необходимо загрузить модули pyparsing, jsonschema и pysctp с репозитория PyPI следующей командой:
+
+pip3 install pyparsing jsonschema pysctp
+
+Далее необходимо заменить файлы модуля sctp на приложенные:
+
+cp sctp.py /usr/local/lib/python3.6/site-packages/
+cp sctp.cpython-36m-x86_64-linux-gnu.so /usr/local/lib/python3.6/site-packages/
+
+И импортировать их в python:
+
+python3
+Python 3.6.2 (default, Sep 22 2017, 11:50:03)
+[GCC 4.8.4] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import sctp
+>>>  
+
+Установка пакетов для поддержки SCTP:
+
+apt-get install libsctp1 libsctp-dev lksctp-tools
+
