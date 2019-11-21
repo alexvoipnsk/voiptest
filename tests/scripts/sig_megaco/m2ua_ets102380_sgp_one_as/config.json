@@ -1,5 +1,5 @@
 {
-  "LogDirectory" : "/home/alexander/py_autotest/log/sigtran/",
+  "LogDirectory" : "~/voiptest/log/sigtran/",
   "Connections" : [
     {
       "id" : 0,
@@ -18,7 +18,7 @@
     {
       "id": 0,
       "name" : "Call Agent",
-      "ipaddr": "192.168.114.200",
+      "ipaddr": "192.168.114.235",
       "port": 2904,
       "transport" : "sctp",
       "proto" : "m2ua",
