@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 import sys
 if sys.version_info < (3,6):
-	print("\033[1;31mInterpreter Error:\033[1;m use Python interpreter version 3.6 or greater")
+	print("use Python interpreter version 3.6 or greater")
 	sys.exit(1)
 
 from os import geteuid
 
 # Check root privileges
 if geteuid() != 0:
-	print("\033[1;31mPermission Error:\033[1;m you need root privileges")
+	print("you need root privileges")
 	exit(1)
 
 # Importing class for working with file system
