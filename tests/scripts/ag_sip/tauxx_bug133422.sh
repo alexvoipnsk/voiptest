@@ -45,10 +45,10 @@ REZULT ()
   if test $? -ne 0
       then
           FAIL_COUNT=$(($FAIL_COUNT+1))
-          echo Test $COUNT failed >> $TEMP_PATH/$0.txt
+          echo Test $COUNT failed > $TEMP_PATH/temp.txt
       else
           SUCC_COUNT=$(($SUCC_COUNT+1))
-          echo Test $COUNT passed >> $TEMP_PATH/$0.txt
+          echo Test $COUNT passed > $TEMP_PATH/temp.txt
   fi
 }
 
@@ -59,7 +59,7 @@ sudo iptables -t mangle -A OUTPUT -p udp -m udp --sport 6000:18000 -j DSCP --set
 ## Registrations
 
 COUNT=1
-sudo $SIPP_PATH/sipp $TAUIP:$TAUPORT -sf $SRC_PATH/bug133422.xml -mi $SIPPIP -m 1 -nd -i $SIPPIP -p $SIPPORT -recv_timeout 200s -timeout_error &
+sudo $SIPP_PATH/sipp $TAUIP:$TAUPORT -sf $SRC_PATH/bug133422.xml -mi $SIPPIP -m 1 -nd -i $SIPPIP -p $SIPPORT -rtp_echo -recv_timeout 200s -timeout_error &
 REZULT
 sleep 2
 

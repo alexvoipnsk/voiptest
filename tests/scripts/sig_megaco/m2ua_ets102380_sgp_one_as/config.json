@@ -1,5 +1,5 @@
 {
-  "LogDirectory" : "~/voiptest/log/sigtran/",
+  "LogDirectory" : "/root/voiptest/log/sigtran/",
   "Connections" : [
     {
       "id" : 0,
@@ -18,7 +18,7 @@
     {
       "id": 0,
       "name" : "Call Agent",
-      "ipaddr": "192.168.114.235",
+      "ipaddr": "192.168.114.240",
       "port": 2904,
       "transport" : "sctp",
       "proto" : "m2ua",
@@ -36,7 +36,7 @@
     {
       "id": 2,
       "name" : "Call Agent",
-      "ipaddr": "192.168.114.200",
+      "ipaddr": "192.168.114.240",
       "port": 2906,
       "transport" : "sctp",
       "proto" : "m2ua",
