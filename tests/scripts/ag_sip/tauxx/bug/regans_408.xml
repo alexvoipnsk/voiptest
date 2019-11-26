@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<scenario name="uas">
+	<recv request="REGISTER" crlf="true" />
+	<send>
+		<![CDATA[
+SIP/2.0 408 Zaderje4ka
+[last_Via:]
+[last_From:]
+[last_To:];tag=[call_number]
+[last_Call-ID:]
+[last_CSeq:]
+Date: Tue, 01 Apr 2014 07:18:20 GMT
+Content-Length: 0
+
+]]>
+	</send>
+	<label id="1" />
+	<ResponseTimeRepartition value="10, 20, 30, 40, 50, 100, 150, 200" />
+	<CallLengthRepartition value="10, 50, 100, 500, 1000, 5000, 10000" />
+</scenario>
