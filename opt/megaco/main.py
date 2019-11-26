@@ -55,7 +55,7 @@ def main():
 	# Parsing the command-line arguments
 	config_file, tests_files, log_flag, verbose_level, job_name = ArgParser().parse_arguments()
 
-	AppLogger.info("Сommand-line arguments was fetched")
+	AppLogger.info("Command-line arguments was fetched")
 
 	# Parsing the configuration file
 	config = ConfigParser().parse_config(config_file)
