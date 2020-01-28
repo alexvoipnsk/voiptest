@@ -1,5 +1,0 @@
-EXECUTE STATUS: FAILURE
-
-(16.01.2020) 13h:08m:03s	[Connect]   Listen socket has been successfully accepted from peer '192.168.116.131:51609'
-(16.01.2020) 13h:08m:03s	[Recv]      Message has been successfully received from node '192.168.116.131:51609'
-(16.01.2020) 13h:08m:03s	[Validate]  Valid message received: (ASP_UP), No parameters received in message
