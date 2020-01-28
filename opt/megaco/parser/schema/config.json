@@ -94,6 +94,22 @@
 	    		"required" : ["id"]
 	    	}
 	    },
+	    "mgcp" : {
+	    	"type" : "array",
+	    	"items" : {
+	    		"type" : "object",
+	    		"properties" : {
+	    			"id" : {"type" : "integer", "minimum" : 0, "exclusiveMinimum" : false},
+	    			"mid" : {"type" : "string", "minLength" : 1},
+	    			"encoding" : {"type" : "string", "enum" : ["full_text", "compact_text"]},
+	    			"terms" : {
+	    				"type" : "array",
+	    				"items" : {"type" : "string", "minLength" : 1}
+	    			}
+	    		},
+	    		"required" : ["id", "mid"]
+	    	}
+	    },
 	    "megaco" : {
 	    	"type" : "array",
 	    	"items" : {

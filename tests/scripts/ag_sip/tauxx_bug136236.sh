@@ -59,8 +59,8 @@ sudo iptables -t mangle -A OUTPUT -p udp -m udp --sport 6000:18000 -j DSCP --set
 ## Registrations
 
 COUNT=1
-sudo $SIPP_PATH/sipp $TAUIP:$TAUPORT -sf $SRC_PATH/bug136236-uas1.xml -mi $SIPPIP -m 1 -nd -i $SIPPIP -p $SIPPORT -rtp_echo -recv_timeout 200s -timeout_error &
-sudo $SIPP_PATH/sipp $TAUIP:$TAUPORT -sf $SRC_PATH/bug136236-uas2.xml -mi $SIPPIP -m 1 -nd -i $SIPPIP -p $(($SIPPORT+2)) -rtp_echo -recv_timeout 200s -timeout_error &
+sudo $SIPP_PATH/sipp $TAUIP:$TAUPORT -sf $SRC_PATH/bug136236-uas1_rfc.xml -mi $SIPPIP -m 1 -nd -i $SIPPIP -p $SIPPORT -rtp_echo -recv_timeout 200s -timeout_error &
+sudo $SIPP_PATH/sipp $TAUIP:$TAUPORT -sf $SRC_PATH/bug136236-uas2_rfc.xml -mi $SIPPIP -m 1 -nd -i $SIPPIP -p $(($SIPPORT+2)) -rtp_echo -recv_timeout 200s -timeout_error &
 REZULT
 sleep 2
 

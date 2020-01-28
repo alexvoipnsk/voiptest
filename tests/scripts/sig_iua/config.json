@@ -1,0 +1,38 @@
+{
+  "LogDirectory" : "../../log/sigtran/",
+  "Connections" : [
+    {
+      "id" : 0,
+      "name" : "Link between Call Agent and SMG_SIGTRAN",
+      "from_sock" : 0,
+      "to_sock" : 1
+    }
+  ], 
+  "sock": [ 
+    {
+      "id": 0,
+      "name" : "Call Agent",
+      "ipaddr": "192.168.114.200",
+      "port": 9900,
+      "transport" : "sctp",
+      "proto" : "iua",
+      "profile" : 0  
+    },
+    {
+      "id": 1,
+      "name" : "SMG_SIGTRAN",
+      "ipaddr": "192.168.114.207",
+      "port": 9900,
+      "transport" : "sctp",
+      "proto" : "iua",
+      "profile" : 0  
+    }
+  ],  
+  "sigtran": [
+    {
+      "id": 0,
+      "asp": ["23"],
+      "iid": ["32"]
+    }
+  ]
+}

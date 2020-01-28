@@ -1,0 +1,8 @@
+EXECUTE STATUS: FAILURE
+
+(26.12.2019) 12h:28m:21s	[Connect]   Peer has been successfully connected to node '1'
+(26.12.2019) 12h:28m:21s	[Send]      Message 'ASP UP(ASP identifier=[$$sock.0.asp.0], info string="sigtran test")' has been successfully sent to node '192.168.114.207:9900'
+(26.12.2019) 12h:28m:21s	[Recv]      Message has been successfully received from node '192.168.114.207:9900'
+(26.12.2019) 12h:28m:21s	[Validate]  Valid message received: (ASP_UP_ACK), Tags: (info_string ) and their values: (sigtran test ) are match
+(26.12.2019) 12h:28m:21s	[Recv]      Message has been successfully received from node '192.168.114.207:9900'
+(26.12.2019) 12h:28m:21s	[Validate]  Valid message received: (NOTIFY), Tags: (status_type/information ) or their values: (AS state change/as inactive ) don't match

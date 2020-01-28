@@ -1,0 +1,28 @@
+EXECUTE STATUS: FAILURE
+
+(16.01.2020) 13h:48m:19s	[Connect]   Listen socket has been successfully accepted from peer '192.168.116.130:46413'
+(16.01.2020) 13h:48m:19s	[Recv]      Message has been successfully received from node '192.168.116.130:46413'
+(16.01.2020) 13h:48m:19s	[Validate]  Valid message received: (ASP_UP), Tags: (asp_identifier ) and their values: (99 ) are match
+(16.01.2020) 13h:48m:19s	[Send]      Message 'ASP UP ACK()' has been successfully sent to node '192.168.116.130:2913'
+(16.01.2020) 13h:48m:19s	[Send]      Message 'NOTIFY(Status Type="AS state change"; Status Information="as inactive")' has been successfully sent to node '192.168.116.130:2913'
+(16.01.2020) 13h:48m:19s	[Recv]      Message has been successfully received from node '192.168.116.130:46413'
+(16.01.2020) 13h:48m:19s	[Validate]  Valid message received: (ASP_ACTIVE), Tags: (traffic_mode_type ) and their values: (1 ) are match
+(16.01.2020) 13h:48m:19s	[Send]      Message 'ASP ACTIVE ACK(traffic mode type="override")' has been successfully sent to node '192.168.116.130:2913'
+(16.01.2020) 13h:48m:19s	[Send]      Message 'NOTIFY(Status Type="AS state change"; Status Information="as active")' has been successfully sent to node '192.168.116.130:2913'
+(16.01.2020) 13h:48m:20s	[Recv]      Message has been successfully received from node '192.168.116.130:46413'
+(16.01.2020) 13h:48m:20s	[Validate]  Valid message received: (ESTAB_REQ), Tags: (interface_identifier_text ) and their values: (iid98 ) are match
+(16.01.2020) 13h:48m:20s	[Send]      Message 'ESTAB CONF(Interface identifiers=[[$$sock.0.iid.0]])' has been successfully sent to node '192.168.116.130:2913'
+(16.01.2020) 13h:48m:20s	[Recv]      Message has been successfully received from node '192.168.116.130:46413'
+(16.01.2020) 13h:48m:20s	[GetBytes]  The bytes from '31' to last byte has been written to variable 'test_mess'
+(16.01.2020) 13h:48m:20s	[Validate]  Valid message received: (DATA), No params for validation
+(16.01.2020) 13h:48m:20s	[Send]      Message 'DATA(Interface identifiers=[[$$sock.0.iid.0]], protocol data 1=SLTA(ni=2; opc=98; dpc=99; sls=1; test_message=[$test_mess]))' has been successfully sent to node '192.168.116.130:2913'
+(16.01.2020) 13h:48m:20s	[Send]      Message 'DATA(Interface identifiers=[[$$sock.0.iid.0]], protocol data 1=SLTM(ni=2; opc=98; dpc=99; sls=1; test_message=87677839))' has been successfully sent to node '192.168.116.130:2913'
+(16.01.2020) 13h:48m:20s	[Recv]      Message has been successfully received from node '192.168.116.130:46413'
+(16.01.2020) 13h:48m:20s	[Validate]  Valid message received: (DATA), No params for validation
+(16.01.2020) 13h:48m:20s	[Send]      Message 'DATA(Interface identifiers=[[$$sock.0.iid.0]], protocol data 1=TRA(ni=2; opc=98; dpc=99; sls=1))' has been successfully sent to node '192.168.116.130:2913'
+(16.01.2020) 13h:48m:20s	[Send]      Message has been successfully sent to node '192.168.116.130:2956'
+(16.01.2020) 13h:48m:20s	[Recv]      Message has been successfully received from node '192.168.116.130:2956'
+(16.01.2020) 13h:48m:20s	[Catch]     The match groups '1' has been written to variables 'transaction_id'
+(16.01.2020) 13h:48m:20s	[Send]      Message has been successfully sent to node '192.168.116.130:2956'
+(16.01.2020) 13h:48m:25s	[Recv]      Message has not been received: timed out
+(16.01.2020) 13h:48m:25s	[Catch]     There is no rigth match to regexp 'Transaction\\s*=\\s*(\\d+)'

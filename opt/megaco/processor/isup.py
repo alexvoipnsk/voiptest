@@ -111,7 +111,7 @@ class Access_Transport:
 class Automatic_Congestion_Level:
 
 	def __init__(self, value):
-		self.value = value
+		self.value = value & 0b00000011
 
 class Backward_Call_Indicators:
 	
@@ -131,7 +131,7 @@ class Backward_Call_Indicators:
 class Call_Diversion_Information:
 
 	def __init__(self, value):
-		self.value = value & 0b00000111
+		self.notification_subscription_options = value & 0b00000111
 		self.redirecting_reason = (value & 0b01111000) >> 3
 		self.spare = (value & 0b10000000) >> 7
 
@@ -731,22 +731,74 @@ class Transmission_Medium_Used:
 class User_Service_Information:
 
 	def __init__(self, value):
-		self.value = value
+		self.value = []
+
+	def Build(self, value):
+		if type(value) == bytes:
+			self.value = self.Extract_Bytes(value)
+		elif type(value) == list:
+			self.value = list(value)
+		return self
+
+	def Extract_Bytes(self, binary_value):
+		bytes_list = []
+		for value in binary_value:
+			bytes_list.append(value)
+		return bytes_list
 
 class User_Service_Information_Prime:
 
-	def __init__(self, value):
-		self.value = value
+	def __init__(self):
+		self.value = []
+
+	def Build(self, value):
+		if type(value) == bytes:
+			self.value = self.Extract_Bytes(value)
+		elif type(value) == list:
+			self.value = list(value)
+		return self
+
+	def Extract_Bytes(self, binary_value):
+		bytes_list = []
+		for value in binary_value:
+			bytes_list.append(value)
+		return bytes_list
 
 class User_Teleservice_Information:
 
-	def __init__(self, value):
-		self.value = value
+	def __init__(self):
+		self.value = []
+
+	def Build(self, value):
+		if type(value) == bytes:
+			self.value = self.Extract_Bytes(value)
+		elif type(value) == list:
+			self.value = list(value)
+		return self
+
+	def Extract_Bytes(self, binary_value):
+		bytes_list = []
+		for value in binary_value:
+			bytes_list.append(value)
+		return bytes_list
 
 class User_To_User_Information:
 
-	def __init__(self, value):
-		self.value = value
+	def __init__(self):
+		self.value = []
+
+	def Build(self, value):
+		if type(value) == bytes:
+			self.value = self.Extract_Bytes(value)
+		elif type(value) == list:
+			self.value = list(value)
+		return self
+
+	def Extract_Bytes(self, binary_value):
+		bytes_list = []
+		for value in binary_value:
+			bytes_list.append(value)
+		return bytes_list
 
 class ISUP_Message_Parser:
 
@@ -760,9 +812,16 @@ class ISUP_Message_Parser:
 		self.parameters_handlers = {
 		  1 : self.IAM_Parameters_Handler,
 		  2 : self.SAM_Parameters_Handler,
+		  3 : self.INR_Parameters_Handler,
+		  4 : self.INF_Parameters_Handler,
+		  5 : self.COT_Parameters_Handler,
 		  6 : self.ACM_Parameters_Handler,
+		  7 : self.CON_Parameters_Handler,
+		  8 : self.FOT_Parameters_Handler,
 		  9 : self.ANM_Parameters_Handler,
 		  12 : self.REL_Parameters_Handler,
+		  13 : self.SUS_Parameters_Handler,
+		  14 : self.RES_Parameters_Handler,
 		  16 : self.RLC_Parameters_Handler,
 		  17 : self.No_Parameters_Handler,
 		  18 : self.No_Parameters_Handler,
@@ -775,14 +834,28 @@ class ISUP_Message_Parser:
 		  25 : self.CGx_Parameters_Handler,
 		  26 : self.CGx_Parameters_Handler,
 		  27 : self.CGx_Parameters_Handler,
+		  31 : self.FAR_Parameters_Handler,
+		  32 : self.FAA_Parameters_Handler,
+		  33 : self.FRJ_Parameters_Handler,
 		  36 : self.No_Parameters_Handler,
 		  41 : self.GRS_Parameters_Handler,
 		  42 : self.GRS_Parameters_Handler,
+		  44 : self.CPG_Parameters_Handler,
+		  45 : self.USR_Parameters_Handler,
 		  46 : self.No_Parameters_Handler,
 		  47 : self.CFN_Parameters_Handler,
 		  48 : self.No_Parameters_Handler,
+		  50 : self.NRM_Parameters_Handler,
+		  51 : self.FAC_Parameters_Handler,
 		  52 : self.No_Parameters_Handler,
-		  53 : self.No_Parameters_Handler }#UP_
+		  53 : self.No_Parameters_Handler,
+		  54 : self.IDR_Parameters_Handler,
+		  55 : self.IDS_Parameters_Handler,
+		  56 : self.SGM_Parameters_Handler,
+		  64 : self.LPP_Parameters_Handler,
+		  65 : self.APT_Parameters_Handler,
+		  66 : self.PRI_Parameters_Handler,
+		  67 : self.SDN_Parameters_Handler }#UP_
 
 	def Define_Service_Data_Handlers(self):
 		handlers = {
@@ -909,6 +982,144 @@ class ISUP_Message_Parser:
 				variable_parameters.append(value)
 		return variable_parameters
 
+	def USR_Parameters_Handler(self, binary_data):
+		#Сборка опциональных параметров
+		variable_parameters = self.Get_Variable_Parameters(binary_data[0:])
+		user_to_user_information = User_To_User_Information(variable_parameters[0])
+		optional_parameters = self.Optional_Parameters_Handler(variable_parameters[1])
+		#Формирование списков параметров
+		mandatory_parameters = [user_to_user_information]
+		return (mandatory_parameters, optional_parameters)
+
+	def FAR_Parameters_Handler(self, binary_data):
+		pattern = struct.Struct("> B")
+		try:
+			unpacked_data = pattern.unpack(binary_data[:1])
+		except struct.error:
+			raise ISUP_Error("invalid FAR fixed mandatory part")
+		else:
+			#Сборка обязательных фиксированных параметров
+			facility_indicator = Facility_Indicator(unpacked_data[0])
+			#Сборка опциональных параметров
+			variable_parameters = self.Get_Variable_Parameters(binary_data[1:])
+			optional_parameters = self.Optional_Parameters_Handler(variable_parameters[0])
+			#Формирование списков параметров
+			mandatory_parameters = [facility_indicator]
+			return (mandatory_parameters, optional_parameters)
+
+	def FAA_Parameters_Handler(self, binary_data):
+		pattern = struct.Struct("> B")
+		try:
+			unpacked_data = pattern.unpack(binary_data[:1])
+		except struct.error:
+			raise ISUP_Error("invalid FAA fixed mandatory part")
+		else:
+			#Сборка обязательных фиксированных параметров
+			facility_indicator = Facility_Indicator(unpacked_data[0])
+			#Сборка опциональных параметров
+			variable_parameters = self.Get_Variable_Parameters(binary_data[1:])
+			optional_parameters = self.Optional_Parameters_Handler(variable_parameters[0])
+			#Формирование списков параметров
+			mandatory_parameters = [facility_indicator]
+			return (mandatory_parameters, optional_parameters)
+
+	def CPG_Parameters_Handler(self, binary_data):
+		pattern = struct.Struct("> B")
+		try:
+			unpacked_data = pattern.unpack(binary_data[:1])
+		except struct.error:
+			raise ISUP_Error("invalid CPG fixed mandatory part")
+		else:
+			#Сборка обязательных фиксированных параметров
+			event_information = Event_Information(unpacked_data[0])
+			#Сборка опциональных параметров
+			variable_parameters = self.Get_Variable_Parameters(binary_data[1:])
+			optional_parameters = self.Optional_Parameters_Handler(variable_parameters[0])
+			#Формирование списков параметров
+			mandatory_parameters = [event_information]
+			return (mandatory_parameters, optional_parameters)
+
+	def COT_Parameters_Handler(self, binary_data):
+		optional_parameters = list()
+		pattern = struct.Struct("> B")
+		try:
+			unpacked_data = pattern.unpack(binary_data[:1])
+		except struct.error:
+			raise ISUP_Error("invalid COT fixed mandatory part")
+		else:
+			#Сборка обязательных фиксированных параметров
+			continuity_indicators = Continuity_Indicators(unpacked_data[0])
+			#Сборка опциональных параметров
+			variable_parameters = self.Get_Variable_Parameters(binary_data[1:])
+			optional_parameters = self.Optional_Parameters_Handler(variable_parameters[0])
+			#Формирование списков параметров
+			mandatory_parameters = [continuity_indicators]
+			return (mandatory_parameters, optional_parameters)
+
+	def INR_Parameters_Handler(self, binary_data):
+		pattern = struct.Struct("> H")
+		try:
+			unpacked_data = pattern.unpack(binary_data[:2])
+		except struct.error:
+			raise ISUP_Error("invalid INR fixed mandatory part")
+		else:
+			#Сборка обязательных фиксированных параметров
+			information_request_indicators = Information_Request_Indicators(unpacked_data[0])
+			#Сборка опциональных параметров
+			variable_parameters = self.Get_Variable_Parameters(binary_data[2:])
+			optional_parameters = self.Optional_Parameters_Handler(variable_parameters[0])
+			#Формирование списков параметров
+			mandatory_parameters = [information_request_indicators]
+			return (mandatory_parameters, optional_parameters)
+
+	def INF_Parameters_Handler(self, binary_data):
+		pattern = struct.Struct("> H")
+		try:
+			unpacked_data = pattern.unpack(binary_data[:2])
+		except struct.error:
+			raise ISUP_Error("invalid INF fixed mandatory part")
+		else:
+			#Сборка обязательных фиксированных параметров
+			information_indicators = Information_Indicators(unpacked_data[0])
+			#Сборка опциональных параметров
+			variable_parameters = self.Get_Variable_Parameters(binary_data[2:])
+			optional_parameters = self.Optional_Parameters_Handler(variable_parameters[0])
+			#Формирование списков параметров
+			mandatory_parameters = [information_indicators]
+			return (mandatory_parameters, optional_parameters)
+
+	def SUS_Parameters_Handler(self, binary_data):
+		pattern = struct.Struct("> B")
+		try:
+			unpacked_data = pattern.unpack(binary_data[:1])
+		except struct.error:
+			raise ISUP_Error("invalid SUS fixed mandatory part")
+		else:
+			#Сборка обязательных фиксированных параметров
+			suspend_resume_indicators = Suspend_Resume_Indicators(unpacked_data[0])
+			#Сборка опциональных параметров
+			variable_parameters = self.Get_Variable_Parameters(binary_data[1:])
+			optional_parameters = self.Optional_Parameters_Handler(variable_parameters[0])
+			#Формирование списков параметров
+			mandatory_parameters = [suspend_resume_indicators]
+			return (mandatory_parameters, optional_parameters)
+
+	def RES_Parameters_Handler(self, binary_data):
+		pattern = struct.Struct("> B")
+		try:
+			unpacked_data = pattern.unpack(binary_data[:1])
+		except struct.error:
+			raise ISUP_Error("invalid RES fixed mandatory part")
+		else:
+			#Сборка обязательных фиксированных параметров
+			suspend_resume_indicators = Suspend_Resume_Indicators(unpacked_data[0])
+			#Сборка опциональных параметров
+			variable_parameters = self.Get_Variable_Parameters(binary_data[1:])
+			optional_parameters = self.Optional_Parameters_Handler(variable_parameters[0])
+			#Формирование списков параметров
+			mandatory_parameters = [suspend_resume_indicators]
+			return (mandatory_parameters, optional_parameters)
+
 	def IAM_Parameters_Handler(self, binary_data):
 		pattern = struct.Struct("> B H B B")
 		try:
@@ -977,6 +1188,50 @@ class ISUP_Message_Parser:
 			mandatory_parameters = [backward_call_indicators]
 			return (mandatory_parameters, optional_parameters)
 
+	def CON_Parameters_Handler(self, binary_data):
+		pattern = struct.Struct("> H")
+		try:
+			unpacked_data = pattern.unpack(binary_data[:2])
+		except struct.error:
+			raise ISUP_Error("invalid ACM fixed mandatory part")
+		else:
+			#Сборка обязательных фиксированных параметров
+			backward_call_indicators = Backward_Call_Indicators(unpacked_data[0])
+			#print("interworking_indicator:", backward_call_indicators.interworking_indicator)
+			#print("end_to_end_information_indicator:", backward_call_indicators.end_to_end_information_indicator)
+			#print("isdn_user_part_indicator:", backward_call_indicators.isdn_user_part_indicator)
+			#print("holding_indicator:", backward_call_indicators.holding_indicator)
+			#print("isdn_access_indicator:", backward_call_indicators.isdn_access_indicator)
+			#print("echo_control_device_indicator:", backward_call_indicators.echo_control_device_indicator)
+			#print("sccp_method_indicator:", backward_call_indicators.sccp_method_indicator)
+			#print("charge_indicator:", backward_call_indicators.charge_indicator)
+			#print("called_party_status_indicator:", backward_call_indicators.called_party_status_indicator)
+			#print("called_party_category_indicator:", backward_call_indicators.called_party_category_indicator)
+			#print("end_to_end_method_indicator:", backward_call_indicators.end_to_end_method_indicator)
+			#Сборка опциональных параметров
+			variable_parameters = self.Get_Variable_Parameters(binary_data[2:])
+			optional_parameters = self.Optional_Parameters_Handler(variable_parameters[0])
+			#Формирование списков параметров
+			mandatory_parameters = [backward_call_indicators]
+			return (mandatory_parameters, optional_parameters)
+
+	def FRJ_Parameters_Handler(self, binary_data):
+		pattern = struct.Struct("> B")
+		try:
+			unpacked_data = pattern.unpack(binary_data[:1])
+		except struct.error:
+			raise ISUP_Error("invalid FRJ fixed mandatory part")
+		else:
+			#Сборка обязательных фиксированных параметров
+			facility_indicator = Facility_Indicator(unpacked_data[0])
+			#Сборка опциональных параметров
+			variable_parameters = self.Get_Variable_Parameters(binary_data[1:])
+			cause_indicators = Cause_Indicators().Build(variable_parameters[0])
+			optional_parameters = self.Optional_Parameters_Handler(variable_parameters[1])
+			#Формирование списков параметров
+			mandatory_parameters = [facility_indicator, cause_indicators]
+			return (mandatory_parameters, optional_parameters)
+
 	def ANM_Parameters_Handler(self, binary_data):
 		#Сообщение ANM не содержит обязательных параметров
 		mandatory_parameters = []
@@ -1026,7 +1281,7 @@ class ISUP_Message_Parser:
 		try:
 			unpacked_data = pattern.unpack(binary_data[:1])
 		except struct.error:
-			raise ISUP_Error("invalid CGU fixed mandatory part")
+			raise ISUP_Error("invalid CGx fixed mandatory part")
 		else:
 			#Сборка обязательных фиксированных параметров
 			circuit_group_supervision_message_type_indicators = Circuit_Group_Supervision_Message_Type(unpacked_data[0])
@@ -1061,6 +1316,86 @@ class ISUP_Message_Parser:
 		mandatory_parameters = [subsequent_number]
 		#Сборка опциональных параметров
 		optional_parameters = self.Optional_Parameters_Handler(variable_parameters[1])
+		return (mandatory_parameters, optional_parameters)
+
+	def FOT_Parameters_Handler(self, binary_data):
+		#Сообщение ANM не содержит обязательных параметров
+		mandatory_parameters = []
+		#Сборка опциональных параметров
+		variable_parameters = self.Get_Variable_Parameters(binary_data)
+		optional_parameters = self.Optional_Parameters_Handler(variable_parameters[0])
+		return (mandatory_parameters, optional_parameters)
+
+	def NRM_Parameters_Handler(self, binary_data):
+		#Сообщение ANM не содержит обязательных параметров
+		mandatory_parameters = []
+		#Сборка опциональных параметров
+		variable_parameters = self.Get_Variable_Parameters(binary_data)
+		optional_parameters = self.Optional_Parameters_Handler(variable_parameters[0])
+		return (mandatory_parameters, optional_parameters)
+
+	def FAC_Parameters_Handler(self, binary_data):
+		#Сообщение ANM не содержит обязательных параметров
+		mandatory_parameters = []
+		#Сборка опциональных параметров
+		variable_parameters = self.Get_Variable_Parameters(binary_data)
+		optional_parameters = self.Optional_Parameters_Handler(variable_parameters[0])
+		return (mandatory_parameters, optional_parameters)
+
+	def IDR_Parameters_Handler(self, binary_data):
+		#Сообщение ANM не содержит обязательных параметров
+		mandatory_parameters = []
+		#Сборка опциональных параметров
+		variable_parameters = self.Get_Variable_Parameters(binary_data)
+		optional_parameters = self.Optional_Parameters_Handler(variable_parameters[0])
+		return (mandatory_parameters, optional_parameters)
+
+	def IDS_Parameters_Handler(self, binary_data):
+		#Сообщение ANM не содержит обязательных параметров
+		mandatory_parameters = []
+		#Сборка опциональных параметров
+		variable_parameters = self.Get_Variable_Parameters(binary_data)
+		optional_parameters = self.Optional_Parameters_Handler(variable_parameters[0])
+		return (mandatory_parameters, optional_parameters)
+
+	def SGM_Parameters_Handler(self, binary_data):
+		#Сообщение ANM не содержит обязательных параметров
+		mandatory_parameters = []
+		#Сборка опциональных параметров
+		variable_parameters = self.Get_Variable_Parameters(binary_data)
+		optional_parameters = self.Optional_Parameters_Handler(variable_parameters[0])
+		return (mandatory_parameters, optional_parameters)
+
+	def LPP_Parameters_Handler(self, binary_data):
+		#Сообщение ANM не содержит обязательных параметров
+		mandatory_parameters = []
+		#Сборка опциональных параметров
+		variable_parameters = self.Get_Variable_Parameters(binary_data)
+		optional_parameters = self.Optional_Parameters_Handler(variable_parameters[0])
+		return (mandatory_parameters, optional_parameters)
+
+	def APT_Parameters_Handler(self, binary_data):
+		#Сообщение ANM не содержит обязательных параметров
+		mandatory_parameters = []
+		#Сборка опциональных параметров
+		variable_parameters = self.Get_Variable_Parameters(binary_data)
+		optional_parameters = self.Optional_Parameters_Handler(variable_parameters[0])
+		return (mandatory_parameters, optional_parameters)
+
+	def PRI_Parameters_Handler(self, binary_data):
+		#Сообщение ANM не содержит обязательных параметров
+		mandatory_parameters = []
+		#Сборка опциональных параметров
+		variable_parameters = self.Get_Variable_Parameters(binary_data)
+		optional_parameters = self.Optional_Parameters_Handler(variable_parameters[0])
+		return (mandatory_parameters, optional_parameters)
+
+	def SDN_Parameters_Handler(self, binary_data):
+		#Сообщение ANM не содержит обязательных параметров
+		mandatory_parameters = []
+		#Сборка опциональных параметров
+		variable_parameters = self.Get_Variable_Parameters(binary_data)
+		optional_parameters = self.Optional_Parameters_Handler(variable_parameters[0])
 		return (mandatory_parameters, optional_parameters)
 
 	def Optional_Parameters_Handler(self, binary_data):
@@ -1125,10 +1460,42 @@ class ISUP_Message_Builder:
 
 	def Define_Parameter_Builders(self):
 		builders = {
+		  "access_transport" : self.Build_Access_Transport,
+		  "user_service_information" : self.Build_User_Service_Information,
+		  "user_service_information_prime" : self.Build_User_Service_Information_Prime,
+		  "user_teleservice_information" : self.Build_User_Teleservice_Information,
+		  "user_to_user_information" : self.Build_User_To_User_Information,
+		  "access_delivery_information" : self.Build_Access_Delivery_Information,
+		  "automatic_congestion_level" : self.Build_Automatic_Congestion_Level,
+		  "call_diversion_information" : self.Build_Call_Diversion_Information,
+		  "call_history_information" : self.Build_Call_History_Information,
+		  "continuity_indicators" : self.Build_Continuity_Indicators,
+		  "echo_control_information" : self.Build_Echo_Control_Information,
+		  "event_information" : self.Build_Event_Information,
+		  "facility_indicator" : self.Build_Facility_Indicator,
+		  "mcid_request_indicators" : self.Build_MCID_Request_Indicators,
+		  "mcid_response_indicators" : self.Build_MCID_Response_Indicators,
+		  "optional_backward_call_indicators" : self.Build_Optional_Backward_Call_Indicators,
+		  "optional_forward_call_indicators" : self.Build_Optional_Forward_Call_Indicators,
+		  "origination_isc_point_code" : self.Build_Origination_ISC_Point_Code,
+		  "propagation_delay_counter" : self.Build_Propagation_Delay_Counter,
+		  "redirection_information" : self.Build_Redirection_Information,
+		  "redirection_number_restriction" : self.Build_Redirection_Number_Restriction,
+		  "signalling_point_code" : self.Build_Signalling_Point_Code,
+		  "suspend/resume_indicators" : self.Build_Suspend_Resume_Indicators,
+		  "transmission_medium_requirement_prime" : self.Build_Transmission_Medium_Requirement_Prime,
+		  "transmission_medium_used" : self.Build_Transmission_Medium_Used,
 		  "nature_of_connection_indicators" : self.Build_Nature_Of_Connection_Indicators,
 		  "forward_call_indicators" : self.Build_Forward_Call_Indicators,
 		  "calling_party_category" : self.Build_Calling_Party_Category,
 		  "transmission_medium_requirement" : self.Build_Transmission_Medium_Requirement,
+		  "calling_party_number" : self.Build_Calling_Party_Number,
+		  "connected_number" : self.Build_Connected_Number,
+		  "location_number" : self.Build_Location_Number,
+		  "original_called_number" : self.Build_Original_Called_Number,
+		  "redirecting_number" : self.Build_Redirecting_Number,
+		  "redirection_number" : self.Build_Redirection_Number,
+		  "generic_number" : self.Build_Generic_Number,
 		  "called_party_number" : self.Build_Called_Party_Number,
 		  "backward_call_indicators" : self.Build_Backward_Call_Indicators,
 		  "cause_indicators" : self.Build_Cause_Indicators,
@@ -1143,31 +1510,172 @@ class ISUP_Message_Builder:
 		lengths = {
 		  1 : 5,
 		  2 : 1,
+		  3 : 1,
+		  4 : 1,
+		  5 : 1,
 		  6 : 1,
+		  7 : 1,
+		  8 : 0,
 		  9 : 0,
 		  12 : 1,
+		  13 : 1,
+		  14 : 1,
 		  16 : 0,
 		  17 : 0,
 		  18 : 0,
 		  19 : 0,
 		  20 : 0,
-		  21 : 0,		  
+		  21 : 0,
 		  22 : 0,
 		  23 : 1,
 		  24 : 2,
 		  25 : 2,
 		  26 : 2,
 		  27 : 2,
+		  31 : 1,
+		  32 : 1,
+		  33 : 2,
 		  36 : 0,
 		  41 : 1,
 		  42 : 1,
+		  43 : 2,
+		  44 : 1,
 		  46 : 0,
 		  47 : 1,
 		  48 : 0,
+		  50 : 0,
+		  51 : 0,
 		  52 : 0,
-		  53 : 0
+		  53 : 0,
+		  54 : 0,
+		  55 : 0,
+		  56 : 0,
+		  64 : 0,
+		  65 : 0,
+		  66 : 0,
+		  67 : 0
 		}
 		return lengths
+
+	def Build_Access_Delivery_Information(self, value):
+		if type(value) != int:
+			raise ISUP_Error("access_delivery_information must be int value")
+		else:
+			return Access_Delivery_Information(value)
+
+	def Build_Automatic_Congestion_Level(self, value):
+		if type(value) != int:
+			raise ISUP_Error("automatic_congestion_level must be int value")
+		else:
+			return Automatic_Congestion_Level(value)
+
+	def Build_Call_Diversion_Information(self, value):
+		if type(value) != int:
+			raise ISUP_Error("call_diversion_information must be int value")
+		else:
+			return Call_Diversion_Information(value)
+
+	def Build_Call_History_Information(self, value):
+		if type(value) != int:
+			raise ISUP_Error("call_history_information must be int value")
+		else:
+			return Call_History_Information(value)
+
+	def Build_Continuity_Indicators(self, value):
+		if type(value) != int:
+			raise ISUP_Error("continuity_indicators must be int value")
+		else:
+			return Continuity_Indicators(value)
+
+	def Build_Echo_Control_Information(self, value):
+		if type(value) != int:
+			raise ISUP_Error("echo_control_information must be int value")
+		else:
+			return Echo_Control_Information(value)
+
+	def Build_Event_Information(self, value):
+		if type(value) != int:
+			raise ISUP_Error("event_information must be int value")
+		else:
+			return Event_Information(value)
+
+	def Build_Facility_Indicator(self, value):
+		if type(value) != int:
+			raise ISUP_Error("facility_indicator must be int value")
+		else:
+			return Facility_Indicator(value)
+
+	def Build_MCID_Request_Indicators(self, value):
+		if type(value) != int:
+			raise ISUP_Error("mcid_request_indicators must be int value")
+		else:
+			return MCID_Request_Indicators(value)			
+
+	def Build_MCID_Response_Indicators(self, value):
+		if type(value) != int:
+			raise ISUP_Error("mcid_response_indicators must be int value")
+		else:
+			return MCID_Response_Indicators(value)
+
+	def Build_Optional_Backward_Call_Indicators(self, value):
+		if type(value) != int:
+			raise ISUP_Error("optional_backward_call_indicators must be int value")
+		else:
+			return Optional_Backward_Call_Indicators(value)
+
+	def Build_Optional_Forward_Call_Indicators(self, value):
+		if type(value) != int:
+			raise ISUP_Error("optional_forward_call_indicators must be int value")
+		else:
+			return Optional_Forward_Call_Indicators(value)
+
+	def Build_Origination_ISC_Point_Code(self, value):
+		if type(value) != int:
+			raise ISUP_Error("origination_isc_point_code must be int value")
+		else:
+			return Origination_ISC_Point_Code(value)		
+
+	def Build_Propagation_Delay_Counter(self, value):
+		if type(value) != int:
+			raise ISUP_Error("propagation_delay_counter must be int value")
+		else:
+			return Propagation_Delay_Counter(value)
+
+	def Build_Redirection_Information(self, value):
+		if type(value) != int:
+			raise ISUP_Error("redirection_information must be int value")
+		else:
+			return Redirection_Information(value)
+
+	def Build_Redirection_Number_Restriction(self, value):
+		if type(value) != int:
+			raise ISUP_Error("redirection_number_restriction must be int value")
+		else:
+			return Redirection_Number_Restriction(value)			
+
+	def Build_Signalling_Point_Code(self, value):
+		if type(value) != int:
+			raise ISUP_Error("signalling_point_code must be int value")
+		else:
+			return Signalling_Point_Code(value)
+
+	def Build_Suspend_Resume_Indicators(self, value):
+		if type(value) != int:
+			raise ISUP_Error("suspend/resume_indicators must be int value")
+		else:
+			return Suspend_Resume_Indicators(value)
+
+	def Build_Transmission_Medium_Requirement_Prime(self, value):
+		if type(value) != int:
+			raise ISUP_Error("transmission_medium_requirement_prime must be int value")
+		else:
+			return Transmission_Medium_Requirement_Prime(value)
+
+	def Build_Transmission_Medium_Used(self, value):
+		if type(value) != int:
+			raise ISUP_Error("transmission_medium_used must be int value")
+		else:
+			return Transmission_Medium_Used(value)
 
 	def Build_Nature_Of_Connection_Indicators(self, value):
 		if type(value) != int:
@@ -1199,6 +1707,30 @@ class ISUP_Message_Builder:
 		else:
 			return Circuit_Group_Supervision_Message_Type(value)
 
+	def Check_Raw_List_Or_Byte_Value(self, value):
+		if type(value) != list or type(value) != bytes:
+			raise ISUP_Error("value must be bytes or list of integers (0-255)")
+
+	def Build_Access_Transport(self, value):
+		self.Check_Raw_List_Or_Byte_Value(value)
+		return Access_Transport().Build(value)
+
+	def Build_User_Service_Information(self, value):
+		self.Check_Raw_List_Or_Byte_Value(value)
+		return User_Service_Information().Build(value)
+
+	def Build_User_Service_Information_Prime(self, value):
+		self.Check_Raw_List_Or_Byte_Value(value)
+		return User_Service_Information_Prime().Build(value)
+
+	def Build_User_Teleservice_Information(self, value):
+		self.Check_Raw_List_Or_Byte_Value(value)
+		return User_Teleservice_Information().Build(value)
+		
+	def Build_User_To_User_Information(self, value):
+		self.Check_Raw_List_Or_Byte_Value(value)
+		return User_To_User_Information().Build(value)
+
 	def Check_Raw_Range_and_Status_Value(self, value):
 		if type(value) != list and (len(value) != 1 or len(value) != 2):
 			raise ISUP_Error("range and status value must be list by pattern: \"[byte1_range] or [byte1_range, (byte_status1, byte_statusN)]\"")
@@ -1215,23 +1747,61 @@ class ISUP_Message_Builder:
 		self.Check_Raw_Range_and_Status_Value(value)
 		return Range_And_Status().Build(value)
 
-	def Check_Raw_CDPN_Value(self, value):
+	def Build_Calling_Party_Number(self, value):
+		self.Check_Raw_PN_Value(value)
+		return Calling_Party_Number().Build(value)
+
+	def Build_Generic_Number(self, value):
+		self.Check_Raw_Generic_Number_Value(value)
+		return Generic_Number().Build(value)
+
+	def Check_Raw_Generic_Number_Value(self, value):
+		if type(value) != list or len(value) != 4:
+			raise ISUP_Error("generic number value must be list by pattern: \"[byte1, byte2, byte3, (addr_sig1, addr_sigN)]\"")
+		elif type(value[0]) != int or type(value[1]) != int or type(value[2]) != int or type(value[3]) != list:
+			raise ISUP_Error("generic number_value must match the pattern: \"[byte1, byte2, byte3, (addr_sig1, addr_sigN)]\"")
+		else:
+			for address_signal in value[3]:
+				if not address_signal in self.address_signals:
+					raise ISUP_Error("invalid address signals list")
+
+	def Check_Raw_PN_Value(self, value):
 #		try:
 #			value[2] = str(value[2])
 #			value[2] = tuple(map(int, value[2]))
 #		except:
 #			pass
 		if type(value) != list or len(value) != 3:
-			raise ISUP_Error("called_party_number value must be list by pattern: \"[byte1, byte2, (addr_sig1, addr_sigN)]\"")
+			raise ISUP_Error("number value must be list by pattern: \"[byte1, byte2, (addr_sig1, addr_sigN)]\"")
 		elif type(value[0]) != int or type(value[1]) != int or type(value[2]) != list:
-			raise ISUP_Error("called_party_number_value must match the pattern: \"[byte1, byte2, (addr_sig1, addr_sigN)]\"")
+			raise ISUP_Error("number_value must match the pattern: \"[byte1, byte2, (addr_sig1, addr_sigN)]\"")
 		else:
 			for address_signal in value[2]:
 				if not address_signal in self.address_signals:
 					raise ISUP_Error("invalid address signals list")
 
+	def Build_Connected_Number(self, value):
+		self.Check_Raw_PN_Value(value)
+		return Connected_Number().Build(value)
+
+	def Build_Location_Number(self, value):
+		self.Check_Raw_PN_Value(value)
+		return Location_Number().Build(value)
+
+	def Build_Original_Called_Number(self, value):
+		self.Check_Raw_PN_Value(value)
+		return Original_Called_Number().Build(value)
+
+	def Build_Redirecting_Number(self, value):
+		self.Check_Raw_PN_Value(value)
+		return Redirecting_Number().Build(value)
+
+	def Build_Redirection_Number(self, value):
+		self.Check_Raw_PN_Value(value)
+		return Redirection_Number().Build(value)
+
 	def Build_Called_Party_Number(self, value):
-		self.Check_Raw_CDPN_Value(value)
+		self.Check_Raw_PN_Value(value)
 		return Called_Party_Number().Build(value)
 
 	def Build_Backward_Call_Indicators(self, value):
@@ -1375,62 +1945,179 @@ class ISUP_Binary_Convertor:
 		self.parameter_convertors = self.Define_Parameter_Convertors()
 		self.fixed_parameters_number = self.Define_Mandatory_Fixed_Parameters_Numbers()
 		self.optional_parameters_possible = self.Define_Optional_Part_Possibility()
+		self.optional_parameters_codes = self.Define_Optional_Parameters_Codes()
 		self.isup_header_length = 3
 
 	def Define_Parameter_Convertors(self):
 		convertors = {
+		  Access_Delivery_Information : self.Convert_Access_Delivery_Information,
+		  Automatic_Congestion_Level : self.Convert_Automatic_Congestion_Level,
+		  Call_Diversion_Information : self.Convert_Call_Diversion_Information,
+		  Call_History_Information : self.Convert_Call_History_Information,
+		  Continuity_Indicators : self.Convert_Continuity_Indicators,
+		  Echo_Control_Information : self.Convert_Echo_Control_Information,
+		  Event_Information : self.Convert_Event_Information,
+		  Facility_Indicator : self.Convert_Facility_Indicator,
+		  Information_Request_Indicators : self.Convert_Information_Request_Indicators,
+		  Information_Indicators : self.Convert_Information_Indicators,
+		  MCID_Request_Indicators : self.Convert_MCID_Request_Indicators,
+		  Optional_Backward_Call_Indicators : self.Convert_Optional_Backward_Call_Indicators,
+		  Optional_Forward_Call_Indicators : self.Convert_Optional_Forward_Call_Indicators,
+		  MCID_Response_Indicators : self.Convert_MCID_Response_Indicators,
+		  Origination_ISC_Point_Code : self.Convert_Origination_ISC_Point_Code,
+		  Propagation_Delay_Counter : self.Convert_Propagation_Delay_Counter,
+		  Redirection_Information : self.Convert_Redirection_Information,
+		  Redirection_Number_Restriction : self.Convert_Redirection_Number_Restriction,
+		  Signalling_Point_Code : self.Convert_Signalling_Point_Code,
+		  Suspend_Resume_Indicators : self.Convert_Suspend_Resume_Indicators,
+		  Transmission_Medium_Requirement_Prime : self.Convert_Transmission_Medium_Requirement_Prime,
+		  Transmission_Medium_Used : self.Convert_Transmission_Medium_Used,
+		  Connected_Number : self.Convert_Connected_Number,
+		  Original_Called_Number : self.Convert_Original_Called_Number,
+		  Location_Number : self.Convert_Location_Number,
+		  Redirection_Number : self.Convert_Redirection_Number,
+		  Redirecting_Number : self.Convert_Redirecting_Number,
+		  Generic_Number : self.Convert_Generic_Number,
 		  Nature_Of_Connection_Indicators : self.Convert_Nature_Of_Connection_Indicators,
 		  Forward_Call_Indicators : self.Convert_Forward_Call_Indicators,
 		  Calling_Party_Category : self.Convert_Calling_Party_Category,
 		  Transmission_Medium_Requirement : self.Convert_Transmission_Medium_Requirement,
 		  Called_Party_Number : self.Convert_Called_Party_Number,
+		  Calling_Party_Number : self.Convert_Calling_Party_Number,
 		  Backward_Call_Indicators : self.Convert_Backward_Call_Indicators,
 		  Range_And_Status : self.Convert_Range_And_Status_Indicators,
 		  Cause_Indicators : self.Convert_Cause_Indicators,
 		  Subsequent_Number : self.Convert_Subsequent_Number,
-		  Circuit_Group_Supervision_Message_Type : self.Convert_Circuit_Group_Supervision_Message_Type
+		  Circuit_Group_Supervision_Message_Type : self.Convert_Circuit_Group_Supervision_Message_Type,
+		  Access_Transport : self.Convert_Access_Transport,
+		  User_Service_Information : self.Convert_User_Service_Information,
+		  User_Service_Information_Prime : self.Convert_User_Service_Information_Prime,
+		  User_Teleservice_Information : self.Convert_User_Teleservice_Information,
+		  User_To_User_Information : self.Convert_User_To_User_Information,
+		  Parameter_Compatibility_Information : self.Convert_Parameter_Compatibility_Information
 		}
 		return convertors
+
+	def Define_Optional_Parameters_Codes(self):
+		codes = {
+		  Access_Delivery_Information : b'\x2E',
+		  Access_Transport : b'\x03',
+		  Automatic_Congestion_Level : b'\x27',
+		  Backward_Call_Indicators : b'\x11',
+		  Call_Diversion_Information : b'\x36',
+		  Call_History_Information : b'\x2D',
+		  Call_Reference : b'\x01',
+		  Called_Party_Number : b'\x04',
+		  Calling_Party_Number : b'\x0A',
+		  Calling_Party_Category : b'\x09',
+		  Cause_Indicators : b'\x12',
+		  Circuit_Group_Supervision_Message_Type : b'\x15',
+		  Closed_User_Group_Interlock_Code : b'\x1A',
+		  Connected_Number : b'\x21',
+		  Continuity_Indicators : b'\x10',
+		  Echo_Control_Information : b'\x37',
+		  Event_Information : b'\x24',
+		  Facility_Indicator : b'\x18',
+		  Forward_Call_Indicators : b'\x07',
+		  Generic_Number : b'\xC0',
+		  Information_Indicators : b'\x0F',
+		  Information_Request_Indicators : b'\x0E',
+		  Location_Number : b'\x3F',
+		  MCID_Request_Indicators : b'\x3B',
+		  MCID_Response_Indicators : b'\x3C',
+		  Nature_Of_Connection_Indicators : b'\x06',
+		  Optional_Backward_Call_Indicators : b'\x29',
+		  Optional_Forward_Call_Indicators : b'\x08',
+		  Original_Called_Number : b'\x28',
+		  Origination_ISC_Point_Code : b'\x2B',
+		  Parameter_Compatibility_Information : b'\x39',
+		  Propagation_Delay_Counter : b'\x31',
+		  Range_And_Status : b'\x16',
+		  Redirecting_Number : b'\x0B',
+		  Redirection_Information : b'\x13',
+		  Redirection_Number : b'\x0C',
+		  Redirection_Number_Restriction : b'\x40',
+		  Signalling_Point_Code : b'\x1E',
+		  Subsequent_Number : b'\x05',
+		  Suspend_Resume_Indicators : b'\x22',
+		  Transmission_Medium_Requirement : b'\x02',
+		  Transmission_Medium_Requirement_Prime : b'\x3E',
+		  Transmission_Medium_Used : b'\x35',
+		  User_Service_Information : b'\x1D',
+		  User_Service_Information_Prime : b'\x30',
+		  User_Teleservice_Information : b'\x34',
+		  User_To_User_Information : b'\x20'
+		}
+		return codes
 
 	def Define_Mandatory_Fixed_Parameters_Numbers(self):
 		#Код сообщения : количество обязательных фиксированных параметров
 		lengths = {
 		  1 : 4,
 		  2 : 0,
+		  3 : 1,
+		  4 : 1,
+		  5 : 1,
 		  6 : 1,
+		  7 : 1,
+		  8 : 0,
 		  9 : 0,
 		  12 : 0,
+		  13 : 1,
+		  14 : 1,
 		  16 : 0,
 		  17 : 0,
 		  18 : 0,
 		  19 : 0,
 		  20 : 0,
-		  21 : 0,		  
+		  21 : 0,
 		  22 : 0,
 		  23 : 0,
 		  24 : 1,
 		  25 : 1,
 		  26 : 1,
 		  27 : 1,
+		  31 : 1,
+		  32 : 1,
+		  33 : 1,
 		  36 : 0,
 		  41 : 0,
 		  42 : 0,
+		  43 : 0,
+		  44 : 1,
+		  45 : 0,
 		  46 : 0,
 		  47 : 0,
 		  48 : 0,
+		  50 : 0,
+		  51 : 0,
 		  52 : 0,
-		  53 : 0
+		  53 : 0,
+		  54 : 0,
+		  55 : 0,
+		  56 : 0,
+		  64 : 0,
+		  65 : 0,
+		  66 : 0,
+		  67 : 0
 		}
 		return lengths
 
 	def Define_Optional_Part_Possibility(self):
-		#Код сообщения : количество обязательных фиксированных параметров
+		#Код сообщения : possibility of optional part
 		possible = {
 		  1 : True, #IAM
 		  2 : True, #SAM
+		  3 : True, #INR
+		  4 : True, #INF
+		  5 : False, #COT
 		  6 : True, #ACM
+		  7 : True, #CON
+		  8 : True, #FOT
 		  9 : True, #ANM
-		  12 : True, #Release
+		  12 : True, #REL
+		  13 : True, #SUS
+		  14 : True, #RES
 		  16 : True, #RLC
 		  17 : False, #CCR
 		  18 : False, #RSC
@@ -1443,16 +2130,244 @@ class ISUP_Binary_Convertor:
 		  25 : False, #CGU
 		  26 : False, #CGBA
 		  27 : False, #CGUA
+		  31 : True, #FAR
+		  32 : True, #FAA
+		  33 : True, #FRJ
 		  36 : False, #Overload, (national use)
-		  46 : False, #Unequipped circuit identification code, (national use)
 		  41 : False, #GRA
 		  42 : False, #GRU
+		  43 : False, #CQR
+		  44 : True, #CPG
+		  45 : True, #USR
+		  46 : False, #Unequipped circuit identification code, (national use)
 		  47 : True, #CFN
 		  48 : False, #Loop back acknowledgement, (national use)
-		  52 : True,
-		  53 : True
+		  50 : True, #NRM
+		  51 : True, #FAC
+		  52 : True, #UPT
+		  53 : True, #UPA
+		  54 : True, #IDR
+		  55 : True, #IDS
+		  56 : True, #SGM
+		  64 : True, #LPP
+		  65 : True, #APT
+		  66 : True, #PRI
+		  67 : True  #SDN
 		}
 		return possible
+
+	def Convert_Parameter_Compatibility_Information(self, parameters):
+		binary_parameter = b''
+		for parameter in parameters:
+			if type(parameters)==list:
+				for subparameter in parameter:
+					binary_parameter += subparameter.to_bytes(1, byteorder="big")
+			else:
+				binary_parameter += parameter.to_bytes(1, byteorder="big")
+		return binary_parameter
+
+	def Convert_Access_Transport(self, parameters):
+		if type(parameters)==list:
+			binary_parameter = b''
+			for parameter in parameters:
+				binary_parameter += parameter.to_bytes(1, byteorder="big")
+		else:
+			binary_parameter = parameters
+		return binary_parameter
+
+	def Convert_User_Service_Information(self, parameters):
+		if type(parameters)==list:
+			binary_parameter = b''
+			for parameter in parameters:
+				binary_parameter += parameter.to_bytes(1, byteorder="big")
+		else:
+			binary_parameter = parameters
+		return binary_parameter
+
+	def Convert_User_Service_Information_Prime(self, parameters):
+		if type(parameters)==list:
+			binary_parameter = b''
+			for parameter in parameters:
+				binary_parameter += parameter.to_bytes(1, byteorder="big")
+		else:
+			binary_parameter = parameters
+		return binary_parameter
+
+	def Convert_User_Teleservice_Information(self, parameters):
+		if type(parameters)==list:
+			binary_parameter = b''
+			for parameter in parameters:
+				binary_parameter += parameter.to_bytes(1, byteorder="big")
+		else:
+			binary_parameter = parameters
+		return binary_parameter
+
+	def Convert_User_To_User_Information(self, parameters):
+		if type(parameters)==list:
+			binary_parameter = b''
+			for parameter in parameters:
+				binary_parameter += parameter.to_bytes(1, byteorder="big")
+		else:
+			binary_parameter = parameters
+		return binary_parameter	
+
+	def Convert_Access_Delivery_Information(self, parameter):
+		parameter_length = 1
+		binary_parameter = parameter.to_bytes(parameter_length, byteorder="big")
+		return binary_parameter
+
+	def Convert_Automatic_Congestion_Level(self, parameter):
+		parameter_length = 1
+		binary_parameter = parameter.to_bytes(parameter_length, byteorder="big")
+		return binary_parameter
+
+	def Convert_Call_Diversion_Information(self, parameter):
+		parameter_length = 1
+		parameter_value = parameter.notification_subscription_options
+		parameter_value += parameter.redirecting_reason << 3
+		parameter_value += parameter.spare << 7
+		binary_parameter = parameter_value.to_bytes(parameter_length, byteorder="big")
+		return binary_parameter
+
+	def Convert_Call_History_Information(self, parameter):
+		parameter_length = 2
+		binary_parameter = parameter.to_bytes(parameter_length, byteorder="big")
+		return binary_parameter
+
+	def Convert_Continuity_Indicators(self, parameter):
+		parameter_length = 1
+		parameter_value = parameter.continuity_indicator
+		parameter_value += parameter.spare << 1
+		binary_parameter = parameter_value.to_bytes(parameter_length, byteorder="big")
+		return binary_parameter
+
+	def Convert_Echo_Control_Information(self, parameter):
+		parameter_length = 1
+		parameter_value = parameter.outgoing_echo_control_device_information_indicator
+		parameter_value += parameter.incoming_echo_control_device_information_indicator << 2
+		parameter_value += parameter.outgoing_echo_control_device_request_indicator << 4
+		parameter_value += parameter.incoming_echo_control_device_request_indicator << 6
+		binary_parameter = parameter_value.to_bytes(parameter_length, byteorder="big")
+		return binary_parameter
+
+	def Convert_Event_Information(self, parameter):
+		parameter_length = 1
+		parameter_value = parameter.event_indicator
+		parameter_value += parameter.event_presentation_restricted_indicator << 7
+		binary_parameter = parameter_value.to_bytes(parameter_length, byteorder="big")
+		return binary_parameter
+
+	def Convert_Facility_Indicator(self, parameter):
+		parameter_length = 1
+		binary_parameter = parameter.to_bytes(parameter_length, byteorder="big")
+		return binary_parameter
+
+	def Convert_Information_Request_Indicators(self, parameter):
+		parameter_length = 2
+		parameter_value = parameter.calling_party_address_request_indicator
+		parameter_value += parameter.holding_indicator << 1
+		parameter_value += parameter.calling_party_category_request_indicator << 3
+		parameter_value += parameter.charge_information_request_indicator << 4
+		parameter_value += parameter.malicious_call_identification_request_indicator << 7
+		parameter_value += parameter.spare << 8
+		binary_parameter = parameter_value.to_bytes(parameter_length, byteorder="big")
+		return binary_parameter
+
+	def Convert_Information_Indicators(self, parameter):
+		parameter_length = 2
+		parameter_value = parameter.calling_party_address_response_indicator
+		parameter_value += parameter.hold_provided_indicator << 2
+		parameter_value += parameter.calling_party_category_response_indicator << 5
+		parameter_value += parameter.charge_information_response_indicator << 6
+		parameter_value += parameter.solicited_information_indicator << 7
+		parameter_value += parameter.spare << 8
+		binary_parameter = parameter_value.to_bytes(parameter_length, byteorder="big")
+		return binary_parameter
+
+	def Convert_MCID_Request_Indicators(self, parameter):
+		parameter_length = 1
+		parameter_value = parameter.mcid_indicator
+		parameter_value += parameter.holding_indicator << 1
+		parameter_value += parameter.spare << 2
+		binary_parameter = parameter_value.to_bytes(parameter_length, byteorder="big")
+		return binary_parameter
+
+	def Convert_Optional_Backward_Call_Indicators(self, parameter):
+		parameter_length = 1
+		parameter_value = parameter.inband_information_indicator
+		parameter_value += parameter.call_diversion_may_occur_indicator << 1
+		parameter_value += parameter.simple_segmentation_indicator << 2
+		parameter_value += parameter.mlpp_user_indicator << 3
+		parameter_value += parameter.spare << 4
+		binary_parameter = parameter_value.to_bytes(parameter_length, byteorder="big")
+		return binary_parameter
+
+	def Convert_Optional_Forward_Call_Indicators(self, parameter):
+		parameter_length = 1
+		parameter_value = parameter.closed_user_group_call_indicator
+		parameter_value += parameter.simple_segmentation_indicator << 2
+		parameter_value += parameter.spare << 3
+		parameter_value += parameter.connected_line_identity_request_indicator << 7
+		binary_parameter = parameter_value.to_bytes(parameter_length, byteorder="big")
+		return binary_parameter
+
+	def Convert_MCID_Response_Indicators(self, parameter):
+		parameter_length = 1
+		parameter_value = parameter.mcid_indicator
+		parameter_value += parameter.holding_indicator << 1
+		parameter_value += parameter.spare << 2
+		binary_parameter = parameter_value.to_bytes(parameter_length, byteorder="big")
+		return binary_parameter
+
+	def Convert_Origination_ISC_Point_Code(self, parameter):
+		parameter_length = 2
+		binary_parameter = parameter.to_bytes(parameter_length, byteorder="big")
+		return binary_parameter
+
+	def Convert_Propagation_Delay_Counter(self, parameter):
+		parameter_length = 2
+		binary_parameter = parameter.to_bytes(parameter_length, byteorder="big")
+		return binary_parameter
+
+	def Convert_Redirection_Information(self, parameter):
+		parameter_length = 2
+		parameter_value = parameter.redirecting_indicator
+		parameter_value += parameter.spare
+		parameter_value += parameter.original_redirection_reason << 4
+		parameter_value += parameter.redirection_counter << 8
+		parameter_value += parameter.spare
+		parameter_value += parameter.redirecting_reason << 12
+		binary_parameter = parameter_value.to_bytes(parameter_length, byteorder="big")
+		return binary_parameter
+
+	def Convert_Redirection_Number_Restriction(self, parameter):
+		parameter_length = 1
+		parameter_value = parameter.presentation_restricted_indicator
+		parameter_value += parameter.spare << 2
+		binary_parameter = parameter_value.to_bytes(parameter_length, byteorder="big")
+		return binary_parameter
+
+	def Convert_Signalling_Point_Code(self, parameter):
+		parameter_length = 2
+		binary_parameter = parameter.to_bytes(parameter_length, byteorder="big")
+		return binary_parameter
+
+	def Convert_Suspend_Resume_Indicators(self, parameter):
+		parameter_length = 1
+		parameter_value = parameter.suspend_resume_indicator
+		parameter_value += parameter.spare << 1
+		binary_parameter = parameter_value.to_bytes(parameter_length, byteorder="big")
+		return binary_parameter
+
+	def Convert_Transmission_Medium_Requirement_Prime(self, parameter):
+		parameter_length = 1
+		binary_parameter = parameter.value.to_bytes(parameter_length, byteorder="big")
+		return binary_parameter
+
+	def Convert_Transmission_Medium_Used(self, parameter):
+		parameter_length = 1
+		binary_parameter = parameter.value.to_bytes(parameter_length, byteorder="big")
+		return binary_parameter
 
 	def Convert_Range_And_Status_Indicators(self, parameter):
 		byte1_value = parameter.range
@@ -1534,6 +2449,104 @@ class ISUP_Binary_Convertor:
 		binary_parameter = binary_indicators + binary_digits
 		return binary_parameter
 
+	def Convert_Calling_Party_Number(self, parameter):
+		byte1_value = parameter.nature_of_address_indicator
+		byte1_value += parameter.odd_even_indicator << 7
+		byte2_value = parameter.screening_indicator
+		byte2_value += parameter.address_presentation_restricted_indicator << 2
+		byte2_value += parameter.numbering_plan_indicator << 4
+		byte2_value += parameter.ni_indicator << 7
+		byte1 = byte1_value.to_bytes(1, byteorder="big")
+		byte2 = byte2_value.to_bytes(1, byteorder="big")
+		binary_indicators = byte1 + byte2
+		binary_digits = self.Convert_Address_Signals(parameter.digits)
+		binary_parameter = binary_indicators + binary_digits
+		return binary_parameter
+
+	def Convert_Connected_Number(self, parameter):
+		byte1_value = parameter.nature_of_address_indicator
+		byte1_value += parameter.odd_even_indicator << 7
+		byte2_value = parameter.screening_indicator
+		byte2_value += parameter.address_presentation_restricted_indicator << 2
+		byte2_value += parameter.numbering_plan_indicator << 4
+		byte2_value += parameter.spare << 7
+		byte1 = byte1_value.to_bytes(1, byteorder="big")
+		byte2 = byte2_value.to_bytes(1, byteorder="big")
+		binary_indicators = byte1 + byte2
+		binary_digits = self.Convert_Address_Signals(parameter.digits)
+		binary_parameter = binary_indicators + binary_digits
+		return binary_parameter
+
+	def Convert_Original_Called_Number(self, parameter):
+		byte1_value = parameter.nature_of_address_indicator
+		byte1_value += parameter.odd_even_indicator << 7
+		byte2_value = parameter.spare
+		byte2_value += parameter.address_presentation_restricted_indicator << 2
+		byte2_value += parameter.numbering_plan_indicator << 4
+		byte1 = byte1_value.to_bytes(1, byteorder="big")
+		byte2 = byte2_value.to_bytes(1, byteorder="big")
+		binary_indicators = byte1 + byte2
+		binary_digits = self.Convert_Address_Signals(parameter.digits)
+		binary_parameter = binary_indicators + binary_digits
+		return binary_parameter
+
+	def Convert_Redirecting_Number(self, parameter):
+		byte1_value = parameter.nature_of_address_indicator
+		byte1_value += parameter.odd_even_indicator << 7
+		byte2_value = parameter.spare
+		byte2_value += parameter.address_presentation_restricted_indicator << 2
+		byte2_value += parameter.numbering_plan_indicator << 4
+		byte1 = byte1_value.to_bytes(1, byteorder="big")
+		byte2 = byte2_value.to_bytes(1, byteorder="big")
+		binary_indicators = byte1 + byte2
+		binary_digits = self.Convert_Address_Signals(parameter.digits)
+		binary_parameter = binary_indicators + binary_digits
+		return binary_parameter
+
+	def Convert_Location_Number(self, parameter):
+		byte1_value = parameter.nature_of_address_indicator
+		byte1_value += parameter.odd_even_indicator << 7
+		byte2_value = parameter.screening_indicator
+		byte2_value += parameter.address_presentation_restricted_indicator << 2
+		byte2_value += parameter.numbering_plan_indicator << 4
+		byte2_value += parameter.inn_indicator << 7
+		byte1 = byte1_value.to_bytes(1, byteorder="big")
+		byte2 = byte2_value.to_bytes(1, byteorder="big")
+		binary_indicators = byte1 + byte2
+		binary_digits = self.Convert_Address_Signals(parameter.digits)
+		binary_parameter = binary_indicators + binary_digits
+		return binary_parameter
+
+	def Convert_Redirection_Number(self, parameter):
+		byte1_value = parameter.nature_of_address_indicator
+		byte1_value += parameter.odd_even_indicator << 7
+		byte2_value = parameter.screening_indicator
+		byte2_value += parameter.address_presentation_restricted_indicator << 2
+		byte2_value += parameter.numbering_plan_indicator << 4
+		byte2_value += parameter.ni_indicator << 7
+		byte1 = byte1_value.to_bytes(1, byteorder="big")
+		byte2 = byte2_value.to_bytes(1, byteorder="big")
+		binary_indicators = byte1 + byte2
+		binary_digits = self.Convert_Address_Signals(parameter.digits)
+		binary_parameter = binary_indicators + binary_digits
+		return binary_parameter
+
+	def Convert_Generic_Number(self, parameter):
+		byte1_value = parameter.number_qualifier_indicator
+		byte2_value = parameter.nature_of_address_indicator
+		byte2_value += parameter.odd_even_indicator << 7
+		byte3_value = parameter.screening_indicator
+		byte3_value += parameter.address_presentation_restricted_indicator << 2
+		byte3_value += parameter.numbering_plan_indicator << 4
+		byte3_value += parameter.ni_indicator << 7
+		byte1 = byte1_value.to_bytes(1, byteorder="big")
+		byte2 = byte2_value.to_bytes(1, byteorder="big")
+		byte3 = byte2_value.to_bytes(1, byteorder="big")
+		binary_indicators = byte1 + byte2 + byte3
+		binary_digits = self.Convert_Address_Signals(parameter.digits)
+		binary_parameter = binary_indicators + binary_digits
+		return binary_parameter
+
 	def Convert_Backward_Call_Indicators(self, parameter):
 		parameter_length = 2
 		parameter_value = parameter.charge_indicator << 8
@@ -1573,8 +2586,23 @@ class ISUP_Binary_Convertor:
 		binary_parameter = byte1 + binary_digits
 		return binary_parameter
 
+	def Get_Optional_Parameters_Length(self, parameters_dict):
+		common_length = 0
+		for parameter,length in parameters_dict.items():
+			common_length += length
+		return common_length
+
 	def Convert_Optional_Parameters(self, parameters):
-		return b""
+		binary_parameter = b''
+		if parameters:
+			for parameter in parameters:
+				temp_binary_parameter = self.parameter_convertors[type(parameter)](parameter)
+				parameter_length = len(temp_binary_parameter)
+				temp_binary_parameter = self.optional_parameters_codes[type(parameter)] + parameter_length.to_bytes(1, byteorder="big") + temp_binary_parameter
+				binary_parameter += temp_binary_parameter
+		if parameters:
+			binary_parameter += b'\x00'
+		return binary_parameter
 
 	def Get_Common_Mandatory_Variable_Parameters_Length(self, parameters_dict):
 		common_length = 0
@@ -1698,15 +2726,15 @@ class ISUP_Binary_Convertor:
 		isup_header = cic + mes_type
 		number_of_fixed_parameters = self.fixed_parameters_number[service_data.mes_type]
 		fixed_part = self.Convert_Mandatory_Fixed_Part(service_data.mandatory_parameters[:number_of_fixed_parameters])
-		optional_part = self.Convert_Optional_Parameters(service_data.optional_parameters)
+		optional_mess_part = self.Convert_Optional_Parameters(service_data.optional_parameters)
 		possible_optional = self.optional_parameters_possible[service_data.mes_type]
 		if service_data.optional_parameters == [] and possible_optional == False:
 			variable_part = self.Convert_Variable_Part(service_data.mandatory_parameters[number_of_fixed_parameters:], optional_pointer=False, optional_part=False)
 		elif service_data.optional_parameters == [] and possible_optional == True:
 			variable_part = self.Convert_Variable_Part(service_data.mandatory_parameters[number_of_fixed_parameters:], optional_pointer=True, optional_part=False)
 		else:
-			variable_part = self.Convert_Variable_Part(service_data.mandatory_parameters[number_of_fixed_parameters:], optional_pointer=True, optional_part=bool(optional_part))
-		binary_service_data = isup_header + fixed_part + variable_part + optional_part
+			variable_part = self.Convert_Variable_Part(service_data.mandatory_parameters[number_of_fixed_parameters:], optional_pointer=True, optional_part=bool(optional_mess_part))
+		binary_service_data = isup_header + fixed_part + variable_part + optional_mess_part
 		service_data_length = len(binary_service_data)
 		return (binary_service_data, service_data_length)
 
@@ -1942,9 +2970,9 @@ class Message_Builder:
 				 "CQM" : [self.Build_Message, 42],
 				 "CQR" : [self.Build_Message, 43],
 				 "FAA" : [self.Build_Message, 32],
-				 "FAC" : [self.Build_Message, 33],
+				 "FAC" : [self.Build_Message, 51],
 				 "FAR" : [self.Build_Message, 31],
-				 "FRJ" : [self.Build_Message, 21],
+				 "FRJ" : [self.Build_Message, 33],
 				 "FOT" : [self.Build_Message, 8],
 				 "GRS" : [self.Build_Message, 23],
 				 "GRA" : [self.Build_Message, 41],				 
@@ -1966,10 +2994,11 @@ class Message_Builder:
 				 "SGM" : [self.Build_Message, 56],
 				 "SAM" : [self.Build_Message, 2],
 				 "SUS" : [self.Build_Message, 13],
+				 "SDN" : [self.Build_Message, 67],				 
 				 "UBL" : [self.Build_Message, 20],
 				 "UBLA" : [self.Build_Message, 22],
 				 "UCIC" : [self.Build_Message, 46],
-				 "USR" : [self.Build_Message, 47],
+				 "USR" : [self.Build_Message, 45],
 				 "UPA" : [self.Build_Message, 53],
 				 "UPT" : [self.Build_Message, 52] }
 

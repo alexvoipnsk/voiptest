@@ -1,0 +1,50 @@
+EXECUTE STATUS: FAILURE
+
+(17.01.2020) 15h:18m:08s	[Connect]   Listen socket has been successfully accepted from peer '192.168.116.130:59734'
+(17.01.2020) 15h:18m:08s	[Recv]      Message has been successfully received from node '192.168.116.130:59734'
+(17.01.2020) 15h:18m:08s	[Validate]  Valid message received: (ASP_UP), Tags: (asp_identifier ) and their values: (99 ) are match
+(17.01.2020) 15h:18m:08s	[Send]      Message 'ASP UP ACK()' has been successfully sent to node '192.168.116.130:2913'
+(17.01.2020) 15h:18m:08s	[Send]      Message 'NOTIFY(Status Type="AS state change"; Status Information="as inactive")' has been successfully sent to node '192.168.116.130:2913'
+(17.01.2020) 15h:18m:08s	[Recv]      Message has been successfully received from node '192.168.116.130:59734'
+(17.01.2020) 15h:18m:08s	[Validate]  Valid message received: (ASP_ACTIVE), Tags: (traffic_mode_type ) and their values: (1 ) are match
+(17.01.2020) 15h:18m:08s	[Send]      Message 'ASP ACTIVE ACK(traffic mode type="override")' has been successfully sent to node '192.168.116.130:2913'
+(17.01.2020) 15h:18m:08s	[Send]      Message 'NOTIFY(Status Type="AS state change"; Status Information="as active")' has been successfully sent to node '192.168.116.130:2913'
+(17.01.2020) 15h:18m:09s	[Recv]      Message has been successfully received from node '192.168.116.130:59734'
+(17.01.2020) 15h:18m:09s	[Validate]  Valid message received: (ESTAB_REQ), Tags: (interface_identifier_text ) and their values: (iid98 ) are match
+(17.01.2020) 15h:18m:09s	[Send]      Message 'ESTAB CONF(Interface identifiers=[[$$sock.0.iid.0]])' has been successfully sent to node '192.168.116.130:2913'
+(17.01.2020) 15h:18m:09s	[Recv]      Message has been successfully received from node '192.168.116.130:59734'
+(17.01.2020) 15h:18m:09s	[GetBytes]  The bytes from '31' to last byte has been written to variable 'test_mess'
+(17.01.2020) 15h:18m:09s	[Validate]  Valid message received: (DATA), No params for validation
+(17.01.2020) 15h:18m:09s	[Send]      Message 'DATA(Interface identifiers=[[$$sock.0.iid.0]], protocol data 1=SLTA(ni=2; opc=98; dpc=99; sls=1; test_message=[$test_mess]))' has been successfully sent to node '192.168.116.130:2913'
+(17.01.2020) 15h:18m:09s	[Send]      Message 'DATA(Interface identifiers=[[$$sock.0.iid.0]], protocol data 1=SLTM(ni=2; opc=98; dpc=99; sls=1; test_message=87677839))' has been successfully sent to node '192.168.116.130:2913'
+(17.01.2020) 15h:18m:09s	[Recv]      Message has been successfully received from node '192.168.116.130:59734'
+(17.01.2020) 15h:18m:09s	[Validate]  Valid message received: (DATA), No params for validation
+(17.01.2020) 15h:18m:09s	[Send]      Message 'DATA(Interface identifiers=[[$$sock.0.iid.0]], protocol data 1=TRA(ni=2; opc=98; dpc=99; sls=1))' has been successfully sent to node '192.168.116.130:2913'
+(17.01.2020) 15h:18m:09s	[Send]      Message has been successfully sent to node '192.168.116.130:2956'
+(17.01.2020) 15h:18m:09s	[Recv]      Message has been successfully received from node '192.168.116.130:2956'
+(17.01.2020) 15h:18m:09s	[Catch]     The match groups '1' has been written to variables 'transaction_id'
+(17.01.2020) 15h:18m:09s	[Send]      Message has been successfully sent to node '192.168.116.130:2956'
+(17.01.2020) 15h:18m:09s	[Recv]      Message has been successfully received from node '192.168.116.130:2956'
+(17.01.2020) 15h:18m:09s	[Catch]     The match groups '8' has been written to variables 'transaction_id'
+(17.01.2020) 15h:18m:09s	[Send]      Message has been successfully sent to node '192.168.116.130:2956'
+(17.01.2020) 15h:18m:09s	[Recv]      Message has been successfully received from node '192.168.116.130:2956'
+(17.01.2020) 15h:18m:09s	[Catch]     The match groups '9' has been written to variables 'transaction_id'
+(17.01.2020) 15h:18m:09s	[Send]      Message has been successfully sent to node '192.168.116.130:2956'
+(17.01.2020) 15h:18m:09s	[Recv]      Message has been successfully received from node '192.168.116.130:59734'
+(17.01.2020) 15h:18m:09s	[Validate]  Valid message received: (DATA), No params for validation
+(17.01.2020) 15h:18m:10s	[Recv]      Message has been successfully received from node '192.168.116.130:59734'
+(17.01.2020) 15h:18m:10s	[Validate]  Valid message received: (DATA), No params for validation
+(17.01.2020) 15h:18m:10s	[Send]      Message 'DATA(Interface identifiers=[[$$sock.0.iid.0]]; protocol data 1=CGUA(ni=2; opc=98; dpc=99; sls=1; cic=30; circuit_group_supervision_message_type=1; range_and_status=[1,[3]]))' has been successfully sent to node '192.168.116.130:2913'
+(17.01.2020) 15h:18m:10s	[Send]      Message 'DATA(Interface identifiers=[[$$sock.0.iid.0]]; protocol data 1=GRS(ni=2; opc=98; dpc=99; sls=1; cic=30; range and status=[1]))' has been successfully sent to node '192.168.116.130:2913'
+(17.01.2020) 15h:18m:10s	[Recv]      Message has been successfully received from node '192.168.116.130:59734'
+(17.01.2020) 15h:18m:10s	[Validate]  Valid message received: (DATA), No params for validation
+(17.01.2020) 15h:18m:17s	[Recv]      Message has been successfully received from node '192.168.116.130:2956'
+(17.01.2020) 15h:18m:17s	[Catch]     The match groups '10' has been written to variables 'transaction_id'
+(17.01.2020) 15h:18m:17s	[Send]      Message has been successfully sent to node '192.168.116.130:2956'
+(17.01.2020) 15h:18m:17s	[Send]      Message 'DATA(Interface identifiers=[[$$sock.0.iid.0]]; protocol data 1=IAM(ni=2; opc=98; dpc=99; sls=1; cic=30; nature_of_connection_indicators=0; forward_call_indicators= 24576; calling_party_category=10; transmission_medium_requirement=3; called_party_number=[129,16,[0,0,4]]; calling_party_number=[129,16,[0,0,1]])' has been successfully sent to node '192.168.116.130:2913'
+(17.01.2020) 15h:18m:25s	[Recv]      Message has been successfully received from node '192.168.116.130:2956'
+(17.01.2020) 15h:18m:25s	[Catch]     The match groups '11' has been written to variables 'transaction_id'
+(17.01.2020) 15h:18m:25s	[Send]      Message has been successfully sent to node '192.168.116.130:2956'
+(17.01.2020) 15h:18m:33s	[Recv]      Message has been successfully received from node '192.168.116.130:2956'
+(17.01.2020) 15h:18m:33s	[Catch]     The match groups '12' has been written to variables 'transaction_id'
+(17.01.2020) 15h:18m:33s	[Catch]     There is no rigth match to regexp 'o=-\\s*(\\d+)\\s*(\\d+)'

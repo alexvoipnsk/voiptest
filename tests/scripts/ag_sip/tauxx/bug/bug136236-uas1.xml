@@ -63,7 +63,7 @@ Content-Length: 0
 ]]>
 	</send>
 
-	<pause milliseconds="2000" />
+	<pause milliseconds="1000" />
 	<send retrans="500">
 		<![CDATA[
 SIP/2.0 200 OK
@@ -115,6 +115,7 @@ a=silenceSupp:off - - - -
 a=inactive
 ]]>
 	</send>
+	<recv request="ACK" crlf="true" />
 
 	<recv request="INVITE" crlf="true" />
 	<send>
@@ -151,8 +152,9 @@ a=ptime:20
 a=sendrecv
 ]]>
 	</send>
+	<recv request="ACK" crlf="true" />
 
-
+	<pause milliseconds="4000" />
 	<send retrans="500">
 		<![CDATA[
 BYE [$5] SIP/2.0

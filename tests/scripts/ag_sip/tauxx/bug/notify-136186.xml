@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<scenario name="Call">
+	<send retrans="500">
+		<![CDATA[
+NOTIFY sip:[field0]@[remote_ip]:[remote_port] SIP/2.0
+Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch][pid]
+From: sipp <sip:[field0]@[field1]>;tag=[call_number]
+To: sut <sip:[field0]@[field1]>
+Call-ID: [call_id]
+CSeq: 1 NOTIFY
+Contact: sip:[field0]@[local_ip]:[local_port]
+Max-Forwards: 70
+Subject: Performance Test
+Event: ua-profile
+Subscription-State: active
+Content-Type: application/simservs+xml
+Content-Length: [len]
+
+<?xml version="1.0"?>
+<simservs>
+  <dial-tone-management>
+    <dial-tone-pattern>special-condition-tone</dial-tone-pattern>
+  </dial-tone-management>
+  <three-party-conference active="true"/>
+  <call-waiting active="true"/>
+  <explicit-call-transfer active="true"/>
+</simservs>]]>
+	</send>
+	<recv response="200" crlf="true" />
+	
+	<pause milliseconds="10000" />
+	
+	<send retrans="500">
+		<![CDATA[
+NOTIFY sip:[field0]@[remote_ip]:[remote_port] SIP/2.0
+Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch][pid]
+From: sipp <sip:[field0]@[field1]>;tag=[call_number]
+To: sut <sip:[field0]@[field1]>
+Call-ID: [call_id]
+CSeq: 2 NOTIFY
+Contact: sip:[field0]@[local_ip]:[local_port]
+Max-Forwards: 70
+Subject: Performance Test
+Event: ua-profile
+Subscription-State: active
+Content-Type: application/simservs+xml
+Content-Length: [len]
+
+<?xml version="1.0"?>
+<simservs>
+  <dial-tone-management>
+    <dial-tone-pattern>standard-dial-tone</dial-tone-pattern>
+  </dial-tone-management>
+  <three-party-conference active="true"/>
+  <call-waiting active="true"/>
+  <explicit-call-transfer active="true"/>
+</simservs>]]>
+	</send>
+	<recv response="200" crlf="true" />
+
+
+	<pause milliseconds="10000" />
+	
+	<send retrans="500">
+		<![CDATA[
+NOTIFY sip:[field0]@[remote_ip]:[remote_port] SIP/2.0
+Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch][pid]
+From: sipp <sip:[field0]@[field1]>;tag=[call_number]
+To: sut <sip:[field0]@[field1]>
+Call-ID: [call_id]
+CSeq: 3 NOTIFY
+Contact: sip:[field0]@[local_ip]:[local_port]
+Max-Forwards: 70
+Subject: Performance Test
+Event: ua-profile
+Subscription-State: active
+Content-Type: application/simservs+xml
+Content-Length: [len]
+
+<?xml version="1.0"?>
+<simservs>
+  <dial-tone-management>
+    <dial-tone-pattern>special-condition-tone</dial-tone-pattern>
+  </dial-tone-management>
+</simservs>]]>
+	</send>
+	<recv response="200" crlf="true" />
+
+	<nop>
+		<action>
+			<jump value="1" />
+		</action>
+	</nop>
+	<label id="1" />
+	<ResponseTimeRepartition value="10, 20, 30, 40, 50, 100, 150, 200" />
+	<CallLengthRepartition value="10, 50, 100, 500, 1000, 5000, 10000" />
+</scenario>

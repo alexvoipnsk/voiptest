@@ -44,7 +44,7 @@ class IUA_Message:
 		  3: "Unit Data Request Message (UNIT DATA REQ)",
 		  4: "Unit Data Indication Message (UNIT DATA IND)",
 		  5: "Establish Request (ESTAB REQ)",
-		  6: "Establish Confirm (ESTAB CONF",
+		  6: "Establish Confirm (ESTAB CONF)",
 		  7: "Establish Indication (ESTAB IND)",
 		  8: "Release Request (RELEASE REQ)",
 		  9: "Release Confirm (RELEASE CONF)",
@@ -447,15 +447,16 @@ class Message_Builder:
 
 	def Build_DLCI_Parameter(self, sapi_definition, tei_definition):
 		dlci = IUA_Parameter(tag=5)
-		if type(sapi_definition) != int:
-			raise IUA_Error("SAPI must be int")
-		elif sapi_definition not in range(64):
-			raise IUA_Error("SAPI must be in range(0-63)")
+		if sapi_definition:
+			if type(sapi_definition) != int:
+				raise IUA_Error("SAPI must be int")
+			elif sapi_definition not in range(64):
+				raise IUA_Error("SAPI must be in range(0-63)")
 		if type(tei_definition) != int:
 			raise IUA_Error("TEI must be int")
 		elif sapi_definition not in range(128):
-			raise IUA_Error("TEI must be in range(0-127)")			
-		dlci.value = sapi_definition*4*256 + tei_definition*2 + 1
+			raise IUA_Error("TEI must be in range(0-127)")
+		dlci.value = (sapi_definition*4*256 + tei_definition*2) * 65536
 		return dlci
 
 	def Build_Status_Parameter(self, status_definition):
@@ -633,79 +634,79 @@ class Message_Builder:
 
 	def Build_Establish_Request(self, sapi, tei, interface_identifiers=[], message_class=5, message_type=5, version=1):
 		object_message = IUA_Message(int(message_class), int(message_type), int(version))
-		if interface_identifiers and sapi and tei:
+		if interface_identifiers and tei:
 			interface_identifiers_list = self.Build_Interface_Identifier_Parameters(interface_identifiers)
 			object_message.parameters = interface_identifiers_list
-			dlci = Build_DLCI_Parameter(sapi, tei)
+			dlci = self.Build_DLCI_Parameter(sapi, tei)
 			object_message.parameters.append(dlci)
 		else:
-			raise IUA_Error("missed mandatory parameter: sapi or tei or iid")
+			raise IUA_Error("missed mandatory parameter: tei or iid")
 		binary_message = self.convertor.Convert_IUA_Message(object_message)
 		return binary_message
 
 	def Build_Establish_Confirmation(self, sapi, tei, interface_identifiers=[], message_class=5, message_type=6, version=1):
 		object_message = IUA_Message(int(message_class), int(message_type), int(version))
-		if interface_identifiers and sapi and tei:
+		if interface_identifiers and tei:
 			interface_identifiers_list = self.Build_Interface_Identifier_Parameters(interface_identifiers)
 			object_message.parameters = interface_identifiers_list
-			dlci = Build_DLCI_Parameter(sapi, tei)
+			dlci = self.Build_DLCI_Parameter(sapi, tei)
 			object_message.parameters.append(dlci)
 		else:
-			raise IUA_Error("missed mandatory parameter: sapi or tei or iid")
+			raise IUA_Error("missed mandatory parameter: tei or iid")
 		binary_message = self.convertor.Convert_IUA_Message(object_message)
 		return binary_message
 
 	def Build_Establish_Indication(self, sapi, tei, interface_identifiers=[], message_class=5, message_type=7, version=1):
 		object_message = IUA_Message(int(message_class), int(message_type), int(version))
-		if interface_identifiers and sapi and tei:
+		if interface_identifiers and tei:
 			interface_identifiers_list = self.Build_Interface_Identifier_Parameters(interface_identifiers)
 			object_message.parameters = interface_identifiers_list
-			dlci = Build_DLCI_Parameter(sapi, tei)
+			dlci = self.Build_DLCI_Parameter(sapi, tei)
 			object_message.parameters.append(dlci)
 		else:
-			raise IUA_Error("missed mandatory parameter: sapi or tei or iid")
+			raise IUA_Error("missed mandatory parameter: tei or iid")
 		binary_message = self.convertor.Convert_IUA_Message(object_message)
 		return binary_message
 
 	def Build_Release_Request(self, sapi, tei, reason, interface_identifiers=[], message_class=5, message_type=8, version=1):
 		object_message = IUA_Message(int(message_class), int(message_type), int(version))
-		if interface_identifiers and sapi and tei and reason:
+		if interface_identifiers and tei and reason:
 			interface_identifiers_list = self.Build_Interface_Identifier_Parameters(interface_identifiers)
 			object_message.parameters = interface_identifiers_list
-			dlci = Build_DLCI_Parameter(sapi, tei)
+			dlci = self.Build_DLCI_Parameter(sapi, tei)
 			object_message.parameters.append(dlci)
 			reason = self.Build_Reason_Parameter(reason)
 			object_message.parameters.append(reason)
 		else:
-			raise IUA_Error("missed mandatory parameter: sapi or tei or iid or reason")
+			raise IUA_Error("missed mandatory parameter: tei or iid or reason")
 		binary_message = self.convertor.Convert_IUA_Message(object_message)
 		return binary_message
 
 	def Build_Release_Confirmation(self, sapi, tei, reason, interface_identifiers=[], message_class=5, message_type=9, version=1):
 		object_message = IUA_Message(int(message_class), int(message_type), int(version))
-		if interface_identifiers and sapi and tei and reason:
+		if interface_identifiers and tei and reason:
 			interface_identifiers_list = self.Build_Interface_Identifier_Parameters(interface_identifiers)
 			object_message.parameters = interface_identifiers_list
-			dlci = Build_DLCI_Parameter(sapi, tei)
+			dlci = self.Build_DLCI_Parameter(sapi, tei)
 			object_message.parameters.append(dlci)
 			reason = self.Build_Reason_Parameter(reason)
 			object_message.parameters.append(reason)
 		else:
-			raise IUA_Error("missed mandatory parameter: sapi or tei or iid or reason")
+			raise IUA_Error("missed mandatory parameter: tei or iid or reason")
 		binary_message = self.convertor.Convert_IUA_Message(object_message)
 		return binary_message
 
 	def Build_Release_Indication(self, sapi, tei, reason, interface_identifiers=[], message_class=5, message_type=10, version=1):
 		object_message = IUA_Message(int(message_class), int(message_type), int(version))
-		if interface_identifiers and sapi and tei and reason:
+		if interface_identifiers and tei and reason:
 			interface_identifiers_list = self.Build_Interface_Identifier_Parameters(interface_identifiers)
 			object_message.parameters = interface_identifiers_list
-			dlci = Build_DLCI_Parameter(sapi, tei)
+			dlci = self.Build_DLCI_Parameter(sapi, tei)
 			object_message.parameters.append(dlci)
 			reason = self.Build_Reason_Parameter(reason)
 			object_message.parameters.append(reason)
 		else:
-			raise IUA_Error("missed mandatory parameter: sapi or tei or iid or reason")
+			raise IUA_Error("missed mandatory parameter: tei or iid or reason")
 		binary_message = self.convertor.Convert_IUA_Message(object_message)
 		return binary_message
 
@@ -839,11 +840,11 @@ class Message_Builder:
 
 	def Build_TEI_Status_Request(self, sapi, tei, status, message_class=0, message_type=2, version=1):
 		object_message = IUA_Message(int(message_class), int(message_type), int(version))
-		if sapi and tei:
-			dlci = Build_DLCI_Parameter(sapi, tei)
+		if tei:
+			dlci = self.Build_DLCI_Parameter(sapi, tei)
 			object_message.parameters.append(dlci)
 		else:
-			raise IUA_Error("missed mandatory parameter: sapi or tei")
+			raise IUA_Error("missed mandatory parameter: tei")
 		status = self.Build_Status_Parameter(status)
 		object_message.parameters.append(status)
 		binary_message = self.convertor.Convert_IUA_Message(object_message)
@@ -851,11 +852,11 @@ class Message_Builder:
 
 	def Build_TEI_Status_Confirmation(self, sapi, tei, status, message_class=0, message_type=3, version=1):
 		object_message = IUA_Message(int(message_class), int(message_type), int(version))
-		if sapi and tei:
-			dlci = Build_DLCI_Parameter(sapi, tei)
+		if tei:
+			dlci = self.Build_DLCI_Parameter(sapi, tei)
 			object_message.parameters.append(dlci)
 		else:
-			raise IUA_Error("missed mandatory parameter: sapi or tei")
+			raise IUA_Error("missed mandatory parameter: tei")
 		status = self.Build_Status_Parameter(status)
 		object_message.parameters.append(status)
 		binary_message = self.convertor.Convert_IUA_Message(object_message)
@@ -863,11 +864,11 @@ class Message_Builder:
 
 	def Build_TEI_Status_Indication(self, sapi, tei, status, message_class=0, message_type=4, version=1):
 		object_message = IUA_Message(int(message_class), int(message_type), int(version))
-		if sapi and tei:
-			dlci = Build_DLCI_Parameter(sapi, tei)
+		if tei:
+			dlci = self.Build_DLCI_Parameter(sapi, tei)
 			object_message.parameters.append(dlci)
 		else:
-			raise IUA_Error("missed mandatory parameter: sapi or tei")
+			raise IUA_Error("missed mandatory parameter: tei")
 		status = self.Build_Status_Parameter(status)
 		object_message.parameters.append(status)
 		binary_message = self.convertor.Convert_IUA_Message(object_message)
@@ -875,11 +876,11 @@ class Message_Builder:
 
 	def Build_TEI_Query_Request(self, sapi, tei, message_class=0, message_type=5, version=1):
 		object_message = IUA_Message(int(message_class), int(message_type), int(version))
-		if sapi and tei:
-			dlci = Build_DLCI_Parameter(sapi, tei)
+		if tei:
+			dlci = self.Build_DLCI_Parameter(sapi, tei)
 			object_message.parameters.append(dlci)
 		else:
-			raise IUA_Error("missed mandatory parameter: sapi or tei")
+			raise IUA_Error("missed mandatory parameter: tei")
 		binary_message = self.convertor.Convert_IUA_Message(object_message)
 		return binary_message
 

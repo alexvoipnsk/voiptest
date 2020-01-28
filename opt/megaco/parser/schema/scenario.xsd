@@ -35,7 +35,7 @@
 <xs:complexType name="SendInstruction">
   <xs:simpleContent>
     <xs:extension base="xs:string">
-      <xs:attribute name="connection" type="xs:nonNegativeInteger"/>
+      <xs:attribute name="connection" type="xs:nonNegativeInteger" use="required"/>
       <xs:attribute name="stream" type="xs:nonNegativeInteger"/>
     </xs:extension>
   </xs:simpleContent>
@@ -127,7 +127,7 @@
   <xs:sequence>
   	<xs:element name="actions" type="ActionsInstruction" minOccurs="0" maxOccurs="1"/>
   </xs:sequence>
-  <xs:attribute name="connection" type="xs:nonNegativeInteger"/>
+  <xs:attribute name="connection" type="xs:nonNegativeInteger" use="required"/>
   <xs:attribute name="timeout" type="xs:nonNegativeInteger"/>
   <xs:attribute name="sec_connection" type="xs:nonNegativeInteger"/>
 </xs:complexType>

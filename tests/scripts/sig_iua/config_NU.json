@@ -1,0 +1,74 @@
+{
+  "LogDirectory" : "/home/alexander/py_autotest/log/sigtran/",
+  "Connections" : [
+    {
+      "id" : 0,
+      "name" : "Link between Call Agent and SMG_SIGTRAN",
+      "from_sock" : 0,
+      "to_sock" : 1
+    },
+    {
+      "id" : 1,
+      "name" : "Link between Call Agent and MEGACO",
+      "from_sock" : 2,
+      "to_sock" : 3
+    }
+  ], 
+  "sock": [ 
+    {
+      "id": 0,
+      "name" : "SIGTRAN gateway",
+      "ipaddr": "192.168.114.200",
+      "port": 2913,
+      "transport" : "sctp",
+      "proto" : "m2ua",
+      "profile" : 0  
+    },
+    {
+      "id": 1,
+      "name" : "SSW_SIGTRAN",
+      "ipaddr": "192.168.116.150",
+      "port": 2904,
+      "transport" : "sctp",
+      "proto" : "m2ua",
+      "profile" : 0  
+    },
+    {
+      "id" : 2,
+      "name" : "SIGTRAN gateway",
+      "ipaddr" : "192.168.114.200",
+      "port" : 2946,
+      "transport" : "udp",
+      "proto" : "megaco",
+      "profile" : 0
+    },
+    {
+      "id" : 3,
+      "name" : "SSW_MEGACO",
+      "ipaddr" : "192.168.116.150",
+      "port" : 2945,
+      "transport" : "udp",
+      "proto" : "megaco",
+      "profile" : 1  
+    }
+  ],  
+  "sigtran": [
+    {
+      "id": 0,
+      "asp": ["12"],
+      "iid": ["iid11"] 
+    }
+  ],
+  "megaco" : [
+    {
+      "id" : 0,
+      "mid" : "smg",
+      "encoding" : "full_text"
+    },
+    {
+      "id" : 1,
+      "mid" : "ssw",
+      "encoding" : "full_text"
+    }
+  ]
+}

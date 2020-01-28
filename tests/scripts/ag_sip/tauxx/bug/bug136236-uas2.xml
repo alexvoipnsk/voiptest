@@ -120,6 +120,7 @@ a=silenceSupp:off - - - -
 a=inactive
 ]]>
 	</send>
+	<recv request="ACK" crlf="true" />
 
 	<recv request="INVITE" crlf="true" />
 	<send>
@@ -156,6 +157,7 @@ a=ptime:20
 a=sendrecv
 ]]>
 	</send>
+	<recv request="ACK" crlf="true" />
 
 	<recv request="BYE" crlf="true" />
 	<send>
