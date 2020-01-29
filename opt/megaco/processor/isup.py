@@ -1487,6 +1487,8 @@ class ISUP_Message_Builder:
 		  "transmission_medium_used" : self.Build_Transmission_Medium_Used,
 		  "nature_of_connection_indicators" : self.Build_Nature_Of_Connection_Indicators,
 		  "forward_call_indicators" : self.Build_Forward_Call_Indicators,
+		  "information_indicators" : self.Build_Information_Indicators,
+		  "information_request_indicators" : self.Build_Information_Request_Indicators,
 		  "calling_party_category" : self.Build_Calling_Party_Category,
 		  "transmission_medium_requirement" : self.Build_Transmission_Medium_Requirement,
 		  "calling_party_number" : self.Build_Calling_Party_Number,
@@ -1686,6 +1688,18 @@ class ISUP_Message_Builder:
 	def Build_Forward_Call_Indicators(self, value):
 		if type(value) != int:
 			raise ISUP_Error("forward_call_indicators must be int value")
+		else:
+			return Forward_Call_Indicators(value)
+
+	def Build_Information_Indicators(self, value):
+		if type(value) != int:
+			raise ISUP_Error("information_indicators must be int value")
+		else:
+			return Forward_Call_Indicators(value)
+
+	def Build_Information_Request_Indicators(self, value):
+		if type(value) != int:
+			raise ISUP_Error("information_request_indicators must be int value")
 		else:
 			return Forward_Call_Indicators(value)
 
