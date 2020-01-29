@@ -1503,6 +1503,7 @@ class ISUP_Message_Builder:
 		  "cause_indicators" : self.Build_Cause_Indicators,
 		  "range_and_status" : self.Build_Range_And_Status,
 		  "subsequent_number" : self.Build_Subsequent_Number,
+		  "parameter_compatibility_information" : self.Build_Parameter_Compatibility_Information,
 		  "circuit_group_supervision_message_type" : self.Build_Circuit_Group_Supervision_Message_Type
 		}
 		return builders
@@ -1558,6 +1559,9 @@ class ISUP_Message_Builder:
 		  67 : 0
 		}
 		return lengths
+
+	def Build_Parameter_Compatibility_Information(self, value):
+		return Parameter_Compatibility_Information().Build(value)
 
 	def Build_Access_Delivery_Information(self, value):
 		if type(value) != int:
@@ -2173,7 +2177,7 @@ class ISUP_Binary_Convertor:
 	def Convert_Parameter_Compatibility_Information(self, parameters):
 		binary_parameter = b''
 		for parameter in parameters:
-			if type(parameters)==list:
+			if type(parameter)==list:
 				for subparameter in parameter:
 					binary_parameter += subparameter.to_bytes(1, byteorder="big")
 			else:
