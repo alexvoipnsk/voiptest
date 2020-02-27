@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<scenario  name="sip_call">
+
+	<connect connection="0" mode="client" />
+
+	<send connection="0">
+		<![CDATA[
+		1 (header=[[$$sock.0.ormNum], [$$sock.0.password]])
+		]]>
+	</send>
+
+	<send connection="0">
+		<![CDATA[
+		2 (header=[[$$sock.0.ormNum], [$$sock.0.password]])
+		]]>
+	</send>
+
+	<send connection="0">
+		<![CDATA[
+		3 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; new_password=536770)
+		]]>
+	</send>
+
+	<send connection="0">
+		<![CDATA[
+		4 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; line_group_number=1, line_group_type='combined', line_a_number=1)
+		]]>
+	</send>
+
+	<send connection="0">
+		<![CDATA[
+		5 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=88, object_type="full", phone_number=738322744789, control_category="combined", line_group_number=6, priority="common", phone_type='local', linkset_number=65535)
+		]]>
+	</send>
+
+	<send connection="0">
+		<![CDATA[
+		6 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=187, object_type="partial", phone_number=71234567890, phone_type='russian')
+		]]>
+	</send>
+
+	<send connection="0">
+		<![CDATA[
+		7 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; call_number=2, object_number=88, object_type="local", line_group_number=14)
+		]]>
+	</send>
+
+	<send connection="0">
+		<![CDATA[
+		8 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; call_number=2, object_number=88, object_type="local", line_a_number=1, line_b_number=1)
+		]]>
+	</send>
+
+	<send connection="0">
+		<![CDATA[
+		9 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; line_group_number=14, line_a_number=1, line_b_number=1)
+		]]>
+	</send>
+
+	<send connection="0">
+		<![CDATA[
+		10 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=187, object_type="partial", linkset_number=61)
+		]]>
+	</send>
+
+	<send connection="0">
+		<![CDATA[
+		11 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; line_group_number=14, line_group_type='separate', line_a_number=1, line_b_number=1)
+		]]>
+	</send>
+
+	<send connection="0">
+		<![CDATA[
+		12 (header=[[$$sock.0.ormNum], [$$sock.0.password]])
+		]]>
+	</send>
+
+	<send connection="0">
+		<![CDATA[
+		13 (header=[[$$sock.0.ormNum], [$$sock.0.password]])
+		]]>
+	</send>
+
+	<send connection="0">
+		<![CDATA[
+		14 (header=[[$$sock.0.ormNum], [$$sock.0.password]], test_message_number=6)
+		]]>
+	</send>
+
+	<send connection="0">
+		<![CDATA[
+		15 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=85, control_category="statistical", line_group_number=61, priority="high")
+		]]>
+	</send>
+
+	<send connection="0">
+		<![CDATA[
+		16 (header=[[$$sock.0.ormNum], [$$sock.0.password]])
+		]]>
+	</send>
+
+	<send connection="0">
+		<![CDATA[
+		17 (header=[[$$sock.0.ormNum], [$$sock.0.password]])
+		]]>
+	</send>
+
+	<recv connection="0" timeout="60000">
+		<actions>
+			<validate rule="sorm">
+				<![CDATA[
+				26 (header=[[$$sock.0.ormNum], 268])
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+
+</scenario>

@@ -79,7 +79,7 @@ class ScenarioBuilder:
 
 		Adds created Validate instruction to Scenario instructions
 		"""
-		return Scenario.Validate(str(component.attrib["rule"]), component.text.strip())
+		return Scenario.Validate(str(component.attrib["rule"]), int(component.attrib["num"]), component.text.strip())
 
 	def _make_catch(self, component):
 		"""Builds and returns the Catch instruction of the Scenario instance"""
@@ -256,6 +256,7 @@ class Scenario:
 
 	class Validate:
 
-		def __init__(self, rule, message):
+		def __init__(self, rule, num, message):
 			self.rule = rule
+			self.num = num
 			self.message = message

@@ -1,4 +1,4 @@
-from socket import socket, AF_INET, SOCK_DGRAM, SOL_SOCKET, SO_REUSEADDR, IPPROTO_TCP
+from socket import socket, AF_INET, SOCK_DGRAM, SOCK_STREAM, SOCK_NONBLOCK, SOL_SOCKET, SO_REUSEADDR, IPPROTO_TCP, MSG_WAITALL
 from socket import timeout as sock_timeout
 from sys import exit
 import sctp
@@ -40,7 +40,7 @@ class NetworkAdapter:
 				exit(1)
 		elif node.transport == "tcp":
 			try:
-				sock = socket(AF_INET, IPPROTO_TCP)
+				sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)
 				sock.bind((node.ipaddr,node.port))
 			except (OSError,IOError) as error:
 				AppLogger.error("Creation socket error for Node '{id}': {error}'".format(id=node.id, error=error))
@@ -60,7 +60,10 @@ class NetworkAdapter:
 		Returns the action result and its info
 		"""
 		try:
-			self._socket.sendto(message.encode(), self._routes[to_node])
+			if (type(message) == bytes):
+				self._socket.sendto(message, self._routes[to_node])
+			else:
+				self._socket.sendto(message.encode(), self._routes[to_node])
 		except (OSError,IOError) as error:
 			return (False, "Message has not been sent: %s" % str(error))
 		return (True, "Message has been successfully sent to node '%s:%s'" % self._routes[to_node])
@@ -83,10 +86,14 @@ class NetworkAdapter:
 		Returns the action result and its info
 		"""
 		try:
-			if self._remote_addr != None:
-				self._socket.send(message, to=self._remote_addr)
+			if (type(message) == bytes):
+				self._socket.send(message)
 			else:
-				self._socket.send(message, to=self._routes[to_node])
+				self._socket.send(message.encode())
+			#if self._remote_addr != None:
+			#	self._socket.send(message, to=self._remote_addr)
+			#else:
+			#	self._socket.send(message, to=self._routes[to_node])
 		except (OSError,IOError) as error:
 			return (False, "Message has not been sent: %s" % str(error))
 		return (True, "Message has been successfully sent to node '%s:%s'" % self._routes[to_node])
@@ -97,12 +104,12 @@ class NetworkAdapter:
 		"""
 		self._socket.settimeout(timeout/1000)    # Setting a timeout for the receiving action
 		try:
-			data, node = self._socket.recvfrom(self.buffer)
+			data, node = self._socket.recvfrom(self.buffer, MSG_WAITALL)
+			#data, node = self._socket.recvfrom(self.buffer)
 		except (OSError, IOError, sock_timeout) as error:
 			return (False, "Message has not been received: " + str(error), "NO_MESSAGE")
 		else:
-			print ("PP", node, self._remote_addr, sec_from_node)
-			if node == None:
+			if data == None:
 				return (False, "Message has not been received", None)
 			if self._remote_addr != (None, None):
 				return (True, "Message has been successfully received from node '%s:%i'" % self._remote_addr, data)
@@ -127,6 +134,7 @@ class NetworkAdapter:
 				return (True, "Listen socket has been successfully accepted from peer '%s:%i'" % self._remote_addr)
 			else:
 				self._socket.connect(self._routes[to_node])
+				self._remote_addr = self._routes[to_node]
 				return (True, "Peer has been successfully connected to node '%s'" % to_node)
 		except (OSError, IOError, sock_timeout) as error:
 			return (False, "Peer has not been connected: " + str(error))
@@ -134,6 +142,7 @@ class NetworkAdapter:
 	def close(self):
 		"""Closes the open socket"""
 		self._socket.close()
+		#self._socket.close(self._routes[to_node])
 
 	def __repr__(self):
 		return "Network adapter for Node '%s'" % self.node_id

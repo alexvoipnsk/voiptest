@@ -1,0 +1,63 @@
+{
+  "LogDirectory" : "/home/alexander/voip_auto/voiptest/log/sigtran/",
+  "Connections" : [
+    {
+      "id" : 0,
+      "name" : "SORM_KPD1",
+      "from_sock" : 0,
+      "to_sock" : 1
+    },
+    {
+      "id" : 1,
+      "name" : "SORM_KPD2",
+      "from_sock" : 2,
+      "to_sock" : 3
+    }
+  ], 
+  "sock": [ 
+    {
+      "id": 0,
+      "name" : "Computer",
+      "ipaddr": "192.168.114.200",
+      "port": 5082,
+      "transport" : "tcp",
+      "proto" : "sorm",
+      "network_buffer" : 4096,
+      "profile" : 0  
+    },
+    {
+      "id": 1,
+      "name" : "SMG",
+      "ipaddr": "192.168.114.202",
+      "port": 1001,
+      "transport" : "tcp",
+      "proto" : "sorm",
+      "profile" : 0
+    },
+    {
+      "id": 2,
+      "name" : "Computer",
+      "ipaddr": "192.168.114.200",
+      "port": 6089,
+      "transport" : "tcp",
+      "proto" : "sorm",
+      "profile" : 0  
+    },
+    {
+      "id": 3,
+      "name" : "SMG",
+      "ipaddr": "192.168.114.202",
+      "port": 1002,
+      "transport" : "tcp",
+      "proto" : "sorm",
+      "profile" : 0
+    }
+  ],  
+  "sorm" : [
+    {
+      "id" : 0,
+      "ormNum" : 1,
+      "password" : 123456
+    }
+  ]
+}

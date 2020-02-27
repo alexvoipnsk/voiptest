@@ -99,6 +99,7 @@
   <xs:simpleContent>
     <xs:extension base="xs:string">
       <xs:attribute name="rule" type="xs:string"/>
+      <xs:attribute name="num" type="xs:integer"/>
     </xs:extension>
   </xs:simpleContent>
 </xs:complexType>

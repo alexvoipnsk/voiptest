@@ -1,0 +1,37 @@
+{
+  "LogDirectory" : "/home/alexander/voip_auto/voiptest/log/sigtran/",
+  "Connections" : [
+    {
+      "id" : 0,
+      "name" : "SIP trunk",
+      "from_sock" : 0,
+      "to_sock" : 1
+    }
+  ], 
+  "sock": [ 
+    {
+      "id": 0,
+      "name" : "Computer",
+      "ipaddr": "192.168.114.200",
+      "port": 5060,
+      "transport" : "udp",
+      "proto" : "megaco",
+      "profile" : 0  
+    },
+    {
+      "id": 1,
+      "name" : "TAU_SIP",
+      "ipaddr": "192.168.114.201",
+      "port": 5060,
+      "transport" : "udp",
+      "proto" : "megaco",
+      "profile" : 0
+    }
+  ],  
+    "megaco" : [
+    {
+      "id" : 0,
+      "mid" : "some_call_id_12345678"
+    }
+  ]
+}

@@ -21,6 +21,7 @@ class ConfigBuilder:
 		        "sock" : self._make_sock,
 		        "megaco" : self._make_megaco,
 		        "mgcp" : self._make_mgcp,
+		        "sorm" : self._make_sorm,
 		        "sigtran" : self._make_sigtran}
 
 	@staticmethod
@@ -67,9 +68,9 @@ class ConfigBuilder:
 
 	@staticmethod
 	def _build_mgcp(fabric):
-		"""Builds and returns the megaco instance"""
-		mgcp = Config.Mgcp(fabric["id"], fabric["mid"])  # Builds the required attributes of the megaco instance
-		for field in ("encoding", "terms"):    # Builds optional attributes of the megaco instance
+		"""Builds and returns the mgcp instance"""
+		mgcp = Config.Mgcp(fabric["id"], fabric["mid"])  # Builds the required attributes of the mgcp instance
+		for field in ("encoding", "terms"):    # Builds optional attributes of the mgcp instance
 			try:
 				if field == "encoding":
 					mgcp.encoding = fabric[field]
@@ -78,6 +79,12 @@ class ConfigBuilder:
 			except KeyError:
 				pass
 		return mgcp
+
+	@staticmethod
+	def _build_sorm(fabric):
+		"""Builds and returns the SORM instance"""
+		sorm = Config.Sorm(fabric["id"], fabric["ormNum"], fabric["password"])  # Builds the required attributes of the sorm instance
+		return sorm
 
 	@staticmethod
 	def _build_sigtran(fabric):
@@ -121,6 +128,10 @@ class ConfigBuilder:
 		"""Builds the mgcp attribute of the Config instance"""
 		self._config.mgcp = tuple(ConfigBuilder._build_mgcp(fabric) for fabric in sample)
 
+	def _make_sorm(self, sample):
+		"""Builds the sorm attribute of the Config instance"""
+		self._config.sorm = tuple(ConfigBuilder._build_sorm(fabric) for fabric in sample)
+
 	def _make_sigtran(self, sample):
 		"""Builds the sigtran attribute of the Config instance"""
 		self._config.sigtran = tuple(ConfigBuilder._build_sigtran(fabric) for fabric in sample)
@@ -144,6 +155,7 @@ class Config:
 		self.sigtran = None
 		self.megaco = None
 		self.mgcp = None
+		self.sorm = None
 
 	class Connection:
 
@@ -187,3 +199,10 @@ class Config:
 			self.mid = mident
 			self.encoding = "full_text"
 			self.terms = tuple()
+
+	class Sorm:
+
+		def __init__(self, node_id, ormNum_id, password):
+			self.id = node_id
+			self.ormNum = ormNum_id
+			self.password = password

@@ -31,7 +31,9 @@ class VariablesTreeBuilder:
 		    "network_buffer" : self._make_network_buffer,
 		    "terms" : self._make_terms,
 		    "asp" : self._make_asp,
-		    "iid" : self._make_iid
+		    "iid" : self._make_iid,
+		    "ormNum" : self._make_ormNum,
+		    "password" : self._make_password
 		}
 
 	def _define_protocols(self):
@@ -39,7 +41,8 @@ class VariablesTreeBuilder:
 		return {
 			"megaco" : self.config.megaco,
 			"sigtran" : self.config.sigtran,
-			"mgcp" : self.config.mgcp
+			"mgcp" : self.config.mgcp,
+			"sorm" : self.config.sorm
 		}
 
 	def _make_globals(self, section):
@@ -137,6 +140,14 @@ class VariablesTreeBuilder:
 		for number, value in enumerate(fabric):
 			iid.childs.append(VariableTree.TreeNode(str(number), value))
 		return iid
+
+	def _make_ormNum(self, value):
+		"""Builds and returns VariableTree node from the name of the specific Node"""
+		return VariableTree.TreeNode("ormNum", value)
+
+	def _make_password(self, value):
+		"""Builds and returns VariableTree node from the name of the specific Node"""
+		return VariableTree.TreeNode("password", value)
 
 	def build_tree(self):
 		"""Builds and returns the VariableTree instance"""

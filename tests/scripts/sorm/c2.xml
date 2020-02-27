@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<scenario  name="sorm_test">
+
+	<connect connection="0" mode="client" />
+
+	<send connection="0">
+		<![CDATA[
+		1 (header=[[$$sock.0.ormNum], [$$sock.0.password]])
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2500"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=1, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=1, execution_status=0)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<send connection="0">
+		<![CDATA[
+		2 (header=[[$$sock.0.ormNum], [$$sock.0.password]])
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2500"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=2, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=2, execution_status=0)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+</scenario>

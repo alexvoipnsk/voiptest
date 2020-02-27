@@ -9,6 +9,7 @@ from sre_constants import error as re_compile_error
 from sys import exit
 import processor.m2ua as m2ua
 import processor.iua as iua
+import processor.sorm268 as sorm
 
 class ScenarioInterpreter:
 	"""Class for Scenario instances interpretation"""
@@ -57,6 +58,9 @@ class ScenarioInterpreter:
 		self.iua_builder = iua.Message_Builder()
 		self.iua_validator = iua.Message_Validator()
 		self.iua_parser = iua.Message_Parser()
+		self.SORM_executor = sorm.Config_Executor()
+		self.SORM_builder = sorm.Message_Builder()
+		self.SORM_validator = sorm.Message_Validator()
 		ScenarioInterpreter._global_variables_tree = VariablesTreeBuilder(config).build_tree()  # Global variables tree (Global namespace)
 
 	def _define_sctp_ppid(self):
@@ -70,12 +74,14 @@ class ScenarioInterpreter:
 		return { "m2ua" : self._handle_m2ua,
 				 "iua" : self._handle_iua,
 				 "mgcp" : self._handle_mgcp,
-		         "megaco" : self._handle_megaco }
+		         "megaco" : self._handle_megaco,
+		         "sorm" : self._handle_sorm }
 
 	def _signaling_protocol_validator_handlers(self):
 		"""Defines signaling protocol handlers"""
 		return { "m2ua" : self._handle_validate_m2ua, 
-				 "iua" : self._handle_validate_iua}
+				 "iua" : self._handle_validate_iua,
+				 "sorm" : self._handle_validate_sorm}
 
 	@staticmethod
 	def _fetch_item(node_id, items):
@@ -128,7 +134,7 @@ class ScenarioInterpreter:
 		for variable in set([var[3:-1] for var in findall(r"\[\$\$[A-Za-z0-9_.]+\]", string)]):  # Forming the set of global variables found in a string
 			value = ScenarioInterpreter._global_variables_tree.get_variable(variable.split("."))
 			if value is not None:
-				string = string.replace("[$$" + variable + "]", value)                           # Replacing a global variable with its value
+				string = string.replace("[$$" + variable + "]", str(value))                           # Replacing a global variable with its value
 			else:
 				return (False, "Variable '%s' does not exist in the global namespace" % variable, None)
 		return (True, None, string)
@@ -190,10 +196,54 @@ class ScenarioInterpreter:
 		message = M2ua_handler[mes_type](**params)
 		return message
 
+	def _handle_sorm(self, message):
+		"""sorm protocol message handling"""
+		SORM_handler = self.SORM_builder._SORM_make_command_handler()
+		print ("::FOR LOGGING PURPOSE. INTERPRETER_MODULE. SORM message handling1::",message)
+		command, params = self.SORM_executor.Values_Exec(message)
+		print ("::FOR LOGGING PURPOSE. INTERPRETER_MODULE. SORM message handling2::",command, params)
+		message = SORM_handler[command](**params)
+		return message
+
+	def _handle_validate_sorm(self, message, data, number):
+		validator = self.SORM_validator._SORM_check_message_handler()
+		if number==None:
+			recvdata==data
+		else:
+			n=0
+			b=b''
+			flag=False
+			for _each in data:
+				if _each==204:
+					n+=1
+					if n==number:
+						b=_each.to_bytes(1, byteorder='big')
+						flag=True
+					elif n<number:
+						b=_each.to_bytes(1, byteorder='big')
+						flag=False
+					else:
+						temp_recvdata=b
+						flag=True
+						break
+				else:
+					b+=_each.to_bytes(1, byteorder='big')
+				temp_recvdata=b
+			if flag:
+				recvdata=temp_recvdata
+			else:
+				recvdata=b''
+		mes_type, params = self.SORM_executor.Values_Exec(message)
+		print ("::FOR LOGGING PURPOSE. SORM_HANDLE_VALIDATE::", mes_type, params, recvdata)
+		if data == "NO_MESSAGE":
+			return (True, "FAKE!!! No message received as scenario plan")
+		else:
+			success, info = validator[mes_type](recvdata, **params)
+			return (success, info)
+
 	def _handle_validate_m2ua(self, message, data):
 		#mes_type, params = self.M2ua_validator.Params_Executor(message)
 		mes_type, params = self.M2ua_executor.Values_Exec(message) # replace
-		print ("KKK", mes_type," LLL", params)
 		if data == "NO_MESSAGE":
 			object_data = data
 		else:
@@ -211,7 +261,6 @@ class ScenarioInterpreter:
 	def _handle_validate_iua(self, message, data):
 		#mes_type, params = self.iua_validator.Params_Executor(message)
 		mes_type, params = self.iua_executor.Values_Exec(message) # replace
-		print ("KKK", mes_type," LLL", params)
 		if data == "NO_MESSAGE":
 			object_data = data
 		else:
@@ -267,7 +316,6 @@ class ScenarioInterpreter:
 		else:
 			success, recv_log, data = network_adapter.recv(self._routes[instruction.connection], timeout=instruction.timeout, sec_from_node=instruction.sec_connection)
 		self._test_log += strftime("(%d.%m.%Y) %Hh:%Mm:%Ss") + "\t[Recv]      " + recv_log + "\n"
-		print("_____SD", success, data)
 		if not success and not data:
 			return False
 		# Executing nested instructions
@@ -281,14 +329,16 @@ class ScenarioInterpreter:
 		Returns True, if instruction has successfully completed or False otherwise
 		"""
 		# Searching for a network adapter by connection identifier
-		print ("00000---", instruction.message)
+		print ("::FOR LOGGING PURPOSE. INTERPRETER_MODULE. SEND handling1::", instruction.message)
 		network_adapter = self._get_network_adapter(instruction.connection)
 		if network_adapter is None:
 			self._test_log += strftime("(%d.%m.%Y) %Hh:%Mm:%Ss") + "\t[Send]      Value '%s' is nonexistent connection identifier\n" % instruction.connection
 			return False
 		# Modify message with protocol handler
 		# Changing variables to their values
+		print ("::FOR LOGGING PURPOSE. INTERPRETER_MODULE. SEND handling2::", instruction.message)
 		success, reason, temp_message = self._replace_variables(instruction.message)
+		print ("::FOR LOGGING PURPOSE. INTERPRETER_MODULE. SEND handling3::", temp_message)
 		message = self._protocol_handlers[network_adapter.proto](temp_message)
 		if not success:
 			self._test_log += strftime("(%d.%m.%Y) %Hh:%Mm:%Ss") + "\t[Send]      " + reason + "\n"
@@ -402,7 +452,9 @@ class ScenarioInterpreter:
 		if instruction.rule == "m2ua":
 			success, info = self._validator_handlers[instruction.rule](temp_message, data)	
 		elif instruction.rule == "iua":
-			success, info = self._validator_handlers[instruction.rule](temp_message, data)	
+			success, info = self._validator_handlers[instruction.rule](temp_message, data)
+		elif instruction.rule == "sorm":
+			success, info = self._validator_handlers[instruction.rule](temp_message, data, instruction.num)	
 		self._test_log += strftime("(%d.%m.%Y) %Hh:%Mm:%Ss") + "\t[Validate]  " +  info + "\n"
 		if not success:
 			return False
@@ -500,7 +552,6 @@ class ScenarioInterpreter:
 		self._test_log = ""                    # Initializing the test log
 		# Execution of the scenario instructions
 		for instruction in scenario:
-			print("----------------------:::;;;", instruction)
 			if not self._command_handlers[instruction.__class__.__name__](instruction):
 				# Test result is True, if the exit status is successful 
 				if self._successfull_exit_flag.isSet():
