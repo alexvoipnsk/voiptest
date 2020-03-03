@@ -1433,10 +1433,11 @@ class ISUP_Message_Parser:
 
 class MTN_SNM_Data:
 
-	def __init__(self, mes_group, mes_type, value=None):
+	def __init__(self, mes_group, mes_type, value=None, destination=None):
 		self.mes_group = mes_group
 		self.mes_type = mes_type
 		self.value = value
+		self.destination = destination
 
 class MTN_SNM_Builder:
 
