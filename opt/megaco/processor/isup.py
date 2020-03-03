@@ -1938,6 +1938,16 @@ class MTN_SNM_Binary_Convertor:
 			else:
 				print("bug")
 				pass
+		if service_data.destination is not None:
+			if type(service_data.destination) == int:
+				if 1<=service_data.destination<=16383:
+					byteN = service_data.destination.to_bytes(2, byteorder="big")
+				else:
+					print("bug")
+					pass
+			else:
+				print("bug")
+				pass
 		binary_service_data = byte1 + byte_len + byteN
 		service_data_length = len(binary_service_data)
 		return (binary_service_data, service_data_length)
@@ -3082,6 +3092,7 @@ class Message_Builder:
 		overlay_data.sio.service_indicator = 0
 		arguments["mes_group"] = 4
 		arguments["mes_type"] = 1
+		arguments["destination"] = protocol_data["destination"]
 		overlay_data.service_data = self.Build_Service_Data(service_indicator=overlay_data.sio.service_indicator, kwargs = arguments)
 		return overlay_data
 
@@ -3092,6 +3103,7 @@ class Message_Builder:
 		overlay_data.sio.service_indicator = 0
 		arguments["mes_group"] = 4
 		arguments["mes_type"] = 3
+		arguments["destination"] = protocol_data["destination"]
 		overlay_data.service_data = self.Build_Service_Data(service_indicator=overlay_data.sio.service_indicator, kwargs = arguments)
 		return overlay_data
 
@@ -3102,6 +3114,7 @@ class Message_Builder:
 		overlay_data.sio.service_indicator = 0
 		arguments["mes_group"] = 4
 		arguments["mes_type"] = 5
+		arguments["destination"] = protocol_data["destination"]
 		overlay_data.service_data = self.Build_Service_Data(service_indicator=overlay_data.sio.service_indicator, kwargs = arguments)
 		return overlay_data
 
