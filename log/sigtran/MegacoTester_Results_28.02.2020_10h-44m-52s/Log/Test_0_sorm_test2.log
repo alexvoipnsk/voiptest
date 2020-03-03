@@ -1,7 +1,0 @@
-EXECUTE STATUS: FAILURE
-
-(28.02.2020) 10h:44m:53s	[Connect]   Peer has been successfully connected to node '1'
-(28.02.2020) 10h:44m:53s	[Send]      Message has been successfully sent to node '192.168.114.202:1001'
-(28.02.2020) 10h:44m:55s	[Pause]     Suspended by 2000 milliseconds
-(28.02.2020) 10h:45m:05s	[Recv]      Message has not been received: timed out
-(28.02.2020) 10h:45m:05s	[Validate]  No message received but 27 (ormnum=1, command_code=1, receipt_status=0) was expected

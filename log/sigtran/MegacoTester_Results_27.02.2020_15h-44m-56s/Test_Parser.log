@@ -1,4 +1,0 @@
-SUCCESSFULLY PARSED:
-
-UNSUCCESSFULLY PARSED:
-Test Error: can't parse the test file '../../tests/scripts/sorm/2_command1.xml'. Details: Element 'scenario', attribute 'name': [facet 'pattern'] The value 'sorm_test 2' is not accepted by the pattern '[a-zA-Z0-9_]+'., line 3
