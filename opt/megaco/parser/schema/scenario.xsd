@@ -32,6 +32,14 @@
   </xs:simpleContent>
 </xs:complexType>
 
+<xs:complexType name="DisconnectInstruction">
+  <xs:simpleContent>
+    <xs:extension base="xs:string">
+      <xs:attribute name="connection" type="xs:nonNegativeInteger" use="required"/>
+    </xs:extension>
+  </xs:simpleContent>
+</xs:complexType>
+
 <xs:complexType name="SendInstruction">
   <xs:simpleContent>
     <xs:extension base="xs:string">
@@ -154,6 +162,7 @@
 			<xs:element name="recv" type="RecvInstruction" maxOccurs="unbounded"/>
 			<xs:element name="nop" type="NopInstruction" maxOccurs="unbounded"/>
       <xs:element name="connect" type="ConnectInstruction" maxOccurs="unbounded"/>
+      <xs:element name="disconnect" type="DisconnectInstruction" maxOccurs="unbounded"/>
 		</xs:choice>
 		<xs:attribute name="name" type="NamePattern" use="required"/>
 	</xs:complexType>

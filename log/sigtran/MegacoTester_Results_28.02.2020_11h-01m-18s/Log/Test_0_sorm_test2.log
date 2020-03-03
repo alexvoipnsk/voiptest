@@ -1,0 +1,23 @@
+EXECUTE STATUS: FAILURE
+
+(28.02.2020) 11h:01m:19s	[Connect]   Peer has been successfully connected to node '1'
+(28.02.2020) 11h:01m:19s	[Send]      Message has been successfully sent to node '192.168.114.202:1001'
+(28.02.2020) 11h:01m:21s	[Pause]     Suspended by 2000 milliseconds
+(28.02.2020) 11h:01m:21s	[Recv]      Message has been successfully received from node '192.168.114.202:1001'
+(28.02.2020) 11h:01m:21s	[Validate]  Message 0x27 validation. Message 0x27 received.
+(28.02.2020) 11h:01m:21s	[Validate]  Message 0x26 validation. Message 0x26 received.
+(28.02.2020) 11h:01m:21s	[Validate]  Message 0x28 validation. Message 0x28 received.
+(28.02.2020) 11h:01m:21s	[Send]      Message has been successfully sent to node '192.168.114.202:1001'
+(28.02.2020) 11h:01m:23s	[Pause]     Suspended by 2000 milliseconds
+(28.02.2020) 11h:01m:23s	[Recv]      Message has been successfully received from node '192.168.114.202:1001'
+(28.02.2020) 11h:01m:23s	[Validate]  Message 0x27 validation. Message 0x27 received.
+(28.02.2020) 11h:01m:23s	[Validate]  Message 0x28 validation. Message 0x28 received.
+(28.02.2020) 11h:01m:23s	[Send]      Message has been successfully sent to node '192.168.114.202:1001'
+(28.02.2020) 11h:01m:25s	[Pause]     Suspended by 2000 milliseconds
+(28.02.2020) 11h:01m:25s	[Recv]      Message has been successfully received from node '192.168.114.202:1001'
+(28.02.2020) 11h:01m:25s	[Validate]  Message 0x27 validation. Message 0x27 received.
+(28.02.2020) 11h:01m:25s	[Validate]  Message 0x28 validation. Message 0x28 received.
+(28.02.2020) 11h:01m:25s	[Send]      Message has been successfully sent to node '192.168.114.202:1001'
+(28.02.2020) 11h:01m:27s	[Pause]     Suspended by 2000 milliseconds
+(28.02.2020) 11h:01m:27s	[Recv]      Message has been successfully received from node '192.168.114.202:1001'
+(28.02.2020) 11h:01m:27s	[Validate]  Message 0x27 validation. Message 0x27 received. Wrong ORM Number: Configured "1", received "99".

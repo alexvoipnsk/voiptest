@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<scenario  name="sorm_test2">
+
+	<connect connection="0" mode="client" />
+
+	<!-->
+	2.1
+	<-->
+	<send connection="0">
+		<![CDATA[
+		1 (header=[[$$sock.0.ormNum], 999999])
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=1, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				26 (ormnum=[$$sock.0.ormNum], intrusion_code=2)
+				]]>
+			</validate>
+			<validate rule="sorm" num="3">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=1, execution_status=3)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	2.2
+	<-->
+	<send connection="0">
+		<![CDATA[
+		1 (header=[[$$sock.0.ormNum], [$$sock.0.password]])
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=1, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=1, execution_status=0)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	2.3
+	<-->
+	<send connection="0">
+		<![CDATA[
+		1 (header=[[$$sock.0.ormNum], [$$sock.0.password]])
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=1, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=1, execution_status=7)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	2.4
+	<-->
+	<send connection="0">
+		<![CDATA[
+		1 (header=[99, [$$sock.0.password]])
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=99, command_code=1, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				26 (ormnum=99, intrusion_code=5)
+				]]>
+			</validate>
+			<validate rule="sorm" num="3">
+				<![CDATA[
+				28 (ormnum=99, command_code=1, execution_status=5)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	Return to idle
+	<-->
+	<send connection="0">
+		<![CDATA[
+		2 (header=[[$$sock.0.ormNum], [$$sock.0.password]])
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=2, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=2, execution_status=0)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<disconnect connection="0" />
+
+</scenario>

@@ -1,4 +1,4 @@
-from socket import socket, AF_INET, SOCK_DGRAM, SOCK_STREAM, SOCK_NONBLOCK, SOL_SOCKET, SO_REUSEADDR, IPPROTO_TCP, MSG_WAITALL
+from socket import socket, AF_INET, SOCK_DGRAM, SOCK_STREAM, SHUT_RDWR, SOL_SOCKET, SO_REUSEADDR, IPPROTO_TCP, MSG_WAITALL
 from socket import timeout as sock_timeout
 from sys import exit
 import sctp
@@ -141,8 +141,12 @@ class NetworkAdapter:
 
 	def close(self):
 		"""Closes the open socket"""
-		self._socket.close()
-		#self._socket.close(self._routes[to_node])
+		try:
+			self._socket.shutdown(SHUT_RDWR)
+			self._socket.close()
+			return (True, "Socket has been successfully disconnected")
+		except (OSError, IOError, sock_timeout) as error:
+			return (False, "Socket has not been disconnected: " + str(error))
 
 	def __repr__(self):
 		return "Network adapter for Node '%s'" % self.node_id

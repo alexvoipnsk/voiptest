@@ -19,7 +19,7 @@
       "id": 0,
       "name" : "Computer",
       "ipaddr": "192.168.114.200",
-      "port": 5082,
+      "port": 5084,
       "transport" : "tcp",
       "proto" : "sorm",
       "network_buffer" : 4096,

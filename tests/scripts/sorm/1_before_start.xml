@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<scenario  name="sorm_test1">
+
+	<connect connection="0" mode="client" />
+
+	<send connection="0">
+		<![CDATA[
+		3 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; new_password=536770)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="1500"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=3, receipt_status=2)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<disconnect connection="0" />
+
+</scenario>

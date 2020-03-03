@@ -1,0 +1,8 @@
+EXECUTE STATUS: FAILURE
+
+(28.02.2020) 09h:49m:50s	[Connect]   Peer has been successfully connected to node '1'
+(28.02.2020) 09h:49m:50s	[Send]      Message has been successfully sent to node '192.168.114.202:1001'
+(28.02.2020) 09h:49m:55s	[Pause]     Suspended by 5000 milliseconds
+(28.02.2020) 09h:49m:55s	[Recv]      Message has been successfully received from node '192.168.114.202:1001'
+(28.02.2020) 09h:49m:55s	[Validate]  Message 0x27 validation. Message 0x27 received.
+(28.02.2020) 09h:49m:55s	[Validate]  Message 0x26 validation. Wrong Message received: Expected length: 55, Received "12".

@@ -1,0 +1,8 @@
+EXECUTE STATUS: SUCCESS
+
+(27.02.2020) 15h:21m:19s	[Connect]   Peer has been successfully connected to node '1'
+(27.02.2020) 15h:21m:19s	[Send]      Message has been successfully sent to node '192.168.114.202:1001'
+(27.02.2020) 15h:21m:21s	[Pause]     Suspended by 2500 milliseconds
+(27.02.2020) 15h:21m:21s	[Recv]      Message has been successfully received from node '192.168.114.202:1001'
+(27.02.2020) 15h:21m:21s	[Validate]  Message 0x27 validation. Message 0x27 received.
+(27.02.2020) 15h:21m:21s	[Disconn]   Socket has been successfully disconnected

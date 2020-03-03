@@ -21,6 +21,7 @@ class ScenarioInterpreter:
 		"""Defines command handlers for scenario instructions executing"""
 		return { "Define" : self._handle_define,
 		         "Connect": self._handle_connect,
+		         "Disconnect": self._handle_disconnect,
 		         "Send" : self._handle_send,
 		         "Recv" : self._handle_recv,
 		         "Actions" : self._handle_actions,
@@ -206,7 +207,13 @@ class ScenarioInterpreter:
 		return message
 
 	def _handle_validate_sorm(self, message, data, number):
+		print ("UUUUUUUU", data, number)
 		validator = self.SORM_validator._SORM_check_message_handler()
+		if data == "NO_MESSAGE":
+			if message == "NO_MESSAGE":
+				return (True, "No message received as scenario plan")
+			else:
+				return (False, "No message received but {0} was expected".format(message))
 		if number==None:
 			recvdata==data
 		else:
@@ -235,11 +242,8 @@ class ScenarioInterpreter:
 				recvdata=b''
 		mes_type, params = self.SORM_executor.Values_Exec(message)
 		print ("::FOR LOGGING PURPOSE. SORM_HANDLE_VALIDATE::", mes_type, params, recvdata)
-		if data == "NO_MESSAGE":
-			return (True, "FAKE!!! No message received as scenario plan")
-		else:
-			success, info = validator[mes_type](recvdata, **params)
-			return (success, info)
+		success, info = validator[mes_type](recvdata, **params)
+		return (success, info)
 
 	def _handle_validate_m2ua(self, message, data):
 		#mes_type, params = self.M2ua_validator.Params_Executor(message)
@@ -294,6 +298,27 @@ class ScenarioInterpreter:
 		# Connect logical connection to the remote node
 		success, info = network_adapter.connect(to_node=self._routes[instruction.connection], mode=instruction.mode)
 		self._test_log += strftime("(%d.%m.%Y) %Hh:%Mm:%Ss") + "\t[Connect]   " +  info + "\n"
+		if not success:
+			return False
+		return True
+
+	def _handle_disconnect(self, instruction):
+		"""Executes	the connect instruction of the test scenario
+
+		Returns True, if instruction has successfully completed or False otherwise
+		"""
+		# Searching for a network adapter by connection identifier
+		network_adapter = self._get_network_adapter(instruction.connection)
+		if network_adapter is None:
+			self._test_log += strftime("(%d.%m.%Y) %Hh:%Mm:%Ss") + "\t[Disconn]   Value '%s' is nonexistent connection identifier\n" % instruction.connection
+			return False
+		# Check, connect not used with UDP proto
+		if network_adapter.transport not in ("tcp", "sctp"):
+			self._test_log += strftime("(%d.%m.%Y) %Hh:%Mm:%Ss") + "\t[Disconn]   Value '%s' is nonconsistent. Tag Connect only used with tcp or sctp transport\n" % network_adapter.proto
+			return False
+		# Connect logical connection to the remote node
+		success, info = network_adapter.close()
+		self._test_log += strftime("(%d.%m.%Y) %Hh:%Mm:%Ss") + "\t[Disconn]   " +  info + "\n"
 		if not success:
 			return False
 		return True

@@ -15,6 +15,7 @@ class ScenarioBuilder:
 	def _define_makers(self):
 		return {"define" : self._make_define,
 		        "connect" : self._make_connect,
+		        "disconnect" : self._make_disconnect,
 		        "send" : self._make_send,
 		        "recv" : self._make_recv,
 		        "actions" : self._make_actions,
@@ -36,11 +37,18 @@ class ScenarioBuilder:
 		self._scenario.instructions.append(Scenario.Define(component.attrib))
 
 	def _make_connect(self, component):
-		"""Builds the Send instruction of the Scenario instance
+		"""Builds the Connect instruction of the Scenario instance
 
-		Adds created Send instruction to Scenario instructions
+		Adds created Connect instruction to Scenario instructions
 		"""
 		self._scenario.instructions.append(Scenario.Connect(int(component.attrib["connection"]), str(component.attrib["mode"])))
+
+	def _make_disconnect(self, component):
+		"""Builds the Disconnect instruction of the Scenario instance
+
+		Adds created Disconnect instruction to Scenario instructions
+		"""
+		self._scenario.instructions.append(Scenario.Disconnect(int(component.attrib["connection"])))
 
 	def _make_send(self, component):
 		"""Builds the Send instruction of the Scenario instance
@@ -164,6 +172,11 @@ class Scenario:
 			self.connection = connection
 			self.mode = mode
 
+	class Disconnect:
+		
+		def __init__(self, connection):
+			self.connection = connection
+		
 	class Send:
 		
 		def __init__(self, connection, message, stream = 0):

@@ -1,0 +1,42 @@
+EXECUTE STATUS: SUCCESS
+
+(28.02.2020) 13h:01m:17s	[Connect]   Peer has been successfully connected to node '1'
+(28.02.2020) 13h:01m:17s	[Send]      Message has been successfully sent to node '192.168.114.202:1001'
+(28.02.2020) 13h:01m:19s	[Pause]     Suspended by 2000 milliseconds
+(28.02.2020) 13h:01m:19s	[Recv]      Message has been successfully received from node '192.168.114.202:1001'
+(28.02.2020) 13h:01m:19s	[Validate]  Message 0x27 validation. Message 0x27 received.
+(28.02.2020) 13h:01m:19s	[Validate]  Message 0x28 validation. Message 0x28 received.
+(28.02.2020) 13h:01m:19s	[Send]      Message has been successfully sent to node '192.168.114.202:1001'
+(28.02.2020) 13h:01m:21s	[Pause]     Suspended by 2000 milliseconds
+(28.02.2020) 13h:01m:21s	[Recv]      Message has been successfully received from node '192.168.114.202:1001'
+(28.02.2020) 13h:01m:21s	[Validate]  Message 0x27 validation. Message 0x27 received.
+(28.02.2020) 13h:01m:21s	[Validate]  Message 0x26 validation. Message 0x26 received.
+(28.02.2020) 13h:01m:21s	[Validate]  Message 0x28 validation. Message 0x28 received.
+(28.02.2020) 13h:01m:21s	[Send]      Message has been successfully sent to node '192.168.114.202:1001'
+(28.02.2020) 13h:01m:23s	[Pause]     Suspended by 2000 milliseconds
+(28.02.2020) 13h:01m:23s	[Recv]      Message has been successfully received from node '192.168.114.202:1001'
+(28.02.2020) 13h:01m:23s	[Validate]  Message 0x27 validation. Message 0x27 received.
+(28.02.2020) 13h:01m:23s	[Validate]  Message 0x26 validation. Message 0x26 received.
+(28.02.2020) 13h:01m:23s	[Validate]  Message 0x28 validation. Message 0x28 received.
+(28.02.2020) 13h:01m:23s	[Send]      Message has been successfully sent to node '192.168.114.202:1001'
+(28.02.2020) 13h:01m:25s	[Pause]     Suspended by 2000 milliseconds
+(28.02.2020) 13h:01m:25s	[Recv]      Message has been successfully received from node '192.168.114.202:1001'
+(28.02.2020) 13h:01m:25s	[Validate]  Message 0x27 validation. Message 0x27 received.
+(28.02.2020) 13h:01m:25s	[Validate]  Message 0x28 validation. Message 0x28 received.
+(28.02.2020) 13h:01m:25s	[Send]      Message has been successfully sent to node '192.168.114.202:1001'
+(28.02.2020) 13h:01m:27s	[Pause]     Suspended by 2000 milliseconds
+(28.02.2020) 13h:01m:27s	[Recv]      Message has been successfully received from node '192.168.114.202:1001'
+(28.02.2020) 13h:01m:27s	[Validate]  Message 0x27 validation. Message 0x27 received.
+(28.02.2020) 13h:01m:27s	[Validate]  Message 0x26 validation. Message 0x26 received.
+(28.02.2020) 13h:01m:27s	[Validate]  Message 0x28 validation. Message 0x28 received.
+(28.02.2020) 13h:01m:27s	[Send]      Message has been successfully sent to node '192.168.114.202:1001'
+(28.02.2020) 13h:01m:29s	[Pause]     Suspended by 2000 milliseconds
+(28.02.2020) 13h:01m:29s	[Recv]      Message has been successfully received from node '192.168.114.202:1001'
+(28.02.2020) 13h:01m:29s	[Validate]  Message 0x27 validation. Message 0x27 received.
+(28.02.2020) 13h:01m:29s	[Validate]  Message 0x28 validation. Message 0x28 received.
+(28.02.2020) 13h:01m:29s	[Send]      Message has been successfully sent to node '192.168.114.202:1001'
+(28.02.2020) 13h:01m:31s	[Pause]     Suspended by 2000 milliseconds
+(28.02.2020) 13h:01m:31s	[Recv]      Message has been successfully received from node '192.168.114.202:1001'
+(28.02.2020) 13h:01m:31s	[Validate]  Message 0x27 validation. Message 0x27 received.
+(28.02.2020) 13h:01m:31s	[Validate]  Message 0x28 validation. Message 0x28 received.
+(28.02.2020) 13h:01m:31s	[Disconn]   Socket has been successfully disconnected

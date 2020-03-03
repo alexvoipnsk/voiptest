@@ -1,0 +1,14 @@
+EXECUTE STATUS: FAILURE
+
+(28.02.2020) 11h:03m:45s	[Connect]   Peer has been successfully connected to node '1'
+(28.02.2020) 11h:03m:45s	[Send]      Message has been successfully sent to node '192.168.114.202:1001'
+(28.02.2020) 11h:03m:47s	[Pause]     Suspended by 2000 milliseconds
+(28.02.2020) 11h:03m:47s	[Recv]      Message has been successfully received from node '192.168.114.202:1001'
+(28.02.2020) 11h:03m:47s	[Validate]  Message 0x27 validation. Message 0x27 received.
+(28.02.2020) 11h:03m:47s	[Validate]  Message 0x26 validation. Message 0x26 received.
+(28.02.2020) 11h:03m:47s	[Validate]  Message 0x28 validation. Message 0x28 received.
+(28.02.2020) 11h:03m:47s	[Send]      Message has been successfully sent to node '192.168.114.202:1001'
+(28.02.2020) 11h:03m:49s	[Pause]     Suspended by 2000 milliseconds
+(28.02.2020) 11h:03m:49s	[Recv]      Message has been successfully received from node '192.168.114.202:1001'
+(28.02.2020) 11h:03m:49s	[Validate]  Message 0x27 validation. Message 0x27 received.
+(28.02.2020) 11h:03m:49s	[Validate]  Message 0x28 validation. Message 0x28 received. Wrong EXECUTION_STATUS: Configured "0", received "7".

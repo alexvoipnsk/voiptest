@@ -2970,6 +2970,9 @@ class Message_Builder:
 		return { "SLTM" : [self.Build_SLTM, 1],
 				 "SLTA" : [self.Build_SLTA, 2],
 				 "TRA" : [self.Build_TRA, 1],
+				 "TFP" : [self.Build_TFP, 1],
+				 "TFR" : [self.Build_TFR, 3],
+				 "TFA" : [self.Build_TFA, 5],
 				 "APT" : [self.Build_Message, 65],
 				 "ACM" : [self.Build_Message, 6],
 				 "ANM" : [self.Build_Message, 9],
@@ -3069,6 +3072,36 @@ class Message_Builder:
 		overlay_data.sio.service_indicator = 0
 		arguments["mes_group"] = 7
 		arguments["mes_type"] = 1
+		overlay_data.service_data = self.Build_Service_Data(service_indicator=overlay_data.sio.service_indicator, kwargs = arguments)
+		return overlay_data
+
+	def Build_TFP(self, mes_type, protocol_data):
+		arguments = dict()
+		self.Define_MTP3_Properties(opc=protocol_data["opc"], dpc=protocol_data["dpc"], link_selector=protocol_data["sls"], network_indicator=protocol_data["ni"])
+		overlay_data = self.mtp3
+		overlay_data.sio.service_indicator = 0
+		arguments["mes_group"] = 4
+		arguments["mes_type"] = 1
+		overlay_data.service_data = self.Build_Service_Data(service_indicator=overlay_data.sio.service_indicator, kwargs = arguments)
+		return overlay_data
+
+	def Build_TFR(self, mes_type, protocol_data):
+		arguments = dict()
+		self.Define_MTP3_Properties(opc=protocol_data["opc"], dpc=protocol_data["dpc"], link_selector=protocol_data["sls"], network_indicator=protocol_data["ni"])
+		overlay_data = self.mtp3
+		overlay_data.sio.service_indicator = 0
+		arguments["mes_group"] = 4
+		arguments["mes_type"] = 3
+		overlay_data.service_data = self.Build_Service_Data(service_indicator=overlay_data.sio.service_indicator, kwargs = arguments)
+		return overlay_data
+
+	def Build_TFA(self, mes_type, protocol_data):
+		arguments = dict()
+		self.Define_MTP3_Properties(opc=protocol_data["opc"], dpc=protocol_data["dpc"], link_selector=protocol_data["sls"], network_indicator=protocol_data["ni"])
+		overlay_data = self.mtp3
+		overlay_data.sio.service_indicator = 0
+		arguments["mes_group"] = 4
+		arguments["mes_type"] = 5
 		overlay_data.service_data = self.Build_Service_Data(service_indicator=overlay_data.sio.service_indicator, kwargs = arguments)
 		return overlay_data
 

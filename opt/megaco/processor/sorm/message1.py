@@ -499,7 +499,7 @@ class Msg1Intrusion(_Message1):
         self.fields.setdefault(Payload.INTRUSION_HOUR,      Const.FILLBYTE)
         self.fields.setdefault(Payload.INTRUSION_MINUTE,    Const.FILLBYTE)
         self.fields.setdefault(Payload.INTRUSION_SECOND,    Const.FILLBYTE)
-        self.fields.setdefault(Payload.INTRUSION_MESSAGE,   Const.FILLBYTE_CHAR * Const.MSG1_6_MESSAGE_LENGTH)
+        self.fields.setdefault(Payload.INTRUSION_MESSAGE,   str(Const.FILLBYTE_CHAR * Const.MSG1_6_MESSAGE_LENGTH))
 
     def _packPayload(self):
         t = self.fields.get(Payload.INTRUSION_MESSAGE)
