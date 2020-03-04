@@ -1905,10 +1905,9 @@ class ISUP_Message_Builder:
 		#print("optional_parameters:", isup_data.optional_parameters)
 		return isup_data
 
-class _SNM_Binary_Convertor:
+class MTN_SNM_Binary_Convertor:
 
 	def Convert_Service_Data(self, service_data):
-		print("UUUUUU", service_data.value, service_data.destination)
 		byteN = bytes()
 		byte_len = bytes()
 		mes_group_value = self.Convert_Bin_To_Decimal(bin(service_data.mes_group))
