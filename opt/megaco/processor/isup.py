@@ -1451,7 +1451,7 @@ class MTN_SNM_Builder:
 		if temp == 1:
 			mtn_data = MTN_SNM_Data(kwargs["mes_group"], kwargs["mes_type"], kwargs["value"])
 		elif temp == 2:
-			mtn_data = MTN_SNM_Data(kwargs["mes_group"], kwargs["mes_type"], kwargs["destination"])
+			mtn_data = MTN_SNM_Data(kwargs["mes_group"], kwargs["mes_type"], None, kwargs["destination"])
 		else:
 			mtn_data = MTN_SNM_Data(kwargs["mes_group"], kwargs["mes_type"])
 		return mtn_data
