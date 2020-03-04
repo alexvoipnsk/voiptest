@@ -1444,18 +1444,14 @@ class MTN_SNM_Builder:
 	def Build_MTN_SNM_Data(self, kwargs):
 		temp = 0
 		for _key,_value in kwargs.items():
-			if _key == "value":
-				print("16661")		
+			if _key == "value":		
 				temp =1
 			if _key == "destination":
-				print("26661")
 				temp =2			
 		if temp == 1:
 			mtn_data = MTN_SNM_Data(kwargs["mes_group"], kwargs["mes_type"], kwargs["value"])
-			print("6661")
 		elif temp == 2:
 			mtn_data = MTN_SNM_Data(kwargs["mes_group"], kwargs["mes_type"], kwargs["destination"])
-			print("6662")
 		else:
 			mtn_data = MTN_SNM_Data(kwargs["mes_group"], kwargs["mes_type"])
 		return mtn_data
@@ -1912,6 +1908,7 @@ class ISUP_Message_Builder:
 class MTN_SNM_Binary_Convertor:
 
 	def Convert_Service_Data(self, service_data):
+		print("UUUUUU", service_data.value, service_data.destination)
 		byteN = bytes()
 		byte_len = bytes()
 		mes_group_value = self.Convert_Bin_To_Decimal(bin(service_data.mes_group))
