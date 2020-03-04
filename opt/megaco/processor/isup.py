@@ -1905,7 +1905,7 @@ class ISUP_Message_Builder:
 		#print("optional_parameters:", isup_data.optional_parameters)
 		return isup_data
 
-class MTN_SNM_Binary_Convertor:
+class _SNM_Binary_Convertor:
 
 	def Convert_Service_Data(self, service_data):
 		print("UUUUUU", service_data.value, service_data.destination)
@@ -1916,7 +1916,6 @@ class MTN_SNM_Binary_Convertor:
 		byte1_value = mes_group_value + mes_type_value
 		byte1 = byte1_value.to_bytes(1, byteorder="big")
 		if service_data.value is not None:
-			print("----1-----")
 			if type(service_data.value) == str or type(service_data.value) == int:			
 				len_value = len(str(service_data.value))
 				#if len_value < 1 or len_value > 30:
@@ -1946,7 +1945,6 @@ class MTN_SNM_Binary_Convertor:
 				print("bug")
 				pass
 		if service_data.destination is not None:
-			print("----2-----")
 			if type(service_data.destination) == int:
 				if 1<=service_data.destination<=16383:
 					destination = self.Convert_Decimal_To_Bin(service_data.destination, length=14)
@@ -1981,6 +1979,16 @@ class MTN_SNM_Binary_Convertor:
 		except:
 			raise ISUP_Error("Value must be in hex range from 0 to F")
 		return decimal_value
+
+	def Convert_Decimal_To_Bin(self, decimal_value, length):
+		bin_value = bin(decimal_value)[2:]
+		end_of_padding = False
+		while not end_of_padding:
+			if len(bin_value) != length:
+				bin_value = "0" + bin_value
+			else:
+				end_of_padding = True
+		return bin_value
 
 class ISUP_Binary_Convertor:
 
