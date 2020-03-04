@@ -1445,13 +1445,17 @@ class MTN_SNM_Builder:
 		temp = 0
 		for _key,_value in kwargs.items():
 			if _key == "value":
+				print("16661")		
 				temp =1
 			if _key == "destination":
+				print("26661")
 				temp =2			
 		if temp == 1:
 			mtn_data = MTN_SNM_Data(kwargs["mes_group"], kwargs["mes_type"], kwargs["value"])
+			print("6661")
 		elif temp == 2:
 			mtn_data = MTN_SNM_Data(kwargs["mes_group"], kwargs["mes_type"], kwargs["destination"])
+			print("6662")
 		else:
 			mtn_data = MTN_SNM_Data(kwargs["mes_group"], kwargs["mes_type"])
 		return mtn_data
