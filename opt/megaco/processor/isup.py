@@ -1915,6 +1915,7 @@ class MTN_SNM_Binary_Convertor:
 		byte1_value = mes_group_value + mes_type_value
 		byte1 = byte1_value.to_bytes(1, byteorder="big")
 		if service_data.value is not None:
+			print("----1-----")
 			if type(service_data.value) == str or type(service_data.value) == int:			
 				len_value = len(str(service_data.value))
 				#if len_value < 1 or len_value > 30:
@@ -1944,9 +1945,11 @@ class MTN_SNM_Binary_Convertor:
 				print("bug")
 				pass
 		if service_data.destination is not None:
+			print("----2-----")
 			if type(service_data.destination) == int:
 				if 1<=service_data.destination<=16383:
 					destination = self.Convert_Decimal_To_Bin(service_data.destination, length=14)
+					print("____)", destination)
 					dest1 = int(destination[:8], 2)
 					dest2 = int(destination[8:], 2)
 					destByte1 = dest1.to_bytes(1, byteorder="big")
@@ -1958,6 +1961,7 @@ class MTN_SNM_Binary_Convertor:
 			else:
 				print("bug")
 				pass
+		print("___", byte1, byte_len, byteN)
 		binary_service_data = byte1 + byte_len + byteN
 		service_data_length = len(binary_service_data)
 		return (binary_service_data, service_data_length)
