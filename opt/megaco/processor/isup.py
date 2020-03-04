@@ -1446,8 +1446,12 @@ class MTN_SNM_Builder:
 		for _key,_value in kwargs.items():
 			if _key == "value":
 				temp =1
+			if _key == "destination":
+				temp =2			
 		if temp == 1:
 			mtn_data = MTN_SNM_Data(kwargs["mes_group"], kwargs["mes_type"], kwargs["value"])
+		elif temp == 2:
+			mtn_data = MTN_SNM_Data(kwargs["mes_group"], kwargs["mes_type"], kwargs["destination"])
 		else:
 			mtn_data = MTN_SNM_Data(kwargs["mes_group"], kwargs["mes_type"])
 		return mtn_data
