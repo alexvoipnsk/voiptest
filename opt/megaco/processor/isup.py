@@ -1946,7 +1946,12 @@ class MTN_SNM_Binary_Convertor:
 		if service_data.destination is not None:
 			if type(service_data.destination) == int:
 				if 1<=service_data.destination<=16383:
-					byteN = service_data.destination.to_bytes(2, byteorder="big")
+					destination = self.Convert_Decimal_To_Bin(service_data.destination, length=14)
+					dest1 = int(destination[:8], 2)
+					dest2 = int(destination[8:], 2)
+					destByte1 = dest1.to_bytes(1, byteorder="big")
+					destByte2 = dest2.to_bytes(1, byteorder="big")
+					byteN = destByte1 + destByte2
 				else:
 					print("bug")
 					pass
