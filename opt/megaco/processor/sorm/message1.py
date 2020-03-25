@@ -282,6 +282,10 @@ class Msg1ObjectInfo(_Message1):
         self.fields.setdefault(Payload.LINE_GROUP_NUMBER,   Const.FILLBYTE)
         self.fields.setdefault(Payload.PRIORITY,            Const.FILLBYTE)
         self.fields.setdefault(Payload.SUBSCRIBER_SET_STATE, Const.FILLBYTE)
+        print("OOPPOO", self.fields[Payload.OBJECT_NUMBER], self.fields[Payload.OBJECT_TYPE], self.fields[Payload.PHONE_TYPE])
+        print("OOPPO1", self.fields[Payload.PHONE_NUMBER], self.fields[Payload.PHONE_LENGTH], self.fields[Payload.LINKSET_NUMBER])
+        print("OOPPO2", self.fields[Payload.CONTROL_CATEGORY], self.fields[Payload.LINE_GROUP_NUMBER], self.fields[Payload.PRIORITY])
+
 
     def _packPayload(self):
         payload = struct.pack(PayloadFormat.Message1_3,
@@ -297,6 +301,7 @@ class Msg1ObjectInfo(_Message1):
                               self.fields[Payload.SUBSCRIBER_SET_STATE],
                              )
         self.fields[Header.PAYLOAD_LENGTH] = len(payload)
+        print("uuu", payload)
         return payload
 
     def _unpackPayload(self, b):
@@ -424,8 +429,7 @@ class Msg1ServicesInfo(_Message1):
     RU: Сообщение №5 "Список услуг связи"
     '''
     def __init__(self, *args):
-        _Message1.__init__(self, MessageCode1.SERVICES_INFO, *args)
-        fillBytesList = [Const.FILLBYTE_THREE, ] * Const.MSG1_5_GROUP_COUNT
+        _Message1.__init__(self, MessageCode1.SERVICES_INFO, *args)        
         self.fields.setdefault(Payload.PHONE_TYPE,      Const.FILLBYTE)
         self.fields.setdefault(Payload.PHONE_NUMBER,    '')
         if self.fields[Payload.PHONE_NUMBER] == '':
@@ -434,6 +438,10 @@ class Msg1ServicesInfo(_Message1):
             length = len(self.fields[Payload.PHONE_NUMBER])
         self.fields.setdefault(Payload.PHONE_LENGTH,        length)
         self.fields.setdefault(Payload.VAS_COUNT,       Const.ZEROBYTE)
+        if self.fields[Payload.VAS_COUNT]:
+            fillBytesList = [Const.FILLBYTE_THREE, ] * self.fields[Payload.VAS_COUNT]
+        else:
+            fillBytesList = [Const.FILLBYTE_THREE, ] * Const.MSG1_5_GROUP_COUNT
         self.fields.setdefault(Payload.VAS_CODE,        fillBytesList)
         self.__extendKeys()
 
@@ -447,15 +455,19 @@ class Msg1ServicesInfo(_Message1):
             self.fields[key] = t + [default, ] * (Const.MSG1_5_GROUP_COUNT - len(t))
 
     def _packPayload(self):
-        t = list()
-        for i in range(Const.MSG1_5_GROUP_COUNT):
-            t.append(self.fields.get(Payload.VAS_CODE)[i])
-        payload = struct.pack(PayloadFormat.Message1_5,
+        t = bytes()
+        if self.fields[Payload.VAS_COUNT]:
+            for i in range(self.fields[Payload.VAS_COUNT]):
+                t += bytes([255, 255, self.fields.get(Payload.VAS_CODE)[i]])
+        else:
+            #t = [16777215, 16777215, 16777215, 16777215, 16777215, 16777215, 16777215, 16777215, 16777215, 16777215, 16777215]
+            t = bytes([255,255,255, 255,255,255, 255,255,255, 255,255,255, 255,255,255, 255,255,255, 255,255,255, 255,255,255, 255,255,255, 255,255,255, 255,255,255])
+        payload = struct.pack('<2B9s1B%ds' % len(t),
                               self.fields[Payload.PHONE_TYPE],
                               self.fields[Payload.PHONE_LENGTH],
                               utils.phone2bcd(self.fields[Payload.PHONE_NUMBER]),
                               self.fields[Payload.VAS_COUNT],
-                              *t,
+                              t,
                              )
         self.fields[Header.PAYLOAD_LENGTH] = len(payload)
         return payload

@@ -354,16 +354,14 @@ class ScenarioInterpreter:
 		Returns True, if instruction has successfully completed or False otherwise
 		"""
 		# Searching for a network adapter by connection identifier
-		print ("::FOR LOGGING PURPOSE. INTERPRETER_MODULE. SEND handling1::", instruction.message)
 		network_adapter = self._get_network_adapter(instruction.connection)
 		if network_adapter is None:
 			self._test_log += strftime("(%d.%m.%Y) %Hh:%Mm:%Ss") + "\t[Send]      Value '%s' is nonexistent connection identifier\n" % instruction.connection
 			return False
 		# Modify message with protocol handler
 		# Changing variables to their values
-		print ("::FOR LOGGING PURPOSE. INTERPRETER_MODULE. SEND handling2::", instruction.message)
 		success, reason, temp_message = self._replace_variables(instruction.message)
-		print ("::FOR LOGGING PURPOSE. INTERPRETER_MODULE. SEND handling3::", temp_message)
+		print ("::FOR LOGGING PURPOSE. INTERPRETER_MODULE. SEND handling::", temp_message)
 		message = self._protocol_handlers[network_adapter.proto](temp_message)
 		if not success:
 			self._test_log += strftime("(%d.%m.%Y) %Hh:%Mm:%Ss") + "\t[Send]      " + reason + "\n"

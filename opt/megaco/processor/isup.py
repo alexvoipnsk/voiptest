@@ -1947,7 +1947,6 @@ class MTN_SNM_Binary_Convertor:
 			if type(service_data.destination) == int:
 				if 1<=service_data.destination<=16383:
 					destination = self.Convert_Decimal_To_Bin(service_data.destination, length=16)
-					print("____)", destination)
 					dest1 = int(destination[:8], 2)
 					dest2 = int(destination[8:], 2)
 					destByte1 = dest1.to_bytes(1, byteorder="big")

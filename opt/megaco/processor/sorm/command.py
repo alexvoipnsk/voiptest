@@ -53,7 +53,8 @@ class _Command():
         self.fields.setdefault(Header.PREAMBLE,     Const.PREAMBLE)
         self.fields.setdefault(Header.SORM_NUMBER,  Const.DEFAULT_SORM_NUMBER)
         self.fields[Header.COMMAND_CODE]            = commandCode
-        self.fields[Header.PAYLOAD_LENGTH]          = 0 # Real payload length calculated while payload packed to bytes
+        #self.fields[Header.PAYLOAD_LENGTH]          = 0 # Real payload length calculated while payload packed to bytes
+        self.fields.setdefault(Header.PAYLOAD_LENGTH, 0)
         self.fields.setdefault(Header.PASSWORD,     Const.DEFAULT_SORM_PASSWORD)
 
     def _packHeader(self):
@@ -770,7 +771,8 @@ class CmdTestRequest(_Command):
         payload = struct.pack(PayloadFormat.Command14,
                               self.fields.get(Payload.TEST_MESSAGE_NUMBER)
                              )
-        self.fields[Header.PAYLOAD_LENGTH] = len(payload)
+        if self.fields[Header.PAYLOAD_LENGTH] == 0:
+            self.fields[Header.PAYLOAD_LENGTH] = len(payload)
         return payload
 
     def _unpackPayload(self, b):

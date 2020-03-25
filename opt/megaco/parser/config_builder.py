@@ -22,6 +22,8 @@ class ConfigBuilder:
 		        "megaco" : self._make_megaco,
 		        "mgcp" : self._make_mgcp,
 		        "sorm" : self._make_sorm,
+		        "users" : self._make_users,
+		        "trunks" : self._make_trunks,
 		        "sigtran" : self._make_sigtran}
 
 	@staticmethod
@@ -38,7 +40,7 @@ class ConfigBuilder:
 	def _build_sock(fabric):
 		"""Builds and returns the sock instance"""
 		socket = Config.Sock(fabric["id"], fabric["ipaddr"], fabric["port"], fabric["transport"], fabric["proto"])  # Builds the required attributes of the sock instance
-		for field in ("name", "profile", "network_buffer"):    # Builds optional attributes of the sock instance
+		for field in ("name", "profile", "network_buffer", "proto_type"):    # Builds optional attributes of the sock instance
 			try:
 				if field == "name":
 					socket.name = fabric[field]
@@ -83,8 +85,46 @@ class ConfigBuilder:
 	@staticmethod
 	def _build_sorm(fabric):
 		"""Builds and returns the SORM instance"""
-		sorm = Config.Sorm(fabric["id"], fabric["ormNum"], fabric["password"])  # Builds the required attributes of the sorm instance
+		sorm = Config.Sorm(fabric["id"], fabric["ormNum"], fabric["password"], fabric["version"], fabric["station_type"])  # Builds the required attributes of the sorm instance
 		return sorm
+
+	@staticmethod
+	def _build_users(fabric):
+		"""Builds and returns the users instance"""
+		users = Config.Users(fabric["id"], fabric["username"])  # Builds the required attributes of the users instance
+		for field in ("authname", "password", "domain", "service", "servicelist"):    # Builds optional attributes of the users instance
+			try:
+				if field == "authname":
+					users.authname = fabric[field]
+				elif field == "password":
+					users.password = fabric[field]
+				elif field == "domain":
+					users.domain = fabric[field]
+				elif field == "service":
+					users.service = tuple(fabric[field])
+				elif field == "servicelist":
+					users.servicelist = tuple(fabric[field])
+			except KeyError:
+				pass
+		return users
+
+	@staticmethod
+	def _build_trunks(fabric):
+		"""Builds and returns the trunks instance"""
+		trunks = Config.Trunks(fabric["id"], fabric["name"])  # Builds the required attributes of the trunks instance
+		for field in ("authname", "password", "domain", "number"):    # Builds optional attributes of the users instance
+			try:
+				if field == "authname":
+					trunks.authname = fabric[field]
+				elif field == "password":
+					trunks.password = fabric[field]
+				elif field == "domain":
+					trunks.domain = fabric[field]
+				elif field == "number":
+					trunks.number = fabric[field]
+			except KeyError:
+				pass
+		return trunks
 
 	@staticmethod
 	def _build_sigtran(fabric):
@@ -132,6 +172,14 @@ class ConfigBuilder:
 		"""Builds the sorm attribute of the Config instance"""
 		self._config.sorm = tuple(ConfigBuilder._build_sorm(fabric) for fabric in sample)
 
+	def _make_users(self, sample):
+		"""Builds the users attribute of the Config instance"""
+		self._config.users = tuple(ConfigBuilder._build_users(fabric) for fabric in sample)
+
+	def _make_trunks(self, sample):
+		"""Builds the trunks attribute of the Config instance"""
+		self._config.trunks = tuple(ConfigBuilder._build_trunks(fabric) for fabric in sample)
+
 	def _make_sigtran(self, sample):
 		"""Builds the sigtran attribute of the Config instance"""
 		self._config.sigtran = tuple(ConfigBuilder._build_sigtran(fabric) for fabric in sample)
@@ -150,7 +198,8 @@ class Config:
 		self.dialplans = []
 		self.connections = None
 		self.sock = None
-		self.user = None
+		self.users = None
+		self.trunks = None
 		self.device = None
 		self.sigtran = None
 		self.megaco = None
@@ -202,7 +251,30 @@ class Config:
 
 	class Sorm:
 
-		def __init__(self, node_id, ormNum_id, password):
+		def __init__(self, node_id, ormNum_id, password, version, station_type):
 			self.id = node_id
 			self.ormNum = ormNum_id
 			self.password = password
+			self.version = version
+			self.station_type = station_type
+
+	class Users:
+
+		def __init__(self, node_id, username, authname = None, password = None, domain = None, service = None, servicelist = None):
+			self.id = node_id
+			self.username = username
+			self.authname = authname
+			self.password = password
+			self.domain = domain
+			self.service = tuple()
+			self.servicelist = tuple()
+
+	class Trunks:
+
+		def __init__(self, node_id, name, authname = None, password = None, domain = None, number = None):
+			self.id = node_id
+			self.name = name
+			self.authname = authname
+			self.password = password
+			self.domain = domain
+			self.number = number

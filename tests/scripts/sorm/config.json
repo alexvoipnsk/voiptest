@@ -12,6 +12,12 @@
       "name" : "SORM_KPD2",
       "from_sock" : 2,
       "to_sock" : 3
+    },
+    {
+      "id" : 2,
+      "name" : "SIP",
+      "from_sock" : 4,
+      "to_sock" : 5
     }
   ], 
   "sock": [ 
@@ -51,13 +57,75 @@
       "transport" : "tcp",
       "proto" : "sorm",
       "profile" : 0
+    },
+    {
+      "id": 4,
+      "name" : "Computer Users",
+      "ipaddr": "192.168.114.200",
+      "port": 5060,
+      "transport" : "udp",
+      "proto" : "sorm",
+      "profile" : 0  
+    },
+    {
+      "id": 5,
+      "name" : "Registrator",
+      "ipaddr": "192.168.116.130",
+      "port": 5065,
+      "transport" : "udp",
+      "proto" : "sorm",
+      "profile" : 0
     }
-  ],  
+  ], 
+  "users": [ 
+    {
+      "id": 0,
+      "username" : "156",
+      "authname" : "156",
+      "password" : "123",
+      "domain" : "dima",
+      "servicelist" : ["hold", "ct"] 
+    },
+    {
+      "id": 1,
+      "username" : "157",
+      "authname" : "157",
+      "password" : "123",
+      "domain" : "dima",
+      "servicelist" : ["3pty", "hold"]   
+    },
+    {
+      "id": 2,
+      "username" : "158",
+      "authname" : "158",
+      "password" : "123",
+      "domain" : "dima"  
+    },
+    {
+      "id": 3,
+      "username" : "7343",
+      "domain" : "dima"  
+    },
+    {
+      "id": 4,
+      "username" : "734",
+      "domain" : "dima"  
+    }
+  ], 
+  "trunks": [ 
+    {
+      "id": 0,
+      "number" : 1,
+      "name" : "to_smg"
+    }
+  ],
   "sorm" : [
     {
       "id" : 0,
       "ormNum" : 1,
-      "password" : 123456
+      "password" : 123456,
+      "version" : "ECSS-10 V3",
+      "station_type" : "terminal_transit"
     }
   ]
 }

@@ -1,0 +1,1202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<scenario name="sorm_test6">
+
+	<connect connection="0" mode="client" />
+
+	<!-->
+	HAVE BUG IN 6.23 & 7.18
+
+
+	Sorm start
+	<-->
+	<send connection="0">
+		<![CDATA[
+		1 (header=[[$$sock.0.ormNum], [$$sock.0.password]])
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=1, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=1, execution_status=0)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	Preconf
+	<-->
+	<send connection="0">
+		<![CDATA[
+		4 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; line_group_number=1, line_group_type='combined', line_a_number=1)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="3000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=4, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=4, execution_status=0)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<send connection="0">
+		<![CDATA[
+		4 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; line_group_number=2, line_group_type='separate', line_a_number=5, line_b_number=6)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="3000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=4, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=4, execution_status=0)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	6.1
+	<-->
+	<send connection="0">
+		<![CDATA[
+		5 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=1, object_type="local", phone_number=[$$users.0.username], control_category="combined", line_group_number=1, priority="common", phone_type='local', linkset_number=65535)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=5, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=5, execution_status=0)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	6.2
+	<-->
+	<send connection="0">
+		<![CDATA[
+		5 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=2, object_type="full", phone_number=[$$users.3.username], control_category="separate", line_group_number=2, priority="common", phone_type='russian', linkset_number=65535)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=5, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=5, execution_status=0)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	6.3
+	<-->
+	<send connection="0">
+		<![CDATA[
+		5 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=3, object_type="trunk", control_category="combined", line_group_number=1, priority="common", linkset_number=0)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=5, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=5, execution_status=0)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	6.4
+	<-->
+	<send connection="0">
+		<![CDATA[
+		5 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=4, object_type="partial", phone_number=[$$users.4.username], control_category="separate", line_group_number=2, priority="common", phone_type='russian', linkset_number=65535)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=5, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=5, execution_status=0)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	6.5
+	<-->
+	<send connection="0">
+		<![CDATA[
+		5 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=5, object_type="partial", phone_number=[$$users.1.username], control_category="combined", line_group_number=1, priority="common", phone_type='local', linkset_number=65535)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=5, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=5, execution_status=1)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	6.6
+	<-->
+	<send connection="0">
+		<![CDATA[
+		5 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=1, object_type="local", phone_number=[$$users.1.username], control_category="combined", line_group_number=1, priority="common", phone_type='local', linkset_number=65535)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=5, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=5, execution_status=1)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	6.7
+	<-->
+	<send connection="0">
+		<![CDATA[
+		5 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=2, object_type="full", phone_number=[$$users.1.username], control_category="separate", line_group_number=2, priority="common", phone_type='russian', linkset_number=65535)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=5, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=5, execution_status=1)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	6.8
+	<-->
+	<send connection="0">
+		<![CDATA[
+		5 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=3, object_type="trunk", control_category="combined", line_group_number=1, linkset_number=[$$trunks.0.number], priority="common")
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=5, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=5, execution_status=1)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	6.9
+	<-->
+	<send connection="0">
+		<![CDATA[
+		5 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=6, object_type="local", phone_number=[$$users.0.username], control_category="combined", line_group_number=1, priority="common", phone_type='local', linkset_number=65535)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=5, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=5, execution_status=0)
+				]]>
+			</validate>
+		</actions>
+	</recv>
+
+	<!-->
+	6.10
+	<-->
+	<send connection="0">
+		<![CDATA[
+		5 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=6, object_type="local", phone_number=[$$users.0.username], control_category="combined", line_group_number=1, priority="common", phone_type='local', linkset_number=65535)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=5, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=5, execution_status=1)
+				]]>
+			</validate>
+		</actions>
+	</recv>
+
+	<!-->
+	6.11
+	<-->
+	<send connection="0">
+		<![CDATA[
+		5 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=7, object_type="local", phone_number=[$$users.2.username], control_category="combined", line_group_number=2, priority="common", phone_type='local', linkset_number=65535)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=5, receipt_status=1)
+				]]>
+			</validate>
+		</actions>
+	</recv>
+
+	<!-->
+	6.12
+	<-->
+	<send connection="0">
+		<![CDATA[
+		5 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=7, object_type="local", phone_number=[$$users.2.username], control_category="combined", line_group_number=3, priority="common", phone_type='local', linkset_number=65535)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=5, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=5, execution_status=1)
+				]]>
+			</validate>
+		</actions>
+	</recv>
+
+	<!-->
+	6.13
+	<-->
+	<send connection="0">
+		<![CDATA[
+		5 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=7, object_type="local", phone_number=[$$users.2.username], control_category="combined", line_group_number=1, priority="common", phone_length=17, phone_type='local', linkset_number=65535)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=5, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=5, execution_status=1)
+				]]>
+			</validate>
+		</actions>
+	</recv>
+
+	<!-->
+	6.14
+	<-->
+	<send connection="0">
+		<![CDATA[
+		5 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=7, object_type="partial", phone_number=[$$users.2.username], control_category="combined", line_group_number=1, priority="common", phone_type='local', linkset_number=65535)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=5, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=5, execution_status=1)
+				]]>
+			</validate>
+		</actions>
+	</recv>
+
+	<!-->
+	6.15
+	<-->
+	<send connection="0">
+		<![CDATA[
+		5 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=7, object_type="local", phone_number=[$$users.2.username], control_category="combined", line_group_number=1, priority="common", phone_type='russian', linkset_number=65535)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=5, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=5, execution_status=1)
+				]]>
+			</validate>
+		</actions>
+	</recv>
+
+	<!-->
+	6.16
+	<-->
+	<send connection="0">
+		<![CDATA[
+		5 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=7, object_type="invalid", phone_number=[$$users.2.username], control_category="combined", line_group_number=1, priority="common", phone_type='local', linkset_number=65535)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=5, receipt_status=1)
+				]]>
+			</validate>
+		</actions>
+	</recv>
+
+
+	<!-->
+	6.17
+	<-->
+	<send connection="0">
+		<![CDATA[
+		5 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=7, object_type="local", phone_number=[$$users.2.username], control_category="combined", line_group_number=1, priority="common", phone_type='invalid', linkset_number=65535)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=5, receipt_status=1)
+				]]>
+			</validate>
+		</actions>
+	</recv>
+
+	<!-->
+	6.18
+	<-->
+	<send connection="0">
+		<![CDATA[
+		5 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=7, object_type="local", phone_number=[$$users.2.username], control_category="invalid", line_group_number=1, priority="common", phone_type='local', linkset_number=65535)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=5, receipt_status=1)
+				]]>
+			</validate>
+		</actions>
+	</recv>
+
+	<!-->
+	6.19
+	<-->
+	<send connection="0">
+		<![CDATA[
+		5 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=7, object_type="local", phone_number=[$$users.2.username], control_category="combined", line_group_number=254, priority="common", phone_type='local', linkset_number=65535)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=5, receipt_status=1)
+				]]>
+			</validate>
+		</actions>
+	</recv>
+
+	<!-->
+	6.20
+	<-->
+	<send connection="0">
+		<![CDATA[
+		5 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=7, object_type="local", phone_number=[$$users.2.username], control_category="combined", line_group_number=1, priority="invalid", phone_type='local', linkset_number=65535)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=5, receipt_status=1)
+				]]>
+			</validate>
+		</actions>
+	</recv>
+
+	<!-->
+	6.23
+	<-->
+	<send connection="0">
+		<![CDATA[
+		5 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=7, object_type="local", phone_number=[$$users.2.username], control_category="combined", line_group_number=1, priority="common")
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=5, receipt_status=1)
+				]]>
+			</validate>
+		</actions>
+	</recv>
+	
+
+	<!-->
+	6.24
+	<-->
+	<send connection="0">
+		<![CDATA[
+		5 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=7, object_type="full", phone_number=[$$users.4.username], control_category="separate", line_group_number=2, priority="common", phone_type='russian', linkset_number=65535)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=5, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=5, execution_status=0)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	6.25
+	<-->
+	<send connection="0">
+		<![CDATA[
+		5 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=8, object_type="partial", phone_number=[$$users.3.username], control_category="separate", line_group_number=2, priority="common", phone_type='russian', linkset_number=65535)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=5, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=5, execution_status=0)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	7.1
+	<-->
+	<send connection="0">
+		<![CDATA[
+		6 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=1, object_type="local", phone_number=[$$users.0.username], phone_type='local')
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=6, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=6, execution_status=0)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	7.2
+	<-->
+	<send connection="0">
+		<![CDATA[
+		6 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=2, object_type="full", phone_number=[$$users.3.username], phone_type='russian')
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=6, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=6, execution_status=0)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	7.3
+	<-->
+	<send connection="0">
+		<![CDATA[
+		6 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=3, object_type="trunk", linkset_number=0)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=6, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=6, execution_status=0)
+				]]>
+			</validate>
+		</actions>
+	</recv>
+
+	<!-->
+	7.4
+	<-->
+	<send connection="0">
+		<![CDATA[
+		6 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=4, object_type="partial", phone_number=[$$users.4.username], phone_type='russian')
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=6, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=6, execution_status=0)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	7.7
+	<-->
+	<send connection="0">
+		<![CDATA[
+		6 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=6, object_type="local", phone_number=[$$users.1.username], phone_type='local')
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=6, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=6, execution_status=1)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	7.8
+	<-->
+	<send connection="0">
+		<![CDATA[
+		6 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=1, object_type="local", phone_number=[$$users.0.username], phone_type='local')
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=6, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=6, execution_status=1)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	7.9
+	<-->
+	<send connection="0">
+		<![CDATA[
+		6 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=6, object_type="local", phone_number=[$$users.4.username], phone_type='local')
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=6, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=6, execution_status=1)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	7.10
+	<-->
+	<send connection="0">
+		<![CDATA[
+		6 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=6, object_type="invalid", phone_number=[$$users.0.username], phone_type='local')
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=6, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=6, execution_status=1)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	7.11
+	<-->
+	<send connection="0">
+		<![CDATA[
+		6 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=6, object_type="local", phone_number=[$$users.0.username], phone_type='russian')
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=6, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=6, execution_status=1)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	7.12
+	<-->
+	<send connection="0">
+		<![CDATA[
+		6 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=6, object_type="full", phone_number=[$$users.0.username], phone_type='local')
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=6, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=6, execution_status=1)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	7.13
+	<-->
+	<send connection="0">
+		<![CDATA[
+		6 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=6, object_type="local", phone_number=[$$users.0.username], phone_type='local', phone_length=17)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=6, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=6, execution_status=1)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	7.14
+	<-->
+	<send connection="0">
+		<![CDATA[
+		6 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=8, object_type="full", phone_number=[$$users.3.username], phone_type='russian')
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=6, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=6, execution_status=1)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	7.15
+	<-->
+	<send connection="0">
+		<![CDATA[
+		6 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=7, object_type="partial", phone_number=[$$users.4.username], phone_type='russian')
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=6, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=6, execution_status=1)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	7.18
+	<-->
+	<send connection="0">
+		<![CDATA[
+		6 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=7, object_type="full", phone_number=[$$users.2.username])
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=6, receipt_status=1)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+
+	<!-->
+	Return to idle
+	<-->
+	<send connection="0">
+		<![CDATA[
+		2 (header=[[$$sock.0.ormNum], [$$sock.0.password]])
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=2, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=2, execution_status=0)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<disconnect connection="0" />
+
+</scenario>

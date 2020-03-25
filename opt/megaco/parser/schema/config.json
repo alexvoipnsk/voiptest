@@ -45,7 +45,7 @@
 	    		"required" : ["id", "ipaddr", "port", "transport", "proto", "profile"]
 	    	}
 	    },
-	    "user" : {
+	    "users" : {
 	    	"type": "array", 
 	    	"items": {
 	    		"type": "object", 
@@ -54,9 +54,32 @@
 	    			"username": {"type": "string", "minLength": 1, "maxLength": 255}, 
 	    			"authname": {"type": "string", "minLength": 1, "maxLength": 255}, 
 	    			"password": {"type": "string", "minLength": 1, "maxLength": 63}, 
-	    			"domain": {"type": "string", "minLength": 1, "maxLength": 255}
+	    			"domain": {"type": "string", "minLength": 1, "maxLength": 255},
+	    			"service": {
+	    				"type" : "array",
+	    				"items" : {"type" : "string", "minLength" : 1},
+	    			"servicelist": {
+	    				"type" : "array",
+	    				"items" : {"type" : "string", "minLength" : 1}	    			
+	    			}
 	    		},
 	    		"required" : ["id", "username"]
+	    	}
+	    },
+	    "trunks" : {
+	    	"type": "array", 
+	    	"items": {
+	    		"type": "object", 
+	    		"properties": {
+	    			"id": {"type" : "integer", "minimum" : 0, "exclusiveMinimum" : false},
+	    			"number": {"type" : "integer", "minimum" : 0, "exclusiveMinimum" : false},
+	    			"name": {"type": "string", "minLength": 1, "maxLength": 255}, 
+	    			"authname": {"type": "string", "minLength": 1, "maxLength": 255}, 
+	    			"password": {"type": "string", "minLength": 1, "maxLength": 63}, 
+	    			"domain": {"type": "string", "minLength": 1, "maxLength": 255}
+	    			}
+	    		},
+	    		"required" : ["id", "name"]
 	    	}
 	    },
 	    "device": {
@@ -101,9 +124,11 @@
 	    		"properties" : {
 	    			"id" : {"type" : "integer", "minimum" : 0, "exclusiveMinimum" : false},
 	    			"ormNum" : {"type": "integer", "minimum": 0, "maximum": 255},
-	    			"password" : {"type": "integer", "minimum": 0, "maximum": 999999}
+	    			"password" : {"type": "integer", "minimum": 0, "maximum": 999999},
+	    			"version": {"type": "string", "minLength": 1, "maxLength": 255}, 
+	    			"station_type": {"type": "string", "minLength": 1, "maxLength": 255}
 	    		},
-	    		"required" : ["id", "ormNum", "password"]
+	    		"required" : ["id", "ormNum", "password", "version", "station_type"]
 	    	}
 	    },
 	    "mgcp" : {

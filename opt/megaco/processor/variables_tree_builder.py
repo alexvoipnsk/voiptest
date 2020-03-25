@@ -33,7 +33,17 @@ class VariablesTreeBuilder:
 		    "asp" : self._make_asp,
 		    "iid" : self._make_iid,
 		    "ormNum" : self._make_ormNum,
-		    "password" : self._make_password
+		    "users" : self._make_users,
+		    "trunks" : self._make_trunks,
+		    "username" : self._make_username,
+		    "authname" : self._make_authname,
+		    "domain" : self._make_domain,
+		    "password" : self._make_password,
+		    "version" : self._make_version,
+		    "station_type" : self._make_station_type,
+		    "service" : self._make_service,
+		    "servicelist" : self._make_servicelist,
+		    "number" : self._make_number
 		}
 
 	def _define_protocols(self):
@@ -42,7 +52,8 @@ class VariablesTreeBuilder:
 			"megaco" : self.config.megaco,
 			"sigtran" : self.config.sigtran,
 			"mgcp" : self.config.mgcp,
-			"sorm" : self.config.sorm
+			"sorm" : self.config.sorm,
+			"sip" : None
 		}
 
 	def _make_globals(self, section):
@@ -56,6 +67,34 @@ class VariablesTreeBuilder:
 		for number, value in enumerate(section):
 			dialplans.childs.append(VariableTree.TreeNode(str(number), value))
 		self._var_tree.childs.append(dialplans)
+
+	def _make_users(self, section):
+		"""Builds VariableTree nodes from users section of the configuration file"""
+		users = VariableTree.TreeNode("users")
+		for user in section:
+			users.childs.append(self._make_user(user))
+		self._var_tree.childs.append(users)
+
+	def _make_user(self, fabric):
+		user = VariableTree.TreeNode(str(fabric.id))
+		for parameter, value in fabric.__dict__.items():
+			if (parameter != "id"):
+				user.childs.append(self._makers[parameter](value))
+		return user
+
+	def _make_trunks(self, section):
+		"""Builds VariableTree nodes from trunks section of the configuration file"""
+		trunks = VariableTree.TreeNode("trunks")
+		for trunk in section:
+			trunks.childs.append(self._make_trunk(trunk))
+		self._var_tree.childs.append(trunks)
+
+	def _make_trunk(self, fabric):
+		trunk = VariableTree.TreeNode(str(fabric.id))
+		for parameter, value in fabric.__dict__.items():
+			if (parameter != "id"):
+				trunk.childs.append(self._makers[parameter](value))
+		return trunk
 
 	def _make_socks(self, section):
 		"""Builds VariableTree nodes from Nodes section of the configuration file"""
@@ -82,6 +121,10 @@ class VariablesTreeBuilder:
 	def _make_name(self, value):
 		"""Builds and returns VariableTree node from the name of the specific Node"""
 		return VariableTree.TreeNode("name", value)
+
+	def _make_number(self, value):
+		"""Builds and returns VariableTree node from the name of the specific Node"""
+		return VariableTree.TreeNode("number", value)
 
 	def _make_ip_address(self, value):
 		"""Builds and returns VariableTree node from the ip_address of the specific Node"""
@@ -149,11 +192,47 @@ class VariablesTreeBuilder:
 		"""Builds and returns VariableTree node from the name of the specific Node"""
 		return VariableTree.TreeNode("password", value)
 
+	def _make_version(self, value):
+		"""Builds and returns VariableTree node from the name of the specific Node"""
+		return VariableTree.TreeNode("version", value)
+
+	def _make_station_type(self, value):
+		"""Builds and returns VariableTree node from the name of the specific Node"""
+		return VariableTree.TreeNode("station_type", value)
+
+	def _make_username(self, value):
+		"""Builds and returns VariableTree node from the username of the specific Node"""
+		return VariableTree.TreeNode("username", value)
+
+	def _make_authname(self, value):
+		"""Builds and returns VariableTree node from the authname of the specific Node"""
+		return VariableTree.TreeNode("authname", value)
+
+	def _make_domain(self, value):
+		"""Builds and returns VariableTree node from the domain of the specific Node"""
+		return VariableTree.TreeNode("domain", value)
+
+	def _make_service(self, fabric):
+		"""Builds and returns VariableTree node from service of the specific Node"""
+		service = VariableTree.TreeNode("service")
+		for number, value in enumerate(fabric):
+			service.childs.append(VariableTree.TreeNode(str(number), value))
+		return service
+
+	def _make_servicelist(self, fabric):
+		"""Builds and returns VariableTree node from servicelist of the specific Node"""
+		ssuplist = []
+		for value in fabric:
+			ssuplist.append(value)
+		return VariableTree.TreeNode("servicelist", ssuplist)
+
 	def build_tree(self):
 		"""Builds and returns the VariableTree instance"""
 		for name, section in {"Globals" : self.config.globals, 
 		                      "Dialplans" : self.config.dialplans, 
-		                      "sock" : self.config.sock}.items():
+		                      "sock" : self.config.sock,
+		                      "users" : self.config.users,
+		                      "trunks" : self.config.trunks}.items():
 			self._makers[name](section)  # Building the VariableTree instance 
 		return self._var_tree
 
