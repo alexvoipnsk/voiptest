@@ -764,7 +764,7 @@ class Message_Validator:
 						s += ' Wrong ORM Version: Expected "2", received "{0}".'.format(payload[9])
 						result = False
 					if (message[10]!=payload[10] or message[11]!=payload[11]):
-						s += ' Wrong LINKSET_NUMBER: Configured "{0},{1}", received "{2},{3}".'.format(message[10], message[11], payload[10], payload[11])
+						s += ' Wrong LINKSET_NUMBER: Configured "{0}", received "{1}".'.format(message[10:11], payload[10:11])
 						result = False
 					if (message[12:]!=payload[12:]):
 						s += ' Wrong LINKSET_NAME: Configured "{0}", received "{1}".'.format(message[12:], payload[12:])

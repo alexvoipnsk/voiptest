@@ -22,6 +22,7 @@ class ConfigBuilder:
 		        "megaco" : self._make_megaco,
 		        "mgcp" : self._make_mgcp,
 		        "sorm" : self._make_sorm,
+		        "sip" : self._make_sip,
 		        "users" : self._make_users,
 		        "trunks" : self._make_trunks,
 		        "sigtran" : self._make_sigtran}
@@ -87,6 +88,12 @@ class ConfigBuilder:
 		"""Builds and returns the SORM instance"""
 		sorm = Config.Sorm(fabric["id"], fabric["ormNum"], fabric["password"], fabric["version"], fabric["station_type"])  # Builds the required attributes of the sorm instance
 		return sorm
+
+	@staticmethod
+	def _build_sip(fabric):
+		"""Builds and returns the SORM instance"""
+		sip = Config.Sip(fabric["id"], fabric["auth"])  # Builds the required attributes of the sorm instance
+		return sip
 
 	@staticmethod
 	def _build_users(fabric):
@@ -172,6 +179,10 @@ class ConfigBuilder:
 		"""Builds the sorm attribute of the Config instance"""
 		self._config.sorm = tuple(ConfigBuilder._build_sorm(fabric) for fabric in sample)
 
+	def _make_sip(self, sample):
+		"""Builds the sip attribute of the Config instance"""
+		self._config.sip = tuple(ConfigBuilder._build_sip(fabric) for fabric in sample)
+
 	def _make_users(self, sample):
 		"""Builds the users attribute of the Config instance"""
 		self._config.users = tuple(ConfigBuilder._build_users(fabric) for fabric in sample)
@@ -203,6 +214,7 @@ class Config:
 		self.device = None
 		self.sigtran = None
 		self.megaco = None
+		self.sip = None
 		self.mgcp = None
 		self.sorm = None
 
@@ -257,6 +269,12 @@ class Config:
 			self.password = password
 			self.version = version
 			self.station_type = station_type
+
+	class Sip:
+
+		def __init__(self, node_id, auth=1):
+			self.id = node_id
+			self.auth = auth
 
 	class Users:
 

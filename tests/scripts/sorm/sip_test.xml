@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<scenario  name="SIP_test">
+
+	<send connection="2">
+		<![CDATA[
+REGISTER sip:[$$sock.5.ipaddr]:[$$sock.5.port] SIP/2.0
+Via: SIP/2.0/UDP [$$sock.4.ipaddr]:[$$sock.4.port];branch=[$$branch$$]
+From: SIP-Tester <sip:[$$users.0.username]@[$$users.0.domain]>;tag=[$$tag$$]
+To: SIP-Tester <sip:[$$users.0.username]@[$$users.0.domain]>
+Call-ID: [$$call_id$$]
+User-Agent: SIP-Tester
+CSeq: 1 REGISTER
+Contact: <sip:[$$users.0.username]@[$$sock.4.ipaddr]:[$$sock.4.port]>;expires=400
+Max-Forwards: 70
+Content-Length: 0[$$return$$][$$return$$]]]>
+	</send>
+
+	<recv connection="2" timeout="4000" >
+    	<actions>
+      		<catch regexp="SIP/2.0\s*([0-9][0-9][0-9])" assign_to="response"/>
+      		<catch regexp='WWW-Authenticate:\s*([A-Za-z]+)\s*([A-Za-z0-9_/=",\.\s\-\$\*]+)' assign_to="scheme,authentication"/>
+    	</actions> 
+   </recv>
+
+	<nop>
+		<actions>
+			<compare first="[$response],[$scheme]" second="401,Digest">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+		</actions>
+	</nop>
+
+	<send connection="2">
+		<![CDATA[
+REGISTER sip:[$$sock.5.ipaddr]:[$$sock.5.port] SIP/2.0
+Via: SIP/2.0/UDP [$$sock.4.ipaddr]:[$$sock.4.port];branch=[$$branch$$]
+From: SIP-Tester <sip:[$$users.0.username]@[$$users.0.domain]>;tag=[$$tag$$]
+To: SIP-Tester <sip:[$$users.0.username]@[$$users.0.domain]>
+Call-ID: [$$call_id$$]
+User-Agent: SIP-Tester
+CSeq: 2 REGISTER
+[$authentication] 
+Contact: <sip:[$$users.0.username]@[$$sock.4.ipaddr]:[$$sock.4.port]>;expires=400
+Max-Forwards: 70
+Content-Length: 0[$$return$$][$$return$$]]]>
+	</send>
+
+	<recv connection="2" timeout="10000" >
+    	<actions>
+      		<catch regexp="SIP/2.0\s*([0-9][0-9][0-9])" assign_to="response"/>
+    	</actions> 
+   </recv>
+
+	<nop>
+		<actions>
+			<compare first="[$response]" second="200">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+		</actions>
+	</nop>
+
+</scenario>

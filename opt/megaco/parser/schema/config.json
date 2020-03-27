@@ -131,6 +131,18 @@
 	    		"required" : ["id", "ormNum", "password", "version", "station_type"]
 	    	}
 	    },
+	    "sip" : {
+	    	"type" : "array",
+	    	"items" : {
+	    		"type" : "object",
+	    		"properties" : {
+	    			"id" : {"type" : "integer", "minimum" : 0, "exclusiveMinimum" : false},
+	    			"auth" : {"type": "integer", "minimum": 0, "maximum": 1},
+	    			"transport" : {"type" : "string", "minLength" : 3}
+	    		},
+	    		"required" : ["id", "auth"]
+	    	}
+	    },
 	    "mgcp" : {
 	    	"type" : "array",
 	    	"items" : {

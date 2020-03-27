@@ -2,6 +2,7 @@ from processor.variables_tree_builder import VariablesTreeBuilder
 from processor.network import NetworkAdapter
 from processor.megaco import Megaco
 from processor.mgcp import Mgcp
+from processor.sip import Sip
 from time import sleep, strftime
 from threading import Event
 from re import findall, compile as re_compile
@@ -35,6 +36,13 @@ class ScenarioInterpreter:
 		         "Validate" : self._handle_validate,
 		         "GetBytes" : self._handle_getbytes }
 
+	def _define_protocol_instance(self):
+		"""Defines protocol instance"""
+		return { "sip" : Sip(),
+		         "megaco": Megaco(),
+		         "mgcp": Mgcp()
+		       }
+
 	def __new__(cls, *args, **kwargs):
 		if ScenarioInterpreter._instance is None:
 			ScenarioInterpreter._instance = object.__new__(cls)
@@ -47,7 +55,7 @@ class ScenarioInterpreter:
 		self._successfull_exit_flag = Event()  # Indicates successful scenario exit
 		self._local_variables = None  # Local scenario namespace
 		self._test_log = None         # For test log collection
-		self._protocol = Megaco()     # Megaco protocol instance
+		self._protocol = self._define_protocol_instance()     # Protocol instance
 		self._protocol_handlers = self._signaling_protocol_handlers()
 		self._validator_handlers = self._signaling_protocol_validator_handlers()
 		self._sctp_ppid = self._define_sctp_ppid()
@@ -76,7 +84,8 @@ class ScenarioInterpreter:
 				 "iua" : self._handle_iua,
 				 "mgcp" : self._handle_mgcp,
 		         "megaco" : self._handle_megaco,
-		         "sorm" : self._handle_sorm }
+		         "sorm" : self._handle_sorm,
+		         "sip" : self._handle_sip }
 
 	def _signaling_protocol_validator_handlers(self):
 		"""Defines signaling protocol handlers"""
@@ -146,7 +155,7 @@ class ScenarioInterpreter:
 		Returns the changing result, error reason and string with replased variables (if result is True, None otherwise)
 		"""
 		for variable in set([var[3:-3] for var in findall(r"\[\$\$[A-Za-z0-9_]+\$\$\]", string)]):
-			value = self._protocol.generate_value(variable)               # Forming the set of local variables with their values found in a string
+			value = self._protocol["sip"].generate_value(variable)               # Forming the set of local variables with their values found in a string
 			if value is not None:
 				string = string.replace("[$$" + variable + "$$]", value)  # Replacing a protocol variable with its value
 				self._local_variables["last_" + variable] = value         # Add protocol variable with the "last_" prefix to local scenario namespace
@@ -187,7 +196,11 @@ class ScenarioInterpreter:
 		return message
 
 	def _handle_mgcp(self, message):
-		"""megaco protocol message handling"""
+		"""mgcp protocol message handling"""
+		return message
+
+	def _handle_sip(self, message):
+		"""sip protocol message handling"""
 		return message
 
 	def _handle_m2ua(self, message):
@@ -207,7 +220,6 @@ class ScenarioInterpreter:
 		return message
 
 	def _handle_validate_sorm(self, message, data, number):
-		print ("UUUUUUUU", data, number)
 		validator = self.SORM_validator._SORM_check_message_handler()
 		if data == "NO_MESSAGE":
 			if message == "NO_MESSAGE":
@@ -447,12 +459,10 @@ class ScenarioInterpreter:
 				return False
 			else:
 				databytes = data[int(instruction.frombyte):tobyte]
-				print("fff", databytes)
 				self._local_variables[variable] = databytes.decode()
 				self._test_log += strftime("(%d.%m.%Y) %Hh:%Mm:%Ss") + "\t[GetBytes]  The bytes from '%s' to '%s' has been written to variable '%s'\n" % (instruction.frombyte, tobyte, instruction.assign_to)
 		else: 
 			databytes = data[int(instruction.frombyte):]
-			print("fff1", databytes)
 			self._local_variables[variable] = databytes.decode()
 			self._test_log += strftime("(%d.%m.%Y) %Hh:%Mm:%Ss") + "\t[GetBytes]  The bytes from '%s' to last byte has been written to variable '%s'\n" % (instruction.frombyte, instruction.assign_to)
 		return True

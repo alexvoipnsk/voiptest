@@ -64,16 +64,16 @@
       "ipaddr": "192.168.114.200",
       "port": 5060,
       "transport" : "udp",
-      "proto" : "sorm",
+      "proto" : "sip",
       "profile" : 0  
     },
     {
       "id": 5,
       "name" : "Registrator",
-      "ipaddr": "192.168.116.130",
+      "ipaddr": "192.168.116.132",
       "port": 5065,
       "transport" : "udp",
-      "proto" : "sorm",
+      "proto" : "sip",
       "profile" : 0
     }
   ], 
@@ -115,8 +115,13 @@
   "trunks": [ 
     {
       "id": 0,
+      "number" : 0,
+      "name" : "dima.d_gr_tr.trunk.autoname"
+    },
+    {
+      "id": 1,
       "number" : 1,
-      "name" : "to_smg"
+      "name" : "dima.sip.trunk.autoname"
     }
   ],
   "sorm" : [
@@ -126,6 +131,13 @@
       "password" : 123456,
       "version" : "ECSS-10 V3",
       "station_type" : "terminal_transit"
+    }
+  ],
+  "sip" : [
+    {
+      "id" : 0,
+      "transport" : "UDP",
+      "auth" : 1
     }
   ]
 }

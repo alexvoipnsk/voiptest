@@ -37,6 +37,7 @@ class VariablesTreeBuilder:
 		    "trunks" : self._make_trunks,
 		    "username" : self._make_username,
 		    "authname" : self._make_authname,
+		    "auth" : self._make_auth,
 		    "domain" : self._make_domain,
 		    "password" : self._make_password,
 		    "version" : self._make_version,
@@ -53,7 +54,7 @@ class VariablesTreeBuilder:
 			"sigtran" : self.config.sigtran,
 			"mgcp" : self.config.mgcp,
 			"sorm" : self.config.sorm,
-			"sip" : None
+			"sip" : self.config.sip
 		}
 
 	def _make_globals(self, section):
@@ -207,6 +208,10 @@ class VariablesTreeBuilder:
 	def _make_authname(self, value):
 		"""Builds and returns VariableTree node from the authname of the specific Node"""
 		return VariableTree.TreeNode("authname", value)
+
+	def _make_auth(self, value):
+		"""Builds and returns VariableTree node from the auth of the specific Node"""
+		return VariableTree.TreeNode("auth", value)
 
 	def _make_domain(self, value):
 		"""Builds and returns VariableTree node from the domain of the specific Node"""
