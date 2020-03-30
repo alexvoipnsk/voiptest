@@ -149,13 +149,13 @@ class ScenarioInterpreter:
 				return (False, "Variable '%s' does not exist in the global namespace" % variable, None)
 		return (True, None, string)
 
-	def _replace_protocol_variables(self, string):
+	def _replace_protocol_variables(self, string, protocol):
 		"""Replaces protocol variable in the string with their values
 
 		Returns the changing result, error reason and string with replased variables (if result is True, None otherwise)
 		"""
 		for variable in set([var[3:-3] for var in findall(r"\[\$\$[A-Za-z0-9_]+\$\$\]", string)]):
-			value = self._protocol["sip"].generate_value(variable)               # Forming the set of local variables with their values found in a string
+			value = self._protocol[protocol].generate_value(variable)               # Forming the set of local variables with their values found in a string
 			if value is not None:
 				string = string.replace("[$$" + variable + "$$]", value)  # Replacing a protocol variable with its value
 				self._local_variables["last_" + variable] = value         # Add protocol variable with the "last_" prefix to local scenario namespace
@@ -175,7 +175,7 @@ class ScenarioInterpreter:
 				return (False, "Variable '%s' does not exist in the local namespace" % variable, None)
 		return (True, None, string)
 
-	def _replace_variables(self, string):
+	def _replace_variables(self, string, protocol="megaco"):
 		"""Replaces local and global variables in the string with their values
 
 		Returns the changing result, error reason and string with replased variables (if result is True, None otherwise)
@@ -183,7 +183,7 @@ class ScenarioInterpreter:
 		success, reason, string = self._replace_local_variables(string)                  # Replacing variables from the local namespace
 		if not success:
 			return (False, reason, None)
-		success, reason, string = self._replace_protocol_variables(string)
+		success, reason, string = self._replace_protocol_variables(string, protocol)
 		if not success:
 			return (False, reason, None)
 		success, reason, string = ScenarioInterpreter._replace_global_variables(string)  # Replacing variables from	the global namespace
@@ -372,7 +372,7 @@ class ScenarioInterpreter:
 			return False
 		# Modify message with protocol handler
 		# Changing variables to their values
-		success, reason, temp_message = self._replace_variables(instruction.message)
+		success, reason, temp_message = self._replace_variables(instruction.message, instruction.protocol)
 		print ("::FOR LOGGING PURPOSE. INTERPRETER_MODULE. SEND handling::", temp_message)
 		message = self._protocol_handlers[network_adapter.proto](temp_message)
 		if not success:

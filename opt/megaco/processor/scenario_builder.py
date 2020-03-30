@@ -56,6 +56,8 @@ class ScenarioBuilder:
 		Adds created Send instruction to Scenario instructions
 		"""
 		send = Scenario.Send(int(component.attrib["connection"]), component.text.strip())
+		if "protocol" in component.attrib:
+			send.protocol = str(component.attrib["protocol"])		
 		if "stream" in component.attrib:
 			send.stream = int(component.attrib["stream"])
 		self._scenario.instructions.append(send)
