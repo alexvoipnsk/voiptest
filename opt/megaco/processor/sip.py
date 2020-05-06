@@ -1,5 +1,6 @@
 from random import randint
 from time import strftime
+import hashlib
 
 class Sip:
 	"""Class for implementing of Sip protocol"""
@@ -47,36 +48,34 @@ class Sip:
 		return strftime("%Y%m%dT%H%M%S")
 
 	@staticmethod
-	def _digest_auth(self, auth_type, auth_method, authname, password, digest_uri_value, auth_data):
-		if auth_type==Digest:
-			A1 = self.defineA1(auth_data["algorithm"], authname)
-			if auth_data["qop"]:
-				if auth_data["qop"]=="auth":
-					A2 = auth_method + ":" + digest_uri_value
-				elif auth_data["qop"]=="auth-int":
-					raise SIP_Error("AUTH: qop=auth-int isn't supported now")
-					#A2 = auth_method ":" digest_uri_value ":" H(entity-body)
-				request_digest  = '"' + < KD ( H(A1),     unq(nonce-value)
-                                         + ":" + nc-value
-                                         + ":" + unq(cnonce-value)
-                                         + ":" + unq(qop-value)
-                                         + ":" + H(A2) ) > + '"'
-			else:
-				A2 = auth_method + ":" + digest_uri_value
-				request_digest  = '"' + < KD ( H(A1), unq(nonce-value) + ":" + H(A2) ) > + '"'
-		else:
-			raise SIP_Error("AUTH: Only Digest authentication is supported")
-
-		realm="dima", nonce="918d004f120b200d50e199de8a3cec8a", algorithm=MD5
-
-		def defineA1(self, auth_data, username, realm, passwd):
-			if auth_data=="MD5":
-				return username + ":" + realm + ":" + passwd
+	def _digest_auth(self, auth_data):
+		if auth_data["auth_type"]==Digest:
+			if auth_data["algorithm"]=="MD5":
+				digest = hashlib.md5()
+				A1md5 = hashlib.md5()
+				A2md5 = hashlib.md5()
+				A1md5.update(auth_data["authname"] + ":" + auth_data["realm"] + ":" + auth_data["password"])
+				if auth_data["qop"]:
+					if auth_data["qop"]=="auth":
+						A2md5.update(auth_data["method"] + ":" + auth_data["digest_uri_value"])
+					elif auth_data["qop"]=="auth-int":
+						raise SIP_Error("AUTH: qop=auth-int isn't supported now")
+						#A2 = method ":" digest_uri_value ":" H(entity-body)
+					request_digest  = '"' + digest.update(A1md5 + ":" + auth_data["nonce-value"] + ":" + auth_data["nc-value"]
+            	                             + ":" + auth_data["cnonce-value"] + ":" + auth_data["qop"] + ":" + A2md5) + '"'
+				else:
+					A2md5.update(auth_data["method"] + ":" + auth_data["digest_uri_value"])
+					request_digest  = '"' + digest.update(A1md5 + ":" + auth_data["nonce-value"] + ":" + A2md5) + '"'
 			elif auth_data["algorithm"]=="MD5-sess":
 				raise SIP_Error("AUTH: Only MD5 alorithm is supported")
 				#A1 = H( unq(username-value) ":" unq(realm-value) + ":" + passwd ) + ":" + unq(nonce-value) + ":" + unq(cnonce-value)
-            else:
-            	raise SIP_Error("AUTH: Only MD5 or MD5-sess alorithms are supported")
+			else:
+				raise SIP_Error("AUTH: Only MD5 or MD5-sess alorithms are supported")
+			return request_digest
+		else:
+			raise SIP_Error("AUTH: Only Digest authentication is supported")
+
+		#realm="dima", nonce="918d004f120b200d50e199de8a3cec8a", algorithm=MD5
 
 		def authValuesExec(self, auth_row):
 			# Ecexute auth data

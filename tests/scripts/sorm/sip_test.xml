@@ -28,6 +28,16 @@ Content-Length: 0[$$return$$][$$return$$]]]>
 			<compare first="[$response],[$scheme]" second="401,Digest">
 				<exit status="failure" info="Test is unsuccessfully completed"/>
 			</compare>
+			<authenticate assign_to="auth">
+				<![CDATA[
+				type = [$scheme]
+				authname = [$$users.0.authname]
+				password = [$$users.0.password]
+				digest_uri_value = sip:[$$sock.5.ipaddr]:[$$sock.5.port]
+				method = "REGISTER"
+				challenge = [$authentication]
+				]]>
+			</authenticate>
 		</actions>
 	</nop>
 
@@ -40,7 +50,7 @@ To: SIP-Tester <sip:[$$users.0.username]@[$$users.0.domain]>
 Call-ID: [$$call_id$$]
 User-Agent: SIP-Tester
 CSeq: 2 REGISTER
-[$authentication] 
+[$auth] 
 Contact: <sip:[$$users.0.username]@[$$sock.4.ipaddr]:[$$sock.4.port]>;expires=400
 Max-Forwards: 70
 Content-Length: 0[$$return$$][$$return$$]]]>

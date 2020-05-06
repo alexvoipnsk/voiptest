@@ -72,9 +72,10 @@ class VariablesTreeBuilder:
 	def _make_users(self, section):
 		"""Builds VariableTree nodes from users section of the configuration file"""
 		users = VariableTree.TreeNode("users")
-		for user in section:
-			users.childs.append(self._make_user(user))
-		self._var_tree.childs.append(users)
+		if section:
+			for user in section:
+				users.childs.append(self._make_user(user))
+			self._var_tree.childs.append(users)
 
 	def _make_user(self, fabric):
 		user = VariableTree.TreeNode(str(fabric.id))
@@ -86,9 +87,10 @@ class VariablesTreeBuilder:
 	def _make_trunks(self, section):
 		"""Builds VariableTree nodes from trunks section of the configuration file"""
 		trunks = VariableTree.TreeNode("trunks")
-		for trunk in section:
-			trunks.childs.append(self._make_trunk(trunk))
-		self._var_tree.childs.append(trunks)
+		if section:
+			for trunk in section:
+				trunks.childs.append(self._make_trunk(trunk))
+			self._var_tree.childs.append(trunks)
 
 	def _make_trunk(self, fabric):
 		trunk = VariableTree.TreeNode(str(fabric.id))

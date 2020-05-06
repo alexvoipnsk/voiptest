@@ -1,0 +1,32 @@
+EXECUTE STATUS: SUCCESS
+
+(05.05.2020) 16h:00m:50s	[Recv]      Message has been successfully received from node '192.168.114.195:2427'
+(05.05.2020) 16h:00m:50s	[Catch]     The match groups '17' has been written to variables 'transaction_id'
+(05.05.2020) 16h:00m:50s	[Catch]     The match groups 'restart' has been written to variables 'method'
+(05.05.2020) 16h:00m:50s	[Compare]   Values from the first group are absolutely equal to values from the second group
+(05.05.2020) 16h:00m:50s	[Send]      Message has been successfully sent to node '192.168.114.195:2427'
+(05.05.2020) 16h:00m:50s	[Send]      Message has been successfully sent to node '192.168.114.195:2427'
+(05.05.2020) 16h:00m:50s	[Recv]      Message has been successfully received from node '192.168.114.195:2427'
+(05.05.2020) 16h:00m:50s	[Catch]     The match groups '10000016' has been written to variables 'transaction_id'
+(05.05.2020) 16h:00m:50s	[Compare]   Values from the first group are absolutely equal to values from the second group
+(05.05.2020) 16h:00m:50s	[Recv]      Message has been successfully received from node '192.168.114.195:2427'
+(05.05.2020) 16h:00m:50s	[Catch]     The match groups '10000016' has been written to variables 'transaction_id'
+(05.05.2020) 16h:00m:50s	[Catch]     The match groups '9401643C' has been written to variables 'connection_id'
+(05.05.2020) 16h:00m:50s	[Compare]   Values from the first group are absolutely equal to values from the second group
+(05.05.2020) 16h:00m:50s	[Send]      Message has been successfully sent to node '192.168.114.195:2427'
+(05.05.2020) 16h:00m:50s	[Send]      Message has been successfully sent to node '192.168.114.195:2427'
+(05.05.2020) 16h:00m:50s	[Recv]      Message has been successfully received from node '192.168.114.195:2427'
+(05.05.2020) 16h:00m:50s	[Catch]     The match groups '10000017' has been written to variables 'transaction_id'
+(05.05.2020) 16h:00m:50s	[Compare]   Values from the first group are absolutely equal to values from the second group
+(05.05.2020) 16h:00m:50s	[Recv]      Message has been successfully received from node '192.168.114.195:2427'
+(05.05.2020) 16h:00m:50s	[Catch]     The match groups '10000017' has been written to variables 'transaction_id'
+(05.05.2020) 16h:00m:50s	[Compare]   Values from the first group are absolutely equal to values from the second group
+(05.05.2020) 16h:00m:50s	[Send]      Message has been successfully sent to node '192.168.114.195:2427'
+(05.05.2020) 16h:00m:50s	[Send]      Message has been successfully sent to node '192.168.114.195:2427'
+(05.05.2020) 16h:00m:50s	[Recv]      Message has been successfully received from node '192.168.114.195:2427'
+(05.05.2020) 16h:00m:50s	[Catch]     The match groups '10000018' has been written to variables 'transaction_id'
+(05.05.2020) 16h:00m:50s	[Compare]   Values from the first group are absolutely equal to values from the second group
+(05.05.2020) 16h:00m:50s	[Recv]      Message has been successfully received from node '192.168.114.195:2427'
+(05.05.2020) 16h:00m:50s	[Catch]     The match groups '10000018' has been written to variables 'transaction_id'
+(05.05.2020) 16h:00m:50s	[Compare]   Values from the first group are absolutely equal to values from the second group
+(05.05.2020) 16h:00m:50s	[Send]      Message has been successfully sent to node '192.168.114.195:2427'

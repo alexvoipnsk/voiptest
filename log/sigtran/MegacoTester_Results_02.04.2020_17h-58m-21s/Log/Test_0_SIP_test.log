@@ -1,0 +1,6 @@
+EXECUTE STATUS: FAILURE
+
+(02.04.2020) 17h:58m:22s	[Send]      Message has been successfully sent to node '192.168.114.204:5060'
+(02.04.2020) 17h:58m:22s	[Recv]      Message has been successfully received from node '192.168.114.204:5060'
+(02.04.2020) 17h:58m:22s	[Catch]     The match groups '405' has been written to variables 'response'
+(02.04.2020) 17h:58m:22s	[Catch]     There is no rigth match to regexp 'WWW-Authenticate:\\s*([A-Za-z]+)\\s*([A-Za-z0-9_/=",\\.\\s\\-\\$\\*]+)\\r'

@@ -1,5 +1,5 @@
 {
-    "LogDirectory" : "/home/alexander/py_autotest/log/mgcp/",
+    "LogDirectory" : "../../log/sigtran/",
     "Connections" : [
          {
               "id" : 0,
@@ -21,7 +21,7 @@
         {
              "id" : 1,
              "name" : "TAU-72.IP",
-             "ipaddr" : "192.168.114.198",
+             "ipaddr" : "192.168.114.195",
              "port" : 2427,
              "transport" : "udp",
              "proto" : "mgcp",

@@ -34,12 +34,14 @@ class ScenarioInterpreter:
 		         "Nop" : self._handle_nop,
 		         "Pause" : self._handle_pause,
 		         "Validate" : self._handle_validate,
+		         "Authenticate" : self._handle_authenticate,
 		         "GetBytes" : self._handle_getbytes }
 
 	def _define_protocol_instance(self):
 		"""Defines protocol instance"""
 		return { "sip" : Sip(),
 		         "megaco": Megaco(),
+		         "none": Megaco(),
 		         "mgcp": Mgcp()
 		       }
 
@@ -440,6 +442,26 @@ class ScenarioInterpreter:
 				self._local_variables[variable] = match[number]
 			else:
 				self._local_variables[variable] = match
+		self._test_log += strftime("(%d.%m.%Y) %Hh:%Mm:%Ss") + "\t[Catch]     The match groups '%s' has been written to variables '%s'\n" % (str(match), ", ".join(variables))
+		return True
+
+	def _handle_authenticate(self, instruction):
+		"""Executes the authenticate instruction of the test scenario
+
+		Returns True, if instruction has successfully completed or False otherwise
+		"""
+		success, reason, temp_message = self._replace_variables(instruction.message)
+		success, info = self._validator_handlers[instruction.rule](temp_message, data)
+
+		mes_type, params = self.M2ua_executor.Values_Exec(message) # replace
+		if data == "NO_MESSAGE":
+			object_data = data
+		else:
+			object_data = self.M2ua_parser.Parse_Message(data)
+		success, info = self.M2ua_validator.Validate_Message(object_data, mes_type, params)
+		return (success, info)
+
+		variable = instruction.assign_to
 		self._test_log += strftime("(%d.%m.%Y) %Hh:%Mm:%Ss") + "\t[Catch]     The match groups '%s' has been written to variables '%s'\n" % (str(match), ", ".join(variables))
 		return True
 

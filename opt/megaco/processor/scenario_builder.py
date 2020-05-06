@@ -27,6 +27,7 @@ class ScenarioBuilder:
 		        "nop" : self._make_nop,
 		        "pause" : self._make_pause,
 		        "validate" : self._make_validate,
+		        "authenticate" : self._make_authenticate,
 		        "getbytes" : self._make_getbytes}
 
 	def _make_define(self, component):
@@ -57,7 +58,9 @@ class ScenarioBuilder:
 		"""
 		send = Scenario.Send(int(component.attrib["connection"]), component.text.strip())
 		if "protocol" in component.attrib:
-			send.protocol = str(component.attrib["protocol"])		
+			send.protocol = str(component.attrib["protocol"])
+		else:
+			send.protocol = "none"
 		if "stream" in component.attrib:
 			send.stream = int(component.attrib["stream"])
 		self._scenario.instructions.append(send)
@@ -89,7 +92,14 @@ class ScenarioBuilder:
 
 		Adds created Validate instruction to Scenario instructions
 		"""
-		return Scenario.Validate(str(component.attrib["rule"]), int(component.attrib["num"]), component.text.strip())
+		if "num" in component.attrib:
+			return Scenario.Validate(str(component.attrib["rule"]), component.text.strip(), int(component.attrib["num"]))
+		else:
+			return Scenario.Validate(str(component.attrib["rule"]), component.text.strip())
+
+	def _make_authenticate(self, component):
+		"""Builds and returns the Authenticate instruction of the Scenario instance"""
+		return Scenario.Authenticate(component.attrib["assign_to"], component.text.strip())
 
 	def _make_catch(self, component):
 		"""Builds and returns the Catch instruction of the Scenario instance"""
@@ -271,7 +281,13 @@ class Scenario:
 
 	class Validate:
 
-		def __init__(self, rule, num, message):
+		def __init__(self, rule, message, num=None):
 			self.rule = rule
+			self.message = message
 			self.num = num
+
+	class Authenticate:
+
+		def __init__(self, assign_to, message):
+			self.assign_to = assign_to
 			self.message = message

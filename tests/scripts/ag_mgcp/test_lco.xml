@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario name="BUG_122797_MGCP_MDFY">
+
+  <recv connection="0" timeout="50000">
+    <actions>
+      <catch regexp="RSIP\s*([0-9]+)" assign_to="transaction_id"/>
+      <catch regexp="RM:\s*([A-Za-z]+)" assign_to="method"/>
+    </actions>
+  </recv>
+
+  <nop>
+  	<actions>
+  	  <compare first="[$method]" second="restart">
+  	    <exit status="failure" info="Test is unsuccessfully completed"/>
+  	  </compare>
+  	</actions>
+  </nop>
+
+  <send connection="0">
+  <![CDATA[
+200 [$transaction_id] RSIP Ok
+   ]]>
+   </send>
+
+   <send connection="0">
+  <![CDATA[
+CRCX 10000016 smg/p/1@[$$sock.0.mid] MGCP 1.0
+C: A
+M: sendrecv
+L: p:20, b:64, a:PCMA;telephone-event, e:on, gc:0, s:off
+Q: loop,process
+R: G/mt, G/ft
+X: 1
+X-MaJiBu: 40
+X+AdJiBu: min:10, nom:20
+
+v=0
+o=iskratel 3767699541 3767699541 IN IP4 [$$sock.0.ipaddr]
+s=cs
+c=IN IP4 [$$sock.0.ipaddr]
+t=0 0
+m=audio 16836 RTP/AVP 8 101
+a=rtpmap:101 telephone-event/8000
+a=fmtp:101 0-15
+a=silenceSupp:off
+   ]]>
+   </send>
+
+  <recv connection="0" timeout="5000">
+    <actions>
+      <catch regexp="100\s*([0-9]+)" assign_to="transaction_id"/>
+    </actions>
+  </recv>
+
+  <nop>
+    <actions>
+      <compare first="[$transaction_id]" second="10000016">
+        <exit status="failure" info="Test is unsuccessfully completed"/>
+      </compare>
+    </actions>
+  </nop>
+
+  <recv connection="0" timeout="5000">
+    <actions>
+      <catch regexp="200\s*([0-9]+)" assign_to="transaction_id"/>
+      <catch regexp="I:\s*([0-9A-Za-z]+)" assign_to="connection_id"/>
+    </actions>
+  </recv>
+
+  <nop>
+    <actions>
+      <compare first="[$transaction_id]" second="10000016">
+        <exit status="failure" info="Test is unsuccessfully completed"/>
+      </compare>
+    </actions>
+  </nop>
+
+   <send connection="0">
+  <![CDATA[
+000 10000016 Response acknowledgement
+   ]]>
+   </send>
+
+   <send connection="0">
+  <![CDATA[
+MDCX 10000017 smg/p/1@[$$sock.0.mid] MGCP 1.0
+C: A
+I: [$connection_id]
+M: sendrecv
+L: p:0, b:64, a:image/T38, e:on, gc:0, s:off
+X-MaJiBu: 40
+X+AdJiBu: min:10, nom:20
+   ]]>
+   </send>
+
+  <recv connection="0" timeout="5000">
+    <actions>
+      <catch regexp="100\s*([0-9]+)" assign_to="transaction_id"/>
+    </actions>
+  </recv>
+
+  <nop>
+    <actions>
+      <compare first="[$transaction_id]" second="10000017">
+        <exit status="failure" info="Test is unsuccessfully completed"/>
+      </compare>
+    </actions>
+  </nop>
+
+  <recv connection="0" timeout="5000">
+    <actions>
+      <catch regexp="200\s*([0-9]+)" assign_to="transaction_id"/>
+    </actions>
+  </recv>
+
+  <nop>
+    <actions>
+      <compare first="[$transaction_id]" second="10000017">
+        <exit status="failure" info="Test is unsuccessfully completed"/>
+      </compare>
+    </actions>
+  </nop>
+
+   <send connection="0">
+  <![CDATA[
+000 10000017 Response acknowledgement
+   ]]>
+   </send>
+
+   <send connection="0">
+  <![CDATA[
+DLCX 10000018 smg/p/1@[$$sock.0.mid] MGCP 1.0
+C: A
+I: [$connection_id]
+Q: loop,process
+X: 2
+S: 
+   ]]>
+   </send>
+
+  <recv connection="0" timeout="5000">
+    <actions>
+      <catch regexp="100\s*([0-9]+)" assign_to="transaction_id"/>
+    </actions>
+  </recv>
+
+  <nop>
+    <actions>
+      <compare first="[$transaction_id]" second="10000018">
+        <exit status="failure" info="Test is unsuccessfully completed"/>
+      </compare>
+    </actions>
+  </nop>
+
+  <recv connection="0" timeout="5000">
+    <actions>
+      <catch regexp="250\s*([0-9]+)" assign_to="transaction_id"/>
+    </actions>
+  </recv>
+
+  <nop>
+    <actions>
+      <compare first="[$transaction_id]" second="10000018">
+        <exit status="failure" info="Test is unsuccessfully completed"/>
+      </compare>
+    </actions>
+  </nop>
+
+  <send connection="0">
+  <![CDATA[
+000 10000018 Response acknowledgement
+   ]]>
+   </send>
+
+</scenario>

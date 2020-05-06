@@ -1,0 +1,22 @@
+EXECUTE STATUS: FAILURE
+
+(05.05.2020) 15h:50m:39s	[Recv]      Message has been successfully received from node '192.168.114.195:2427'
+(05.05.2020) 15h:50m:39s	[Catch]     The match groups '3' has been written to variables 'transaction_id'
+(05.05.2020) 15h:50m:39s	[Catch]     The match groups 'restart' has been written to variables 'method'
+(05.05.2020) 15h:50m:39s	[Compare]   Values from the first group are absolutely equal to values from the second group
+(05.05.2020) 15h:50m:39s	[Send]      Message has been successfully sent to node '192.168.114.195:2427'
+(05.05.2020) 15h:50m:39s	[Send]      Message has been successfully sent to node '192.168.114.195:2427'
+(05.05.2020) 15h:50m:39s	[Recv]      Message has been successfully received from node '192.168.114.195:2427'
+(05.05.2020) 15h:50m:39s	[Catch]     The match groups '10000016' has been written to variables 'transaction_id'
+(05.05.2020) 15h:50m:39s	[Compare]   Values from the first group are absolutely equal to values from the second group
+(05.05.2020) 15h:50m:39s	[Recv]      Message has been successfully received from node '192.168.114.195:2427'
+(05.05.2020) 15h:50m:39s	[Catch]     The match groups '10000016' has been written to variables 'transaction_id'
+(05.05.2020) 15h:50m:39s	[Catch]     The match groups '4B7FDB40' has been written to variables 'connection_id'
+(05.05.2020) 15h:50m:39s	[Compare]   Values from the first group are absolutely equal to values from the second group
+(05.05.2020) 15h:50m:39s	[Send]      Message has been successfully sent to node '192.168.114.195:2427'
+(05.05.2020) 15h:50m:39s	[Send]      Message has been successfully sent to node '192.168.114.195:2427'
+(05.05.2020) 15h:50m:39s	[Recv]      Message has been successfully received from node '192.168.114.195:2427'
+(05.05.2020) 15h:50m:39s	[Catch]     The match groups '10000017' has been written to variables 'transaction_id'
+(05.05.2020) 15h:50m:39s	[Compare]   Values from the first group are absolutely equal to values from the second group
+(05.05.2020) 15h:50m:39s	[Recv]      Message has been successfully received from node '192.168.114.195:2427'
+(05.05.2020) 15h:50m:39s	[Catch]     There is no rigth match to regexp '200\\s*([0-9]+)'
