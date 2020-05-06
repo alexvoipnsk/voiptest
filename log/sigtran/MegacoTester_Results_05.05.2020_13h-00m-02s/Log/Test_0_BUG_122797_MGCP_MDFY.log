@@ -1,4 +1,0 @@
-EXECUTE STATUS: FAILURE
-
-(05.05.2020) 13h:00m:53s	[Recv]      Message has not been received: timed out
-(05.05.2020) 13h:00m:53s	[Catch]     There is no rigth match to regexp 'RSIP\\s*([0-9]+)'
