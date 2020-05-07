@@ -2701,7 +2701,6 @@ class ISUP_Binary_Convertor:
 		#if optional_pointer == True:
 		#	pointers_number += 1
 		#pointers_values = [None] * pointers_number
-		print("JJJ", mandatory_parameters, optional_pointer, optional_part, pointers_number)
 		pointers_values = list()
 		mandatory_variable_parameters, mandatory_parameters_length = self.Convert_Mandatory_Variable_Parameters(mandatory_parameters)
 		if mand_pointer == True and optional_pointer == False:
@@ -2718,7 +2717,6 @@ class ISUP_Binary_Convertor:
 			pointers_values = [0]
 		else:
 			pointers_values = [1]
-		print ("JJJ1", pointers_values)
 #		for index in range(1, pointers_number + 1):
 #			if index == 1 and not optional_pointer:
 #				pointers_values[index-1] = 1

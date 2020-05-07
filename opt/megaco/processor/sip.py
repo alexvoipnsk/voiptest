@@ -1,6 +1,6 @@
 from random import randint
 from time import strftime
-import hashlib
+from hashlib import md5
 
 class Sip:
 	"""Class for implementing of Sip protocol"""
@@ -47,64 +47,55 @@ class Sip:
 		"""Returns a timestamp per ISO 8601"""
 		return strftime("%Y%m%dT%H%M%S")
 
+	def generate_value(self, variable):
+		"""Generates and returns the requested value of a variable or None"""
+		if variable in self._generators:
+			return self._generators[variable]()
+
+class Auth:
+	"""Class for implementing of authentication"""
+
 	@staticmethod
-	def _digest_auth(self, auth_data):
-		if auth_data["auth_type"]==Digest:
+	def _digest_auth(auth_data):
+		print ('8888', auth_data)
+		if auth_data["authtype"]=="Digest":
 			if auth_data["algorithm"]=="MD5":
-				digest = hashlib.md5()
-				A1md5 = hashlib.md5()
-				A2md5 = hashlib.md5()
-				A1md5.update(auth_data["authname"] + ":" + auth_data["realm"] + ":" + auth_data["password"])
-				if auth_data["qop"]:
+				A1md5 = md5("{}:{}:{}".format(str(auth_data["authname"]), str(auth_data["realm"]), str(auth_data["password"])).encode('utf-8')).hexdigest()
+				if "qop" in auth_data:
 					if auth_data["qop"]=="auth":
-						A2md5.update(auth_data["method"] + ":" + auth_data["digest_uri_value"])
+						A2md5.update((auth_data["method"] + ":" + str(auth_data["digest-uri-value"])).encode())
 					elif auth_data["qop"]=="auth-int":
 						raise SIP_Error("AUTH: qop=auth-int isn't supported now")
 						#A2 = method ":" digest_uri_value ":" H(entity-body)
-					request_digest  = '"' + digest.update(A1md5 + ":" + auth_data["nonce-value"] + ":" + auth_data["nc-value"]
-            	                             + ":" + auth_data["cnonce-value"] + ":" + auth_data["qop"] + ":" + A2md5) + '"'
+					request_digest  = '"' + digest_value.update((A1md5 + ":" + str(auth_data["nonce"]) + ":" + str(auth_data["nc-value"])
+            	                             + ":" + str(auth_data["cnonce-value"]) + ":" + auth_data["qop"] + ":" + A2md5).encode()) + '"'
 				else:
-					A2md5.update(auth_data["method"] + ":" + auth_data["digest_uri_value"])
-					request_digest  = '"' + digest.update(A1md5 + ":" + auth_data["nonce-value"] + ":" + A2md5) + '"'
+					A2md5 = md5("{}:{}".format(str(auth_data["method"]), str(auth_data["digest-uri-value"])).encode('utf-8')).hexdigest()
+					digest_value = md5("{}:{}:{}".format(A1md5, str(auth_data["nonce"]), A2md5).encode())
+					request_digest  = digest_value.hexdigest()
+					authorization='Authorization: Digest username="' + str(auth_data["authname"]) + '", realm="' + str(auth_data["realm"]) + '", nonce="' +str(auth_data["nonce"]) + '", uri="'+ str(auth_data["digest-uri-value"]) + '", response=' + request_digest + ', algorithm="' + str(auth_data["algorithm"])
 			elif auth_data["algorithm"]=="MD5-sess":
 				raise SIP_Error("AUTH: Only MD5 alorithm is supported")
-				#A1 = H( unq(username-value) ":" unq(realm-value) + ":" + passwd ) + ":" + unq(nonce-value) + ":" + unq(cnonce-value)
+				#A1 = H( unq(username-value) ":" unq(realm-value) + ":" + passwd ) + ":" + unq(nonce) + ":" + unq(cnonce-value)
 			else:
 				raise SIP_Error("AUTH: Only MD5 or MD5-sess alorithms are supported")
-			return request_digest
+			return authorization
 		else:
 			raise SIP_Error("AUTH: Only Digest authentication is supported")
 
-		#realm="dima", nonce="918d004f120b200d50e199de8a3cec8a", algorithm=MD5
 
-		def authValuesExec(self, auth_row):
-			# Ecexute auth data
-			print ("::FOR LOGGING PURPOSE. SIP_AUTH_FUNCTION. Start of parsing, raw data from file::",auth_row)
-			auth_params = dict()
-			if auth_row:
-				auth_row = auth_row.strip()
-				temp_string = '' 	#temporary string for build new param value
-				param = ''      	#temporary string for build new param
-				for _val in auth_row:
-					if _val == "'" or _val == '"':
-						pass
-					elif _val == ",":
-						fin_string = temp_string.strip()
-						if fin_string:
-							try:
-								fin_string = int(temp_string.strip())
-							except:
-								pass
-							auth_params[param] = fin_string
-							param = ''
-						else:
-							raise SIP_Error("AUTH: No parameter's value received")
-					elif _val == "=":
-						param = temp_string.strip().lower()
-						temp_string = ''
-					else:
-						temp_string +=_val
-				if param and temp_string:
+	def authValuesExec(self, auth_row):
+		# Ecexute auth data
+		print ("::FOR LOGGING PURPOSE. SIP_AUTH_FUNCTION. Start of parsing, raw data from file::",auth_row)
+		auth_params = dict()
+		if auth_row:
+			auth_row = auth_row.strip()
+			temp_string = '' 	#temporary string for build new param value
+			param = ''      	#temporary string for build new param
+			for _val in auth_row:
+				if _val == "'" or _val == '"':
+					pass
+				elif _val == ",":
 					fin_string = temp_string.strip()
 					if fin_string:
 						try:
@@ -112,18 +103,30 @@ class Sip:
 						except:
 							pass
 						auth_params[param] = fin_string
+						param = ''
+						temp_string = ''
 					else:
 						raise SIP_Error("AUTH: No parameter's value received")
-				print ("::FOR LOGGING PURPOSE. SIP_AUTH_FUNCTION. End of parsing::",auth_params)
-				return auth_params
-			else: 
-				raise SIP_Error("AUTH: No auth parameters are received")
+				elif _val == "=":
+					param = temp_string.strip().lower()
+					temp_string = ''
+				else:
+					temp_string +=_val
+			if param and temp_string:
+				fin_string = temp_string.strip()
+				if fin_string:
+					try:
+						fin_string = int(temp_string.strip())
+					except:
+						pass
+					auth_params[param] = fin_string
+				else:
+					raise SIP_Error("AUTH: No parameter's value received")
+			print ("::FOR LOGGING PURPOSE. SIP_AUTH_FUNCTION. End of parsing::",auth_params)
+			return auth_params
+		else: 
+			raise SIP_Error("AUTH: No auth parameters are received")
 
-
-	def generate_value(self, variable):
-		"""Generates and returns the requested value of a variable or None"""
-		if variable in self._generators:
-			return self._generators[variable]()
 
 class SIP_Error(Exception):
 

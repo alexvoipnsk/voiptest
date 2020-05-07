@@ -11,6 +11,7 @@ from sys import exit
 import processor.m2ua as m2ua
 import processor.iua as iua
 import processor.sorm268 as sorm
+import processor.sip as sip
 
 class ScenarioInterpreter:
 	"""Class for Scenario instances interpretation"""
@@ -61,6 +62,7 @@ class ScenarioInterpreter:
 		self._protocol_handlers = self._signaling_protocol_handlers()
 		self._validator_handlers = self._signaling_protocol_validator_handlers()
 		self._sctp_ppid = self._define_sctp_ppid()
+		self.auth_executor = sip.Auth()
 		self.M2ua_executor = m2ua.Config_Executor()
 		self.M2ua_builder = m2ua.Message_Builder()
 		self.M2ua_validator = m2ua.Message_Validator()
@@ -445,24 +447,15 @@ class ScenarioInterpreter:
 		self._test_log += strftime("(%d.%m.%Y) %Hh:%Mm:%Ss") + "\t[Catch]     The match groups '%s' has been written to variables '%s'\n" % (str(match), ", ".join(variables))
 		return True
 
-	def _handle_authenticate(self, instruction):
+	def _handle_authenticate(self, instruction, data=None):
 		"""Executes the authenticate instruction of the test scenario
 
 		Returns True, if instruction has successfully completed or False otherwise
 		"""
 		success, reason, temp_message = self._replace_variables(instruction.message)
-		success, info = self._validator_handlers[instruction.rule](temp_message, data)
-
-		mes_type, params = self.M2ua_executor.Values_Exec(message) # replace
-		if data == "NO_MESSAGE":
-			object_data = data
-		else:
-			object_data = self.M2ua_parser.Parse_Message(data)
-		success, info = self.M2ua_validator.Validate_Message(object_data, mes_type, params)
-		return (success, info)
-
-		variable = instruction.assign_to
-		self._test_log += strftime("(%d.%m.%Y) %Hh:%Mm:%Ss") + "\t[Catch]     The match groups '%s' has been written to variables '%s'\n" % (str(match), ", ".join(variables))
+		params = self.auth_executor.authValuesExec(temp_message) 
+		self._local_variables[instruction.assign_to] = self.auth_executor._digest_auth(params)
+		self._test_log += strftime("(%d.%m.%Y) %Hh:%Mm:%Ss") + "\t[Authenticate]     The authentication info has been written to variable '%s'\n" % str(instruction.assign_to)
 		return True
 
 	def _handle_getbytes(self, instruction, data=None):

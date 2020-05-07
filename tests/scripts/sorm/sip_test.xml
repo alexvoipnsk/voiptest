@@ -20,6 +20,7 @@ Content-Length: 0[$$return$$][$$return$$]]]>
     	<actions>
       		<catch regexp="SIP/2.0\s*([0-9][0-9][0-9])" assign_to="response"/>
       		<catch regexp='WWW-Authenticate:\s*([A-Za-z]+)\s*([A-Za-z0-9_/=",\.\s\-\$\*]+)\r' assign_to="scheme,authentication"/>
+      		<catch regexp='Call-ID:\s*([A-Za-z0-9_/=",\.\-\$\*]+)\r' assign_to="callid"/>
     	</actions> 
    </recv>
 
@@ -30,12 +31,7 @@ Content-Length: 0[$$return$$][$$return$$]]]>
 			</compare>
 			<authenticate assign_to="auth">
 				<![CDATA[
-				type = [$scheme]
-				authname = [$$users.0.authname]
-				password = [$$users.0.password]
-				digest_uri_value = sip:[$$sock.5.ipaddr]:[$$sock.5.port]
-				method = "REGISTER"
-				challenge = [$authentication]
+				authtype = [$scheme], authname = [$$users.0.authname], password = [$$users.0.password], digest-uri-value = sip:[$$sock.5.ipaddr]:[$$sock.5.port], method = "REGISTER", [$authentication]
 				]]>
 			</authenticate>
 		</actions>
@@ -47,7 +43,7 @@ REGISTER sip:[$$sock.5.ipaddr]:[$$sock.5.port] SIP/2.0
 Via: SIP/2.0/UDP [$$sock.4.ipaddr]:[$$sock.4.port];branch=[$$branch$$]
 From: SIP-Tester <sip:[$$users.0.username]@[$$users.0.domain]>;tag=[$$tag$$]
 To: SIP-Tester <sip:[$$users.0.username]@[$$users.0.domain]>
-Call-ID: [$$call_id$$]
+Call-ID: [$callid]
 User-Agent: SIP-Tester
 CSeq: 2 REGISTER
 [$auth] 
