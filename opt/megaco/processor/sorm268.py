@@ -388,6 +388,9 @@ class Message_Validator:
 				 29 : self._checkMessage29,
 				 30 : self._checkMessage2A,
 				 31 : self._checkMessage2B,
+				 41 : self._checkMessage41,
+				 42 : self._checkMessage42,
+				 43 : self._checkMessage43,
 				 52 : self._checkMessage52,
 				 53 : self._checkMessage53,
 				 100 : self._checkNoMessage }
@@ -821,13 +824,224 @@ class Message_Validator:
 			result = False
 		return result, s
 
-	def _checkMessage52(self, payload, ormnum, operation_code, calling_phone_number=-1, calling_phone_type='ff', called_phone_number=-1, called_phone_type='ff'):
+	def _checkMessage41(self, payload, ormnum, object_number, object_type, operation_code, line_a_number, line_b_number=255, priority="common", calling_phone_number=-1, calling_phone_type='ff', called_phone_number=-1, 
+		                called_phone_type='ff', linkset_number=65535):
 		calling_phone = self.check._checkPhoneNumber(calling_phone_number)
 		called_phone = self.check._checkPhoneNumber(called_phone_number)
 		calling_type_phone = self.check._phoneTypeDefine(calling_phone_type)
 		called_type_phone = self.check._phoneTypeDefine(called_phone_type)
+		self.check._checkLinksetNumber(linkset_number)
+		prio = self.check._priorityDefine(priority)
+		self.check._checkObjectNumber(object_number)		
+		type_object = self.check._objectTypeDefine(object_type)
 		message2 = message_kpd2.Msg2ControlLineDisconnected({const.Header.SORM_NUMBER: ormnum, const.Payload.OPERATION_CODE: operation_code, const.Payload.CALLING_PHONE_NUMBER: calling_phone,
-                                  const.Payload.CALLING_PHONE_TYPE: calling_type_phone, const.Payload.CALLED_PHONE_NUMBER: called_phone, const.Payload.CALLED_PHONE_TYPE: called_type_phone})
+                                  const.Payload.CALLING_PHONE_TYPE: calling_type_phone, const.Payload.CALLED_PHONE_NUMBER: called_phone, const.Payload.CALLED_PHONE_TYPE: called_type_phone,
+                                  const.Payload.LINKSET_NUMBER: linkset_number, const.Payload.LINE_A_NUMBER: line_a_number, const.Payload.LINE_B_NUMBER: line_b_number,
+                                  const.Payload.PRIORITY: prio, const.Payload.OBJECT_NUMBER: object_number, const.Payload.OBJECT_TYPE: type_object})
+		message = bytes(message2)
+		s = 'Message 0x41 validation.'
+		result = True
+		if payload:
+			if len(payload)!=48:
+				s += ' Wrong Message received: Expected length: 48, Received "{0}".'.format(len(payload))
+				result = False			
+			else:
+				if payload[2]!=82:
+					s += ' Wrong Message received: Expected: 0x41, Received "{:02X}".'.format(payload[2])
+					result = False
+				else:
+					s += ' Message 0x41 received.'		
+					if (message[1]!=payload[1]):
+						s += ' Wrong ORM Number: Configured "{0}", received "{1}".'.format(message[1], payload[1])
+						result = False
+					if (message[7:8]!=payload[7:8]):
+						s += ' Wrong OBJECT_NUMBER: Configured "{0}", received "{1}".'.format(message[7:8], payload[7:8])
+						result = False
+					if (message[6]!=payload[6]):
+						s += ' Wrong OBJECT_TYPE: Configured "{0}", received "{1}".'.format(message[6], payload[6])
+						result = False					
+					if (message[12]!=payload[12]):
+						s += ' Wrong CALLING_PHONE_TYPE: Configured "{0}", received "{1}".'.format(message[12], payload[12])
+						result = False
+					if (message[14:22]!=payload[14:22]):
+						s += ' Wrong CALLING_PHONE_NUMBER: Configured "{0}", received "{1}".'.format(message[14:22], payload[14:22])
+						result = False		
+					if (message[23]!=payload[23]):
+						s += ' Wrong CALLED_PHONE_TYPE: Configured "{0}", received "{1}".'.format(message[23], payload[23])
+						result = False
+					if (message[24:32]!=payload[24:32]):
+						s += ' Wrong CALLED_PHONE_NUMBER: Configured "{0}", received "{1}".'.format(message[24:32], payload[24:32])
+						result = False	
+					if (message[33:34]!=payload[33:34]):
+						s += ' Wrong LINKSET_NUMBER: Configured "{0}", received "{1}".'.format(message[33:34], payload[33:34])
+						result = False				
+					if (message[35]!=payload[35]):
+						s += ' Wrong LINE_A_NUMBER: Configured "{0}", received "{1}".'.format(message[35], payload[35])
+						result = False
+					if (message[36]!=payload[36]):
+						s += ' Wrong LINE_B_NUMBER: Configured "{0}", received "{1}".'.format(message[36], payload[36])
+						result = False
+					if (message[44]!=payload[44]):
+						s += ' Wrong OPERATION_CODE: Configured "{0}", received "{1}".'.format(message[44], payload[44])
+						result = False
+					if (message[43]!=payload[43]):
+						s += ' Wrong PRIORITY: Configured "{0}", received "{1}".'.format(message[43], payload[43])
+						result = False
+		else:
+			s += ' ERROR: No message received'
+			result = False
+		return result, s
+
+	def _checkMessage42(self, payload, ormnum, object_number, object_type, operation_code, line_a_number, line_b_number=255, priority="common", calling_phone_number=-1, calling_phone_type='ff', called_phone_number=-1, 
+		                called_phone_type='ff', linkset_number=65535):
+		calling_phone = self.check._checkPhoneNumber(calling_phone_number)
+		called_phone = self.check._checkPhoneNumber(called_phone_number)
+		calling_type_phone = self.check._phoneTypeDefine(calling_phone_type)
+		called_type_phone = self.check._phoneTypeDefine(called_phone_type)
+		self.check._checkLinksetNumber(linkset_number)
+		prio = self.check._priorityDefine(priority)
+		self.check._checkObjectNumber(object_number)		
+		type_object = self.check._objectTypeDefine(object_type)
+		message2 = message_kpd2.Msg2ControlLineDisconnected({const.Header.SORM_NUMBER: ormnum, const.Payload.OPERATION_CODE: operation_code, const.Payload.CALLING_PHONE_NUMBER: calling_phone,
+                                  const.Payload.CALLING_PHONE_TYPE: calling_type_phone, const.Payload.CALLED_PHONE_NUMBER: called_phone, const.Payload.CALLED_PHONE_TYPE: called_type_phone,
+                                  const.Payload.LINKSET_NUMBER: linkset_number, const.Payload.LINE_A_NUMBER: line_a_number, const.Payload.LINE_B_NUMBER: line_b_number,
+                                  const.Payload.PRIORITY: prio, const.Payload.OBJECT_NUMBER: object_number, const.Payload.OBJECT_TYPE: type_object})
+		message = bytes(message2)
+		s = 'Message 0x42 validation.'
+		result = True
+		if payload:
+			if len(payload)!=48:
+				s += ' Wrong Message received: Expected length: 48, Received "{0}".'.format(len(payload))
+				result = False			
+			else:
+				if payload[2]!=82:
+					s += ' Wrong Message received: Expected: 0x42, Received "{:02X}".'.format(payload[2])
+					result = False
+				else:
+					s += ' Message 0x41 received.'		
+					if (message[1]!=payload[1]):
+						s += ' Wrong ORM Number: Configured "{0}", received "{1}".'.format(message[1], payload[1])
+						result = False
+					if (message[7:8]!=payload[7:8]):
+						s += ' Wrong OBJECT_NUMBER: Configured "{0}", received "{1}".'.format(message[7:8], payload[7:8])
+						result = False
+					if (message[6]!=payload[6]):
+						s += ' Wrong OBJECT_TYPE: Configured "{0}", received "{1}".'.format(message[6], payload[6])
+						result = False					
+					if (message[12]!=payload[12]):
+						s += ' Wrong CALLING_PHONE_TYPE: Configured "{0}", received "{1}".'.format(message[12], payload[12])
+						result = False
+					if (message[14:22]!=payload[14:22]):
+						s += ' Wrong CALLING_PHONE_NUMBER: Configured "{0}", received "{1}".'.format(message[14:22], payload[14:22])
+						result = False		
+					if (message[23]!=payload[23]):
+						s += ' Wrong CALLED_PHONE_TYPE: Configured "{0}", received "{1}".'.format(message[23], payload[23])
+						result = False
+					if (message[24:32]!=payload[24:32]):
+						s += ' Wrong CALLED_PHONE_NUMBER: Configured "{0}", received "{1}".'.format(message[24:32], payload[24:32])
+						result = False	
+					if (message[33:34]!=payload[33:34]):
+						s += ' Wrong LINKSET_NUMBER: Configured "{0}", received "{1}".'.format(message[33:34], payload[33:34])
+						result = False				
+					if (message[35]!=payload[35]):
+						s += ' Wrong LINE_A_NUMBER: Configured "{0}", received "{1}".'.format(message[35], payload[35])
+						result = False
+					if (message[36]!=payload[36]):
+						s += ' Wrong LINE_B_NUMBER: Configured "{0}", received "{1}".'.format(message[36], payload[36])
+						result = False
+					if (message[44]!=payload[44]):
+						s += ' Wrong OPERATION_CODE: Configured "{0}", received "{1}".'.format(message[44], payload[44])
+						result = False
+					if (message[43]!=payload[43]):
+						s += ' Wrong PRIORITY: Configured "{0}", received "{1}".'.format(message[43], payload[43])
+						result = False
+		else:
+			s += ' ERROR: No message received'
+			result = False
+		return result, s
+
+	def _checkMessage43(self, payload, ormnum, object_number, object_type, operation_code, line_a_number, line_b_number=255, priority="common", calling_phone_number=-1, calling_phone_type='ff', called_phone_number=-1, 
+		                called_phone_type='ff', linkset_number=65535):
+		calling_phone = self.check._checkPhoneNumber(calling_phone_number)
+		called_phone = self.check._checkPhoneNumber(called_phone_number)
+		calling_type_phone = self.check._phoneTypeDefine(calling_phone_type)
+		called_type_phone = self.check._phoneTypeDefine(called_phone_type)
+		self.check._checkLinksetNumber(linkset_number)
+		prio = self.check._priorityDefine(priority)
+		self.check._checkObjectNumber(object_number)		
+		type_object = self.check._objectTypeDefine(object_type)
+		message2 = message_kpd2.Msg2ControlLineDisconnected({const.Header.SORM_NUMBER: ormnum, const.Payload.OPERATION_CODE: operation_code, const.Payload.CALLING_PHONE_NUMBER: calling_phone,
+                                  const.Payload.CALLING_PHONE_TYPE: calling_type_phone, const.Payload.CALLED_PHONE_NUMBER: called_phone, const.Payload.CALLED_PHONE_TYPE: called_type_phone,
+                                  const.Payload.LINKSET_NUMBER: linkset_number, const.Payload.LINE_A_NUMBER: line_a_number, const.Payload.LINE_B_NUMBER: line_b_number,
+                                  const.Payload.PRIORITY: prio, const.Payload.OBJECT_NUMBER: object_number, const.Payload.OBJECT_TYPE: type_object})
+		message = bytes(message2)
+		s = 'Message 0x43 validation.'
+		result = True
+		if payload:
+			if len(payload)!=48:
+				s += ' Wrong Message received: Expected length: 48, Received "{0}".'.format(len(payload))
+				result = False			
+			else:
+				if payload[2]!=82:
+					s += ' Wrong Message received: Expected: 0x43, Received "{:02X}".'.format(payload[2])
+					result = False
+				else:
+					s += ' Message 0x41 received.'		
+					if (message[1]!=payload[1]):
+						s += ' Wrong ORM Number: Configured "{0}", received "{1}".'.format(message[1], payload[1])
+						result = False
+					if (message[7:8]!=payload[7:8]):
+						s += ' Wrong OBJECT_NUMBER: Configured "{0}", received "{1}".'.format(message[7:8], payload[7:8])
+						result = False
+					if (message[6]!=payload[6]):
+						s += ' Wrong OBJECT_TYPE: Configured "{0}", received "{1}".'.format(message[6], payload[6])
+						result = False					
+					if (message[12]!=payload[12]):
+						s += ' Wrong CALLING_PHONE_TYPE: Configured "{0}", received "{1}".'.format(message[12], payload[12])
+						result = False
+					if (message[14:22]!=payload[14:22]):
+						s += ' Wrong CALLING_PHONE_NUMBER: Configured "{0}", received "{1}".'.format(message[14:22], payload[14:22])
+						result = False		
+					if (message[23]!=payload[23]):
+						s += ' Wrong CALLED_PHONE_TYPE: Configured "{0}", received "{1}".'.format(message[23], payload[23])
+						result = False
+					if (message[24:32]!=payload[24:32]):
+						s += ' Wrong CALLED_PHONE_NUMBER: Configured "{0}", received "{1}".'.format(message[24:32], payload[24:32])
+						result = False	
+					if (message[33:34]!=payload[33:34]):
+						s += ' Wrong LINKSET_NUMBER: Configured "{0}", received "{1}".'.format(message[33:34], payload[33:34])
+						result = False				
+					if (message[35]!=payload[35]):
+						s += ' Wrong LINE_A_NUMBER: Configured "{0}", received "{1}".'.format(message[35], payload[35])
+						result = False
+					if (message[36]!=payload[36]):
+						s += ' Wrong LINE_B_NUMBER: Configured "{0}", received "{1}".'.format(message[36], payload[36])
+						result = False
+					if (message[44]!=payload[44]):
+						s += ' Wrong OPERATION_CODE: Configured "{0}", received "{1}".'.format(message[44], payload[44])
+						result = False
+					if (message[43]!=payload[43]):
+						s += ' Wrong PRIORITY: Configured "{0}", received "{1}".'.format(message[43], payload[43])
+						result = False
+		else:
+			s += ' ERROR: No message received'
+			result = False
+		return result, s
+
+	def _checkMessage52(self, payload, ormnum, object_number, object_type, operation_code, line_a_number, line_b_number=255, priority="common", calling_phone_number=-1, calling_phone_type='ff', called_phone_number=-1, 
+		                called_phone_type='ff', linkset_number=65535):
+		calling_phone = self.check._checkPhoneNumber(calling_phone_number)
+		called_phone = self.check._checkPhoneNumber(called_phone_number)
+		calling_type_phone = self.check._phoneTypeDefine(calling_phone_type)
+		called_type_phone = self.check._phoneTypeDefine(called_phone_type)
+		self.check._checkLinksetNumber(linkset_number)
+		prio = self.check._priorityDefine(priority)
+		self.check._checkObjectNumber(object_number)		
+		type_object = self.check._objectTypeDefine(object_type)
+		message2 = message_kpd2.Msg2ControlLineDisconnected({const.Header.SORM_NUMBER: ormnum, const.Payload.OPERATION_CODE: operation_code, const.Payload.CALLING_PHONE_NUMBER: calling_phone,
+                                  const.Payload.CALLING_PHONE_TYPE: calling_type_phone, const.Payload.CALLED_PHONE_NUMBER: called_phone, const.Payload.CALLED_PHONE_TYPE: called_type_phone,
+                                  const.Payload.LINKSET_NUMBER: linkset_number, const.Payload.LINE_A_NUMBER: line_a_number, const.Payload.LINE_B_NUMBER: line_b_number,
+                                  const.Payload.PRIORITY: prio, const.Payload.OBJECT_NUMBER: object_number, const.Payload.OBJECT_TYPE: type_object})
 		message = bytes(message2)
 		s = 'Message 0x52 validation.'
 		result = True
@@ -844,6 +1058,12 @@ class Message_Validator:
 					if (message[1]!=payload[1]):
 						s += ' Wrong ORM Number: Configured "{0}", received "{1}".'.format(message[1], payload[1])
 						result = False
+					if (message[7:8]!=payload[7:8]):
+						s += ' Wrong OBJECT_NUMBER: Configured "{0}", received "{1}".'.format(message[7:8], payload[7:8])
+						result = False
+					if (message[6]!=payload[6]):
+						s += ' Wrong OBJECT_TYPE: Configured "{0}", received "{1}".'.format(message[6], payload[6])
+						result = False					
 					if (message[12]!=payload[12]):
 						s += ' Wrong CALLING_PHONE_TYPE: Configured "{0}", received "{1}".'.format(message[12], payload[12])
 						result = False
@@ -855,9 +1075,21 @@ class Message_Validator:
 						result = False
 					if (message[24:32]!=payload[24:32]):
 						s += ' Wrong CALLED_PHONE_NUMBER: Configured "{0}", received "{1}".'.format(message[24:32], payload[24:32])
-						result = False					
+						result = False	
+					if (message[33:34]!=payload[33:34]):
+						s += ' Wrong LINKSET_NUMBER: Configured "{0}", received "{1}".'.format(message[33:34], payload[33:34])
+						result = False				
+					if (message[35]!=payload[35]):
+						s += ' Wrong LINE_A_NUMBER: Configured "{0}", received "{1}".'.format(message[35], payload[35])
+						result = False
+					if (message[36]!=payload[36]):
+						s += ' Wrong LINE_B_NUMBER: Configured "{0}", received "{1}".'.format(message[36], payload[36])
+						result = False
 					if (message[44]!=payload[44]):
 						s += ' Wrong OPERATION_CODE: Configured "{0}", received "{1}".'.format(message[44], payload[44])
+						result = False
+					if (message[43]!=payload[43]):
+						s += ' Wrong PRIORITY: Configured "{0}", received "{1}".'.format(message[43], payload[43])
 						result = False
 		else:
 			s += ' ERROR: No message received'

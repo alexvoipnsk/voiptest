@@ -545,7 +545,7 @@ Content-Length: 0[$$return$$][$$return$$]]]>
 		<actions>
 			<validate rule="sorm" num="3">
 				<![CDATA[
-				52 (ormnum=[$$sock.0.ormNum], operation_code=6, calling_phone_number=[$$users.0.username], calling_phone_type='local', called_phone_number=[$$users.1.username], called_phone_type='local')
+				52 (ormnum=[$$sock.0.ormNum], object_number=1, object_type="local", operation_code=6, calling_phone_number=[$$users.0.username], calling_phone_type='local', called_phone_number=[$$users.1.username], called_phone_type='local', priority="common", line_a_number=1)
 				]]>
 			</validate>
 		</actions>
@@ -1099,23 +1099,22 @@ Max-Forwards: 70
 Content-Length: 0[$$return$$][$$return$$]]]>
 	</send>
 
-	<send connection="0">
-		<![CDATA[
-		5 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=1, object_type="local", phone_number=[$$users.0.username], control_category="combined", line_group_number=1, priority="common", phone_type='local', linkset_number=65535)
-		]]>
-	</send>
-
 	<nop>
 		<actions>
 			<pause timeout="4000"/>
 		</actions>
 	</nop>
 
-	<recv connection="1" timeout="4000" >
+	<recv connection="1" timeout="10000" >
 		<actions>
 			<validate rule="sorm" num="1">
 				<![CDATA[
-				NO_MESSAGE
+				41 (ormnum=[$$sock.0.ormNum], object_number=1, object_type="local", operation_code=0, calling_phone_number=[$$users.0.username], calling_phone_type='local', called_phone_number=[$$users.1.username], called_phone_type='local', priority="common", line_a_number=1)
+				]]>
+			</validate>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				42 (ormnum=[$$sock.0.ormNum], object_number=1, object_type="local", operation_code=0, calling_phone_number=[$$users.0.username], calling_phone_type='local', called_phone_number=[$$users.1.username], called_phone_type='local', priority="common", line_a_number=1)
 				]]>
 			</validate>
 		</actions>
@@ -1178,15 +1177,16 @@ Content-Length: 0[$$return$$][$$return$$]]]>
 		</actions>
 	</nop>
 
-	<recv connection="1" timeout="4000" >
+	<recv connection="1" timeout="10000" >
 		<actions>
 			<validate rule="sorm" num="1">
 				<![CDATA[
-				NO_MESSAGE
+				43 (ormnum=[$$sock.0.ormNum], object_number=1, object_type="local", operation_code=5, calling_phone_number=[$$users.0.username], calling_phone_type='local', called_phone_number=[$$users.1.username], called_phone_type='local', priority="common", line_a_number=1)
 				]]>
 			</validate>
 		</actions>
 	</recv> 
+
 
 	<!-->
 	20.9
