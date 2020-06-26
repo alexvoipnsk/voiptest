@@ -388,7 +388,22 @@ class Message_Validator:
 				 29 : self._checkMessage29,
 				 30 : self._checkMessage2A,
 				 31 : self._checkMessage2B,
-				 53 : self._checkMessage53 }
+				 52 : self._checkMessage52,
+				 53 : self._checkMessage53,
+				 100 : self._checkNoMessage }
+
+	def _checkNoMessage(self, payload, params):
+		s = 'No Message validation.'
+		if (params==None):
+			if payload:
+				s += ' Message has been received: Expected "No message", Received message with code "{:02X}".'.format(payload[2])
+				result = False
+			else:
+				s += ' No message received'
+				result = True
+		else:
+			raise SORM_Error("Invalid behavior")
+		return result, s
 
 	def _checkMessage21(self, payload, ormnum, failure_type, failure_code):
 		message2 = message1.Msg1TestResponse({const.Header.SORM_NUMBER: ormnum, const.Payload.FAILURE_TYPE: failure_type, const.Payload.FAILURE_CODE: failure_code})
@@ -515,9 +530,9 @@ class Message_Validator:
 	def _checkMessage24(self, payload, ormnum, groups):
 		args = {const.Header.SORM_NUMBER: ormnum}
 		if (type(groups[0]) != list):
-			argum = {const.Payload.LINE_GROUP_NUMBER: groups[0], const.Payload.LINE_GROUP_TYPE: self._lineGroupTypeDefine(groups[1]), const.Payload.LINE_A_NUMBER: groups[2], const.Payload.LINE_B_NUMBER: groups[3]}
+			argum = {const.Payload.LINE_GROUP_NUMBER: groups[0], const.Payload.LINE_GROUP_TYPE: self.check._lineGroupTypeDefine(groups[1]), const.Payload.LINE_A_NUMBER: groups[2], const.Payload.LINE_B_NUMBER: groups[3]}
 		elif len(groups) == 1:
-			argum = {const.Payload.LINE_GROUP_NUMBER: groups[0][0], const.Payload.LINE_GROUP_TYPE: self._lineGroupTypeDefine(groups[0][1]), const.Payload.LINE_A_NUMBER: groups[0][2], const.Payload.LINE_B_NUMBER: groups[0][3]}
+			argum = {const.Payload.LINE_GROUP_NUMBER: groups[0][0], const.Payload.LINE_GROUP_TYPE: self.check._lineGroupTypeDefine(groups[0][1]), const.Payload.LINE_A_NUMBER: groups[0][2], const.Payload.LINE_B_NUMBER: groups[0][3]}
 		else:
 			i = 0
 			par1 = list()
@@ -526,7 +541,7 @@ class Message_Validator:
 			par4 = list()
 			while i < len(groups):
 				par1.append(groups[i][0])
-				par2.append(self._lineGroupTypeDefine(groups[i][1]))
+				par2.append(self.check._lineGroupTypeDefine(groups[i][1]))
 				par3.append(groups[i][2])
 				par4.append(groups[i][3])
 				i += 1
@@ -648,7 +663,7 @@ class Message_Validator:
 		result = True
 		if payload:
 			if len(payload)!=12:
-				s += ' Wrong Message received: Expected length: 12, Received "{0}".'.format(len(payload))
+				s += ' Wrong Message received: Expected length: 12, Received "{0}" with payload "{1:02X}".'.format(len(payload), payload[2])
 				result = False			
 			else:
 				if payload[2]!=39:
@@ -680,7 +695,7 @@ class Message_Validator:
 		result = True
 		if payload:
 			if len(payload)!=12:
-				s += ' Wrong Message received: Expected length: 12, Received "{0}".'.format(len(payload))
+				s += ' Wrong Message received: Expected length: 12, Received "{0}" with payload "{1:02X}".'.format(len(payload), payload[2])
 				result = False			
 			else:
 				if payload[2]!=40:
@@ -806,6 +821,49 @@ class Message_Validator:
 			result = False
 		return result, s
 
+	def _checkMessage52(self, payload, ormnum, operation_code, calling_phone_number=-1, calling_phone_type='ff', called_phone_number=-1, called_phone_type='ff'):
+		calling_phone = self.check._checkPhoneNumber(calling_phone_number)
+		called_phone = self.check._checkPhoneNumber(called_phone_number)
+		calling_type_phone = self.check._phoneTypeDefine(calling_phone_type)
+		called_type_phone = self.check._phoneTypeDefine(called_phone_type)
+		message2 = message_kpd2.Msg2ControlLineDisconnected({const.Header.SORM_NUMBER: ormnum, const.Payload.OPERATION_CODE: operation_code, const.Payload.CALLING_PHONE_NUMBER: calling_phone,
+                                  const.Payload.CALLING_PHONE_TYPE: calling_type_phone, const.Payload.CALLED_PHONE_NUMBER: called_phone, const.Payload.CALLED_PHONE_TYPE: called_type_phone})
+		message = bytes(message2)
+		s = 'Message 0x52 validation.'
+		result = True
+		if payload:
+			if len(payload)!=48:
+				s += ' Wrong Message received: Expected length: 48, Received "{0}".'.format(len(payload))
+				result = False			
+			else:
+				if payload[2]!=82:
+					s += ' Wrong Message received: Expected: 0x52, Received "{:02X}".'.format(payload[2])
+					result = False
+				else:
+					s += ' Message 0x52 received.'		
+					if (message[1]!=payload[1]):
+						s += ' Wrong ORM Number: Configured "{0}", received "{1}".'.format(message[1], payload[1])
+						result = False
+					if (message[12]!=payload[12]):
+						s += ' Wrong CALLING_PHONE_TYPE: Configured "{0}", received "{1}".'.format(message[12], payload[12])
+						result = False
+					if (message[14:22]!=payload[14:22]):
+						s += ' Wrong CALLING_PHONE_NUMBER: Configured "{0}", received "{1}".'.format(message[14:22], payload[14:22])
+						result = False		
+					if (message[23]!=payload[23]):
+						s += ' Wrong CALLED_PHONE_TYPE: Configured "{0}", received "{1}".'.format(message[23], payload[23])
+						result = False
+					if (message[24:32]!=payload[24:32]):
+						s += ' Wrong CALLED_PHONE_NUMBER: Configured "{0}", received "{1}".'.format(message[24:32], payload[24:32])
+						result = False					
+					if (message[44]!=payload[44]):
+						s += ' Wrong OPERATION_CODE: Configured "{0}", received "{1}".'.format(message[44], payload[44])
+						result = False
+		else:
+			s += ' ERROR: No message received'
+			result = False
+		return result, s
+
 	def _checkMessage53(self, payload, ormnum, test_message_number, control_channel_1_state, control_channel_2_state):
 		message2 = message_kpd2.Msg2TestResponse({const.Header.SORM_NUMBER: ormnum, const.Payload.TEST_MESSAGE_NUMBER: test_message_number, 
 						const.Payload.CONTROL_CHANNEL_1_STATE: control_channel_1_state, const.Payload.CONTROL_CHANNEL_2_STATE: control_channel_2_state})
@@ -856,6 +914,8 @@ class Config_Executor:
 				messType="31"
 			elif (messType=="2C"):
 				messType="32"
+			elif (messType=="NO MESSAGE" or messType=="NO_MESSAGE"):
+				return 100, {"params": None}
 			try:
 				message_row_type = int(messType)
 			except:

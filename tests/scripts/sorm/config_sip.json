@@ -88,8 +88,8 @@
     {
       "id": 5,
       "name" : "Registrator",
-      "ipaddr": "192.168.116.132",
-      "port": 5065,
+      "ipaddr": "192.168.114.196",
+      "port": 5060,
       "transport" : "udp",
       "proto" : "sip",
       "profile" : 0
@@ -106,8 +106,8 @@
     {
       "id": 7,
       "name" : "Registrator",
-      "ipaddr": "192.168.116.133",
-      "port": 5065,
+      "ipaddr": "192.168.114.196",
+      "port": 5060,
       "transport" : "udp",
       "proto" : "sip",
       "profile" : 0
@@ -125,18 +125,18 @@
   "users": [ 
     {
       "id": 0,
-      "username" : "156",
-      "authname" : "156",
-      "password" : "123",
-      "domain" : "dima",
+      "username" : "700401",
+      "authname" : "700401",
+      "password" : "700401",
+      "domain" : "voip.local",
       "servicelist" : ["hold", "ct"] 
     },
     {
       "id": 1,
-      "username" : "157",
-      "authname" : "157",
-      "password" : "123",
-      "domain" : "dima",
+      "username" : "200100",
+      "authname" : "200100",
+      "password" : "200100",
+      "domain" : "voip.local",
       "servicelist" : ["3pty", "hold"]   
     },
     {

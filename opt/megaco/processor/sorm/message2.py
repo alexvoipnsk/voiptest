@@ -260,10 +260,11 @@ class _Message2default(_Message2):
         self.fields.setdefault(Payload.CALL_SECOND,             Const.FILLBYTE)
         self.fields.setdefault(Payload.PRIORITY,                Const.FILLBYTE)
         self.fields.setdefault(Payload.OPERATION_CODE,          Const.FILLBYTE)
-        self.fields.setdefault(Payload.VAS_CODE,                Const.FILLBYTE_THREE)
+        self.fields.setdefault(Payload.VAS_CODE,                Const.FILLBYTE)
+        self.fields.setdefault(Payload.VAS_CODE_FILLER,         Const.FILLBYTE_TWO)
         self.fields.setdefault(Payload.ADDITIONAL_CODE,         Const.FILLBYTE)
 
-    def _packPayload(self):
+    def _packPayload(self): 
         '''
         Internal function.
         Pack header from class fields dictionary to binary.
@@ -294,6 +295,7 @@ class _Message2default(_Message2):
                               self.fields[Payload.PRIORITY],
                               self.fields[Payload.OPERATION_CODE],
                               self.fields[Payload.VAS_CODE],
+                              self.fields[Payload.VAS_CODE_FILLER],
                               self.fields[Payload.ADDITIONAL_CODE],
                              )
         self.fields[Header.PAYLOAD_LENGTH] = len(payload)

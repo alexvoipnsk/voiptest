@@ -152,7 +152,7 @@ m=audio 65530 RTP/AVP 8 0 18[$$return$$]]]>
 		</actions>
 	</recv>
 
-	<send connection="2" protocol="sip">
+	<send connection="4" protocol="sip">
 		<![CDATA[
 INVITE sip:[$$users.1.username]@[$$sock.5.ipaddr]:[$$sock.5.port] SIP/2.0
 Via: SIP/2.0/UDP [$$sock.4.ipaddr]:[$$sock.4.port];branch=[$$branch$$]

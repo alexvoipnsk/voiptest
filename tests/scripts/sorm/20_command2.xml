@@ -3,6 +3,7 @@
 <scenario name="sorm_test20">
 
 	<connect connection="0" mode="client" />
+	<connect connection="1" mode="client" />
 
 	<!-->
 	20.4
@@ -222,6 +223,970 @@
 		</actions>
 	</recv> 
 
+	<!-->
+	20.3
+	<-->
+
+	<!-->
+	SIP registration and call
+	<-->
+	<send connection="2" protocol="sip">
+		<![CDATA[
+REGISTER sip:[$$sock.5.ipaddr]:[$$sock.5.port] SIP/2.0
+Via: SIP/2.0/UDP [$$sock.4.ipaddr]:[$$sock.4.port];branch=[$$branch$$]
+From: SIP-Send <sip:[$$users.0.username]@[$$users.0.domain]>;tag=[$$tag$$]
+To: SIP-Send <sip:[$$users.0.username]@[$$users.0.domain]>
+Call-ID: [$$call_id$$]
+User-Agent: SIP-Tester
+CSeq: 1 REGISTER
+Contact: <sip:[$$users.0.username]@[$$sock.4.ipaddr]:[$$sock.4.port]>;expires=400
+Max-Forwards: 70
+Content-Length: 0[$$return$$][$$return$$]]]>
+	</send>
+
+	<recv connection="2" timeout="4000" >
+    	<actions>
+      		<catch regexp="SIP/2.0\s*([0-9][0-9][0-9])" assign_to="response"/>
+      		<catch regexp='WWW-Authenticate:\s*([A-Za-z]+)\s*([A-Za-z0-9_/=",\.\s\-\$\*]+)\r' assign_to="scheme,authentication"/>
+      		<catch regexp='Call-ID:\s*([A-Za-z0-9_/=",\.\-\$\*]+)\r' assign_to="callid"/>
+			<compare first="[$response],[$scheme]" second="401,Digest">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+			<authenticate assign_to="auth">
+				<![CDATA[
+				authtype = [$scheme], authname = [$$users.0.authname], password = [$$users.0.password], digest-uri-value = sip:[$$sock.5.ipaddr]:[$$sock.5.port], method = "REGISTER", [$authentication]
+				]]>
+			</authenticate>
+		</actions>
+   </recv>
+
+	<send connection="2" protocol="sip">
+		<![CDATA[
+REGISTER sip:[$$sock.5.ipaddr]:[$$sock.5.port] SIP/2.0
+Via: SIP/2.0/UDP [$$sock.4.ipaddr]:[$$sock.4.port];branch=[$$branch$$]
+From: SIP-Send <sip:[$$users.0.username]@[$$users.0.domain]>;tag=[$$tag$$]
+To: SIP-Send <sip:[$$users.0.username]@[$$users.0.domain]>
+Call-ID: [$callid]
+User-Agent: SIP-Tester
+CSeq: 2 REGISTER
+[$auth] 
+Contact: <sip:[$$users.0.username]@[$$sock.4.ipaddr]:[$$sock.4.port]>;expires=400
+Max-Forwards: 70
+Content-Length: 0[$$return$$][$$return$$]]]>
+	</send>
+
+	<recv connection="2" timeout="10000" >
+    	<actions>
+      		<catch regexp="SIP/2.0\s*([0-9][0-9][0-9])" assign_to="response"/>
+    		<compare first="[$response]" second="200">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+		</actions> 
+   </recv>
+
+	<send connection="3" protocol="sip">
+		<![CDATA[
+REGISTER sip:[$$sock.5.ipaddr]:[$$sock.5.port] SIP/2.0
+Via: SIP/2.0/UDP [$$sock.6.ipaddr]:[$$sock.6.port];branch=[$$branch$$]
+From: SIP-Recv <sip:[$$users.1.username]@[$$users.1.domain]>;tag=[$$tag$$]
+To: SIP-Recv <sip:[$$users.1.username]@[$$users.1.domain]>
+Call-ID: [$$call_id$$]
+User-Agent: SIP-Tester
+CSeq: 1 REGISTER
+Contact: <sip:[$$users.1.username]@[$$sock.6.ipaddr]:[$$sock.6.port]>;expires=400
+Max-Forwards: 70
+Content-Length: 0[$$return$$][$$return$$]]]>
+	</send>
+
+	<recv connection="3" timeout="4000" >
+    	<actions>
+      		<catch regexp="SIP/2.0\s*([0-9][0-9][0-9])" assign_to="response"/>
+      		<catch regexp='WWW-Authenticate:\s*([A-Za-z]+)\s*([A-Za-z0-9_/=",\.\s\-\$\*]+)\r' assign_to="scheme,authentication"/>
+      		<catch regexp='Call-ID:\s*([A-Za-z0-9_/=",\.\-\$\*]+)\r' assign_to="callid"/>
+			<compare first="[$response],[$scheme]" second="401,Digest">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+			<authenticate assign_to="auth">
+				<![CDATA[
+				authtype = [$scheme], authname = [$$users.1.authname], password = [$$users.1.password], digest-uri-value = sip:[$$sock.5.ipaddr]:[$$sock.5.port], method = "REGISTER", [$authentication]
+				]]>
+			</authenticate>
+		</actions>
+	</recv>
+
+	<send connection="3" protocol="sip">
+		<![CDATA[
+REGISTER sip:[$$sock.5.ipaddr]:[$$sock.5.port] SIP/2.0
+Via: SIP/2.0/UDP [$$sock.6.ipaddr]:[$$sock.6.port];branch=[$$branch$$]
+From: SIP-Recv <sip:[$$users.1.username]@[$$users.1.domain]>;tag=[$$tag$$]
+To: SIP-Recv <sip:[$$users.1.username]@[$$users.1.domain]>
+Call-ID: [$callid]
+User-Agent: SIP-Tester
+CSeq: 2 REGISTER
+[$auth] 
+Contact: <sip:[$$users.1.username]@[$$sock.6.ipaddr]:[$$sock.6.port]>;expires=400
+Max-Forwards: 70
+Content-Length: 0[$$return$$][$$return$$]]]>
+	</send>
+
+	<recv connection="3" timeout="10000" >
+    	<actions>
+      		<catch regexp="SIP/2.0\s*([0-9][0-9][0-9])" assign_to="response"/>
+      		<compare first="[$response]" second="200">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+    	</actions> 
+   </recv>
+
+	<!-->
+	SIP call
+	<-->
+		<send connection="2" protocol="sip">
+		<![CDATA[
+INVITE sip:[$$users.1.username]@[$$sock.5.ipaddr]:[$$sock.5.port] SIP/2.0
+Via: SIP/2.0/UDP [$$sock.4.ipaddr]:[$$sock.4.port];branch=[$$branch$$]
+From: SIP-Send <sip:[$$users.0.username]@[$$users.0.domain]>;tag=[$$tag$$]
+To: SIP-Recv <sip:[$$users.1.username]@[$$users.0.domain]>
+Call-ID: [$$call_id$$]
+User-Agent: SIP-Tester
+CSeq: 101 INVITE
+Contact: <sip:[$$users.0.username]@[$$sock.4.ipaddr]:[$$sock.4.port]>
+Max-Forwards: 70
+Supported: replaces
+Allow: INVITE,BYE,CANCEL,ACK,REGISTER
+Content-Type: application/sdp
+Content-Length: 130[$$return$$]
+v=0
+o=- 4321201733 1269330201 IN IP4 192.168.114.200
+s=SDP Data
+c=IN IP4 192.168.114.200
+t=0 0
+m=audio 65530 RTP/AVP 8 0 18[$$return$$]]]>
+	</send>
+
+	<recv connection="2" timeout="4000" >
+    	<actions>
+      		<catch regexp="SIP/2.0\s*([0-9][0-9][0-9])" assign_to="response"/>
+      		<catch regexp='WWW-Authenticate:\s*([A-Za-z]+)\s*([A-Za-z0-9_/=",\.\s\-\$\*]+)\r' assign_to="scheme,authentication"/>
+      		<catch regexp='Call-ID:\s*([A-Za-z0-9_/=",\.\-\$\*]+)\r' assign_to="callid"/>
+			<compare first="[$response],[$scheme]" second="401,Digest">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+			<authenticate assign_to="auth">
+				<![CDATA[
+				authtype = [$scheme], authname = [$$users.0.authname], password = [$$users.0.password], digest-uri-value = sip:[$$sock.5.ipaddr]:[$$sock.5.port], method = "INVITE", [$authentication]
+				]]>
+			</authenticate>
+		</actions>
+	</recv>
+
+	<send connection="2" protocol="sip">
+		<![CDATA[
+INVITE sip:[$$users.1.username]@[$$sock.5.ipaddr]:[$$sock.5.port] SIP/2.0
+Via: SIP/2.0/UDP [$$sock.4.ipaddr]:[$$sock.4.port];branch=[$$branch$$]
+From: SIP-Send <sip:[$$users.0.username]@[$$users.0.domain]>;tag=[$$tag$$]
+To: SIP-Recv <sip:[$$users.1.username]@[$$users.0.domain]>
+Call-ID: [$callid]
+User-Agent: SIP-Tester
+CSeq: 102 INVITE
+Contact: <sip:[$$users.0.username]@[$$sock.4.ipaddr]:[$$sock.4.port]>
+Max-Forwards: 70
+[$auth]
+Supported: replaces
+Allow: INVITE,BYE,CANCEL,ACK,REGISTER
+Content-Type: application/sdp
+Content-Length: 130[$$return$$]
+v=0
+o=- 4321201733 1269330201 IN IP4 192.168.114.200
+s=SDP Data
+c=IN IP4 192.168.114.200
+t=0 0
+m=audio 65530 RTP/AVP 8 0 18[$$return$$]]]>
+	</send>
+
+	<recv connection="2" timeout="4000" >
+    	<actions>
+      		<catch regexp="SIP/2.0\s*([0-9][0-9][0-9])" assign_to="response"/>
+      		<compare first="[$response]" second="100">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+    	</actions> 
+   </recv>
+
+	<recv connection="3" timeout="4000" >
+    	<actions>
+      		<catch regexp="(INVITE)\ssip:" assign_to="request"/>
+      		<catch regexp='Via:\s*([A-Za-z0-9_/=@",;\:\.\s\-\$\*]+)\r' assign_to="sip_via_B"/>
+      		<catch regexp='From:\s*([A-Za-z0-9_/=@",;\:\.\s\-\$\*]*&lt;[A-Za-z0-9_/=@",;\:\.\s\-\$\*]+&gt;[A-Za-z0-9_/=@",;\:\.\s\-\$\*]+)\r' assign_to="sip_from_B"/>
+      		<catch regexp='To:\s*([A-Za-z0-9_/=@",;\:\.\s\-\$\*]*&lt;[A-Za-z0-9_/=@",;\:\.\s\-\$\*]+&gt;)\r' assign_to="sip_to_B"/>
+      		<catch regexp='Call-ID:\s*([A-Za-z0-9_/=",\.\-\$\*]+)\r' assign_to="call_id_B"/>
+      		<catch regexp='CSeq:\s*([A-Za-z0-9_/=",\.\s\-\$\*]+)\r' assign_to="cseq_B"/>
+      		<compare first="[$request]" second="INVITE">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+    	</actions> 
+   </recv>
+
+	<send connection="3" protocol="sip">
+		<![CDATA[
+SIP/2.0 100 Trying
+Via: [$sip_via_B]
+From: [$sip_from_B]
+To: [$sip_to_B]
+Call-ID: [$call_id_B]
+CSeq: [$cseq_B]
+User-Agent: SIP tester B side
+Content-Length: 0[$$return$$][$$return$$]]]>
+	</send>
+
+	<send connection="3" protocol="sip">
+		<![CDATA[
+SIP/2.0 180 Ringing
+Via: [$sip_via_B]
+From: [$sip_from_B]
+To: [$sip_to_B];tag=bside0001
+Call-ID: [$call_id_B]
+CSeq: [$cseq_B]
+User-Agent: SIP tester B side
+Content-Length: 0[$$return$$][$$return$$]]]>
+	</send>
+
+	<recv connection="2" timeout="10000" >
+    	<actions>
+      		<catch regexp="SIP/2.0\s*([0-9][0-9][0-9])" assign_to="response"/>
+    		<compare first="[$response]" second="180">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+    	</actions> 
+   </recv>
+
+	<send connection="3" protocol="sip">
+		<![CDATA[
+SIP/2.0 200 OK
+Via: [$sip_via_B]
+From: [$sip_from_B]
+To: [$sip_to_B];tag=bside0001
+Call-ID: [$call_id_B]
+CSeq: [$cseq_B]
+User-Agent: SIP tester B side
+Content-Length: 184[$$return$$]
+v=0
+o=- 1094199684727664219 3060688246994854032 IN IP4 192.168.114.200
+s=Session SDP
+c=IN IP4 192.168.114.200
+t=0 0
+m=audio 65400 RTP/AVP 8
+a=rtpmap:8 PCMA/8000
+a=ptime:20[$$return$$]]]>
+	</send>
+
+	<recv connection="3" timeout="4000" >
+    	<actions>
+      		<catch regexp="(ACK)\ssip:" assign_to="request"/>
+      		<compare first="[$request]" second="ACK">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+    	</actions> 
+   </recv>
+
+	<recv connection="2" timeout="10000" >
+    	<actions>
+      		<catch regexp="SIP/2.0\s*([0-9][0-9][0-9])" assign_to="response"/>
+      		<catch regexp='From:\s*([A-Za-z0-9_/=@",;\:\.\s\-\$\*]*&lt;[A-Za-z0-9_/=@",;\:\.\s\-\$\*]+&gt;[A-Za-z0-9_/=@",;\:\.\s\-\$\*]+)\r' assign_to="sip_from_A"/>
+      		<catch regexp='Call-ID:\s*([A-Za-z0-9_/=",\.\-\$\*]+)\r' assign_to="call_id_A"/>
+      		<catch regexp='To:[A-Za-z0-9_/=@",;\:\.\s\-\$*]*&lt;[A-Za-z0-9_/=@",;\:\.\s\-\$\*]+&gt;([A-Za-z0-9_/=,;\:\.\-\*]+)\r' assign_to="sip_to_tag_A"/>      		
+    		<compare first="[$response]" second="200">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+    	</actions> 
+   </recv>
+
+	<send connection="2" protocol="sip">
+		<![CDATA[
+ACK sip:[$$users.1.username]@[$$sock.5.ipaddr]:[$$sock.5.port] SIP/2.0
+Via: SIP/2.0/UDP [$$sock.4.ipaddr]:[$$sock.4.port];branch=[$$branch$$]
+From: [$sip_from_A]
+To: SIP-Recv <sip:[$$users.1.username]@[$$users.0.domain]>[$sip_to_tag_A]
+Call-ID: [$call_id_A]
+User-Agent: SIP-Tester
+CSeq: 102 ACK
+Max-Forwards: 70
+Content-Length: 0[$$return$$][$$return$$]]]>
+	</send>
+
+	<send connection="0">
+		<![CDATA[
+		2 (header=[[$$sock.0.ormNum], [$$sock.0.password]])
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="8000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=2, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=2, execution_status=0)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<recv connection="1" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="3">
+				<![CDATA[
+				52 (ormnum=[$$sock.0.ormNum], operation_code=6, calling_phone_number=[$$users.0.username], calling_phone_type='local', called_phone_number=[$$users.1.username], called_phone_type='local')
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	SIP release call
+	<-->
+	<send connection="2" protocol="sip">
+		<![CDATA[
+BYE sip:[$$users.1.username]@[$$sock.5.ipaddr]:[$$sock.5.port] SIP/2.0
+Via: SIP/2.0/UDP [$$sock.4.ipaddr]:[$$sock.4.port];branch=[$$branch$$]
+From: [$sip_from_A]
+To: SIP-Recv <sip:[$$users.1.username]@[$$users.0.domain]>[$sip_to_tag_A]
+Call-ID: [$call_id_A]
+User-Agent: SIP-Tester
+CSeq: 103 BYE
+Max-Forwards: 70
+Content-Length: 0[$$return$$][$$return$$]]]>
+	</send>
+
+	<recv connection="2" timeout="4000" >
+    	<actions>
+      		<catch regexp="SIP/2.0\s*([0-9][0-9][0-9])" assign_to="response"/>
+    		<compare first="[$response]" second="200">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+    	</actions> 
+   </recv>
+
+	<recv connection="3" timeout="4000" >
+    	<actions>
+      		<catch regexp="(BYE)\ssip:" assign_to="request"/>      		
+      		<catch regexp='Via:\s*([A-Za-z0-9_/=@",;\:\.\s\-\$\*]+)\r' assign_to="sip_via_B"/>
+      		<catch regexp='From:\s*([A-Za-z0-9_/=@",;\:\.\s\-\$\*]*&lt;[A-Za-z0-9_/=@",;\:\.\s\-\$\*]+&gt;[A-Za-z0-9_/=@",;\:\.\s\-\$\*]+)\r' assign_to="sip_from_B"/>
+      		<catch regexp='To:([A-Za-z0-9_/=@",;\:\.\s\-\$*]*&lt;[A-Za-z0-9_/=@",;\:\.\s\-\$\*]+&gt;[A-Za-z0-9_/=,;\:\.\-\*]+)\r' assign_to="sip_to_B"/>
+      		<catch regexp='CSeq:\s*([A-Za-z0-9_/=",\.\s\-\$\*]+)\r' assign_to="cseq_B"/>
+      		<compare first="[$request]" second="BYE">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+    	</actions> 
+   </recv>
+
+	<send connection="3" protocol="sip">
+		<![CDATA[
+SIP/2.0 200 OK
+Via: [$sip_via_B]
+From: [$sip_from_B]
+To: [$sip_to_B];tag=bside0001
+Call-ID: [$call_id_B]
+CSeq: [$cseq_B]
+Contact: <sip:[$$users.1.username]@[$$sock.6.ipaddr]:[$$sock.6.port]>
+User-Agent: SIP tester B side
+Content-Length: 0[$$return$$][$$return$$]]]>
+	</send>
+
+	<send connection="0">
+		<![CDATA[
+		1 (header=[[$$sock.0.ormNum], [$$sock.0.password]])
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=1, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=1, execution_status=0)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	Preconf
+	<-->
+	<send connection="0">
+		<![CDATA[
+		4 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; line_group_number=1, line_group_type='combined', line_a_number=1)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="3000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=4, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=4, execution_status=0)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	20.7
+	<-->
+		<send connection="2" protocol="sip">
+		<![CDATA[
+INVITE sip:[$$users.1.username]@[$$sock.5.ipaddr]:[$$sock.5.port] SIP/2.0
+Via: SIP/2.0/UDP [$$sock.4.ipaddr]:[$$sock.4.port];branch=[$$branch$$]
+From: SIP-Send <sip:[$$users.0.username]@[$$users.0.domain]>;tag=[$$tag$$]
+To: SIP-Recv <sip:[$$users.1.username]@[$$users.0.domain]>
+Call-ID: [$$call_id$$]
+User-Agent: SIP-Tester
+CSeq: 101 INVITE
+Contact: <sip:[$$users.0.username]@[$$sock.4.ipaddr]:[$$sock.4.port]>
+Max-Forwards: 70
+Supported: replaces
+Allow: INVITE,BYE,CANCEL,ACK,REGISTER
+Content-Type: application/sdp
+Content-Length: 130[$$return$$]
+v=0
+o=- 4321201733 1269330201 IN IP4 192.168.114.200
+s=SDP Data
+c=IN IP4 192.168.114.200
+t=0 0
+m=audio 65530 RTP/AVP 8 0 18[$$return$$]]]>
+	</send>
+
+	<recv connection="2" timeout="4000" >
+    	<actions>
+      		<catch regexp="SIP/2.0\s*([0-9][0-9][0-9])" assign_to="response"/>
+      		<catch regexp='WWW-Authenticate:\s*([A-Za-z]+)\s*([A-Za-z0-9_/=",\.\s\-\$\*]+)\r' assign_to="scheme,authentication"/>
+      		<catch regexp='Call-ID:\s*([A-Za-z0-9_/=",\.\-\$\*]+)\r' assign_to="callid"/>
+			<compare first="[$response],[$scheme]" second="401,Digest">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+			<authenticate assign_to="auth">
+				<![CDATA[
+				authtype = [$scheme], authname = [$$users.0.authname], password = [$$users.0.password], digest-uri-value = sip:[$$sock.5.ipaddr]:[$$sock.5.port], method = "INVITE", [$authentication]
+				]]>
+			</authenticate>
+		</actions>
+	</recv>
+
+	<send connection="2" protocol="sip">
+		<![CDATA[
+INVITE sip:[$$users.1.username]@[$$sock.5.ipaddr]:[$$sock.5.port] SIP/2.0
+Via: SIP/2.0/UDP [$$sock.4.ipaddr]:[$$sock.4.port];branch=[$$branch$$]
+From: SIP-Send <sip:[$$users.0.username]@[$$users.0.domain]>;tag=[$$tag$$]
+To: SIP-Recv <sip:[$$users.1.username]@[$$users.0.domain]>
+Call-ID: [$callid]
+User-Agent: SIP-Tester
+CSeq: 102 INVITE
+Contact: <sip:[$$users.0.username]@[$$sock.4.ipaddr]:[$$sock.4.port]>
+Max-Forwards: 70
+[$auth]
+Supported: replaces
+Allow: INVITE,BYE,CANCEL,ACK,REGISTER
+Content-Type: application/sdp
+Content-Length: 130[$$return$$]
+v=0
+o=- 4321201733 1269330201 IN IP4 192.168.114.200
+s=SDP Data
+c=IN IP4 192.168.114.200
+t=0 0
+m=audio 65530 RTP/AVP 8 0 18[$$return$$]]]>
+	</send>
+
+	<recv connection="2" timeout="4000" >
+    	<actions>
+      		<catch regexp="SIP/2.0\s*([0-9][0-9][0-9])" assign_to="response"/>
+      		<compare first="[$response]" second="100">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+    	</actions> 
+   </recv>
+
+	<recv connection="3" timeout="4000" >
+    	<actions>
+      		<catch regexp="(INVITE)\ssip:" assign_to="request"/>
+      		<catch regexp='Via:\s*([A-Za-z0-9_/=@",;\:\.\s\-\$\*]+)\r' assign_to="sip_via_B"/>
+      		<catch regexp='From:\s*([A-Za-z0-9_/=@",;\:\.\s\-\$\*]*&lt;[A-Za-z0-9_/=@",;\:\.\s\-\$\*]+&gt;[A-Za-z0-9_/=@",;\:\.\s\-\$\*]+)\r' assign_to="sip_from_B"/>
+      		<catch regexp='To:\s*([A-Za-z0-9_/=@",;\:\.\s\-\$\*]*&lt;[A-Za-z0-9_/=@",;\:\.\s\-\$\*]+&gt;)\r' assign_to="sip_to_B"/>
+      		<catch regexp='Call-ID:\s*([A-Za-z0-9_/=",\.\-\$\*]+)\r' assign_to="call_id_B"/>
+      		<catch regexp='CSeq:\s*([A-Za-z0-9_/=",\.\s\-\$\*]+)\r' assign_to="cseq_B"/>
+      		<compare first="[$request]" second="INVITE">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+    	</actions> 
+   </recv>
+
+	<send connection="3" protocol="sip">
+		<![CDATA[
+SIP/2.0 100 Trying
+Via: [$sip_via_B]
+From: [$sip_from_B]
+To: [$sip_to_B]
+Call-ID: [$call_id_B]
+CSeq: [$cseq_B]
+User-Agent: SIP tester B side
+Content-Length: 0[$$return$$][$$return$$]]]>
+	</send>
+
+	<send connection="3" protocol="sip">
+		<![CDATA[
+SIP/2.0 180 Ringing
+Via: [$sip_via_B]
+From: [$sip_from_B]
+To: [$sip_to_B];tag=bside0001
+Call-ID: [$call_id_B]
+CSeq: [$cseq_B]
+User-Agent: SIP tester B side
+Content-Length: 0[$$return$$][$$return$$]]]>
+	</send>
+
+	<recv connection="2" timeout="10000" >
+    	<actions>
+      		<catch regexp="SIP/2.0\s*([0-9][0-9][0-9])" assign_to="response"/>
+    		<compare first="[$response]" second="180">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+    	</actions> 
+   </recv>
+
+	<send connection="3" protocol="sip">
+		<![CDATA[
+SIP/2.0 200 OK
+Via: [$sip_via_B]
+From: [$sip_from_B]
+To: [$sip_to_B];tag=bside0001
+Call-ID: [$call_id_B]
+CSeq: [$cseq_B]
+User-Agent: SIP tester B side
+Content-Length: 184[$$return$$]
+v=0
+o=- 1094199684727664219 3060688246994854032 IN IP4 192.168.114.200
+s=Session SDP
+c=IN IP4 192.168.114.200
+t=0 0
+m=audio 65400 RTP/AVP 8
+a=rtpmap:8 PCMA/8000
+a=ptime:20[$$return$$]]]>
+	</send>
+
+	<recv connection="3" timeout="4000" >
+    	<actions>
+      		<catch regexp="(ACK)\ssip:" assign_to="request"/>
+      		<compare first="[$request]" second="ACK">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+    	</actions> 
+   </recv>
+
+	<recv connection="2" timeout="10000" >
+    	<actions>
+      		<catch regexp="SIP/2.0\s*([0-9][0-9][0-9])" assign_to="response"/>
+      		<catch regexp='From:\s*([A-Za-z0-9_/=@",;\:\.\s\-\$\*]*&lt;[A-Za-z0-9_/=@",;\:\.\s\-\$\*]+&gt;[A-Za-z0-9_/=@",;\:\.\s\-\$\*]+)\r' assign_to="sip_from_A"/>
+      		<catch regexp='Call-ID:\s*([A-Za-z0-9_/=",\.\-\$\*]+)\r' assign_to="call_id_A"/>
+      		<catch regexp='To:[A-Za-z0-9_/=@",;\:\.\s\-\$*]*&lt;[A-Za-z0-9_/=@",;\:\.\s\-\$\*]+&gt;([A-Za-z0-9_/=,;\:\.\-\*]+)\r' assign_to="sip_to_tag_A"/>      		
+    		<compare first="[$response]" second="200">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+    	</actions> 
+   </recv>
+
+	<send connection="2" protocol="sip">
+		<![CDATA[
+ACK sip:[$$users.1.username]@[$$sock.5.ipaddr]:[$$sock.5.port] SIP/2.0
+Via: SIP/2.0/UDP [$$sock.4.ipaddr]:[$$sock.4.port];branch=[$$branch$$]
+From: [$sip_from_A]
+To: SIP-Recv <sip:[$$users.1.username]@[$$users.0.domain]>[$sip_to_tag_A]
+Call-ID: [$call_id_A]
+User-Agent: SIP-Tester
+CSeq: 102 ACK
+Max-Forwards: 70
+Content-Length: 0[$$return$$][$$return$$]]]>
+	</send>
+
+	<send connection="0">
+		<![CDATA[
+		5 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=1, object_type="local", phone_number=[$$users.0.username], control_category="combined", line_group_number=1, priority="common", phone_type='local', linkset_number=65535)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="2000"/>
+		</actions>
+	</nop>
+
+	<recv connection="0" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				27 (ormnum=[$$sock.0.ormNum], command_code=5, receipt_status=0)
+				]]>
+			</validate>
+			<validate rule="sorm" num="2">
+				<![CDATA[
+				28 (ormnum=[$$sock.0.ormNum], command_code=5, execution_status=0)
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<recv connection="1" timeout="10000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				NO_MESSAGE
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+
+	<!-->
+	SIP release call
+	<-->
+	<send connection="2" protocol="sip">
+		<![CDATA[
+BYE sip:[$$users.1.username]@[$$sock.5.ipaddr]:[$$sock.5.port] SIP/2.0
+Via: SIP/2.0/UDP [$$sock.4.ipaddr]:[$$sock.4.port];branch=[$$branch$$]
+From: [$sip_from_A]
+To: SIP-Recv <sip:[$$users.1.username]@[$$users.0.domain]>[$sip_to_tag_A]
+Call-ID: [$call_id_A]
+User-Agent: SIP-Tester
+CSeq: 103 BYE
+Max-Forwards: 70
+Content-Length: 0[$$return$$][$$return$$]]]>
+	</send>
+
+	<recv connection="2" timeout="4000" >
+    	<actions>
+      		<catch regexp="SIP/2.0\s*([0-9][0-9][0-9])" assign_to="response"/>
+    		<compare first="[$response]" second="200">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+    	</actions> 
+   </recv>
+
+	<recv connection="3" timeout="4000" >
+    	<actions>
+      		<catch regexp="(BYE)\ssip:" assign_to="request"/>      		
+      		<catch regexp='Via:\s*([A-Za-z0-9_/=@",;\:\.\s\-\$\*]+)\r' assign_to="sip_via_B"/>
+      		<catch regexp='From:\s*([A-Za-z0-9_/=@",;\:\.\s\-\$\*]*&lt;[A-Za-z0-9_/=@",;\:\.\s\-\$\*]+&gt;[A-Za-z0-9_/=@",;\:\.\s\-\$\*]+)\r' assign_to="sip_from_B"/>
+      		<catch regexp='To:([A-Za-z0-9_/=@",;\:\.\s\-\$*]*&lt;[A-Za-z0-9_/=@",;\:\.\s\-\$\*]+&gt;[A-Za-z0-9_/=,;\:\.\-\*]+)\r' assign_to="sip_to_B"/>
+      		<catch regexp='CSeq:\s*([A-Za-z0-9_/=",\.\s\-\$\*]+)\r' assign_to="cseq_B"/>
+      		<compare first="[$request]" second="BYE">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+    	</actions> 
+   </recv>
+
+	<send connection="3" protocol="sip">
+		<![CDATA[
+SIP/2.0 200 OK
+Via: [$sip_via_B]
+From: [$sip_from_B]
+To: [$sip_to_B];tag=bside0001
+Call-ID: [$call_id_B]
+CSeq: [$cseq_B]
+Contact: <sip:[$$users.1.username]@[$$sock.6.ipaddr]:[$$sock.6.port]>
+User-Agent: SIP tester B side
+Content-Length: 0[$$return$$][$$return$$]]]>
+	</send>
+
+	<!-->
+	20.8
+	<-->
+		<send connection="2" protocol="sip">
+		<![CDATA[
+INVITE sip:[$$users.1.username]@[$$sock.5.ipaddr]:[$$sock.5.port] SIP/2.0
+Via: SIP/2.0/UDP [$$sock.4.ipaddr]:[$$sock.4.port];branch=[$$branch$$]
+From: SIP-Send <sip:[$$users.0.username]@[$$users.0.domain]>;tag=[$$tag$$]
+To: SIP-Recv <sip:[$$users.1.username]@[$$users.0.domain]>
+Call-ID: [$$call_id$$]
+User-Agent: SIP-Tester
+CSeq: 101 INVITE
+Contact: <sip:[$$users.0.username]@[$$sock.4.ipaddr]:[$$sock.4.port]>
+Max-Forwards: 70
+Supported: replaces
+Allow: INVITE,BYE,CANCEL,ACK,REGISTER
+Content-Type: application/sdp
+Content-Length: 130[$$return$$]
+v=0
+o=- 4321201733 1269330201 IN IP4 192.168.114.200
+s=SDP Data
+c=IN IP4 192.168.114.200
+t=0 0
+m=audio 65530 RTP/AVP 8 0 18[$$return$$]]]>
+	</send>
+
+	<recv connection="2" timeout="4000" >
+    	<actions>
+      		<catch regexp="SIP/2.0\s*([0-9][0-9][0-9])" assign_to="response"/>
+      		<catch regexp='WWW-Authenticate:\s*([A-Za-z]+)\s*([A-Za-z0-9_/=",\.\s\-\$\*]+)\r' assign_to="scheme,authentication"/>
+      		<catch regexp='Call-ID:\s*([A-Za-z0-9_/=",\.\-\$\*]+)\r' assign_to="callid"/>
+			<compare first="[$response],[$scheme]" second="401,Digest">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+			<authenticate assign_to="auth">
+				<![CDATA[
+				authtype = [$scheme], authname = [$$users.0.authname], password = [$$users.0.password], digest-uri-value = sip:[$$sock.5.ipaddr]:[$$sock.5.port], method = "INVITE", [$authentication]
+				]]>
+			</authenticate>
+		</actions>
+	</recv>
+
+	<send connection="2" protocol="sip">
+		<![CDATA[
+INVITE sip:[$$users.1.username]@[$$sock.5.ipaddr]:[$$sock.5.port] SIP/2.0
+Via: SIP/2.0/UDP [$$sock.4.ipaddr]:[$$sock.4.port];branch=[$$branch$$]
+From: SIP-Send <sip:[$$users.0.username]@[$$users.0.domain]>;tag=[$$tag$$]
+To: SIP-Recv <sip:[$$users.1.username]@[$$users.0.domain]>
+Call-ID: [$callid]
+User-Agent: SIP-Tester
+CSeq: 102 INVITE
+Contact: <sip:[$$users.0.username]@[$$sock.4.ipaddr]:[$$sock.4.port]>
+Max-Forwards: 70
+[$auth]
+Supported: replaces
+Allow: INVITE,BYE,CANCEL,ACK,REGISTER
+Content-Type: application/sdp
+Content-Length: 130[$$return$$]
+v=0
+o=- 4321201733 1269330201 IN IP4 192.168.114.200
+s=SDP Data
+c=IN IP4 192.168.114.200
+t=0 0
+m=audio 65530 RTP/AVP 8 0 18[$$return$$]]]>
+	</send>
+
+	<recv connection="2" timeout="4000" >
+    	<actions>
+      		<catch regexp="SIP/2.0\s*([0-9][0-9][0-9])" assign_to="response"/>
+      		<compare first="[$response]" second="100">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+    	</actions> 
+   </recv>
+
+	<recv connection="3" timeout="4000" >
+    	<actions>
+      		<catch regexp="(INVITE)\ssip:" assign_to="request"/>
+      		<catch regexp='Via:\s*([A-Za-z0-9_/=@",;\:\.\s\-\$\*]+)\r' assign_to="sip_via_B"/>
+      		<catch regexp='From:\s*([A-Za-z0-9_/=@",;\:\.\s\-\$\*]*&lt;[A-Za-z0-9_/=@",;\:\.\s\-\$\*]+&gt;[A-Za-z0-9_/=@",;\:\.\s\-\$\*]+)\r' assign_to="sip_from_B"/>
+      		<catch regexp='To:\s*([A-Za-z0-9_/=@",;\:\.\s\-\$\*]*&lt;[A-Za-z0-9_/=@",;\:\.\s\-\$\*]+&gt;)\r' assign_to="sip_to_B"/>
+      		<catch regexp='Call-ID:\s*([A-Za-z0-9_/=",\.\-\$\*]+)\r' assign_to="call_id_B"/>
+      		<catch regexp='CSeq:\s*([A-Za-z0-9_/=",\.\s\-\$\*]+)\r' assign_to="cseq_B"/>
+      		<compare first="[$request]" second="INVITE">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+    	</actions> 
+   </recv>
+
+	<send connection="3" protocol="sip">
+		<![CDATA[
+SIP/2.0 100 Trying
+Via: [$sip_via_B]
+From: [$sip_from_B]
+To: [$sip_to_B]
+Call-ID: [$call_id_B]
+CSeq: [$cseq_B]
+User-Agent: SIP tester B side
+Content-Length: 0[$$return$$][$$return$$]]]>
+	</send>
+
+	<send connection="3" protocol="sip">
+		<![CDATA[
+SIP/2.0 180 Ringing
+Via: [$sip_via_B]
+From: [$sip_from_B]
+To: [$sip_to_B];tag=bside0001
+Call-ID: [$call_id_B]
+CSeq: [$cseq_B]
+User-Agent: SIP tester B side
+Content-Length: 0[$$return$$][$$return$$]]]>
+	</send>
+
+	<recv connection="2" timeout="10000" >
+    	<actions>
+      		<catch regexp="SIP/2.0\s*([0-9][0-9][0-9])" assign_to="response"/>
+    		<compare first="[$response]" second="180">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+    	</actions> 
+   </recv>
+
+	<send connection="3" protocol="sip">
+		<![CDATA[
+SIP/2.0 200 OK
+Via: [$sip_via_B]
+From: [$sip_from_B]
+To: [$sip_to_B];tag=bside0001
+Call-ID: [$call_id_B]
+CSeq: [$cseq_B]
+User-Agent: SIP tester B side
+Content-Length: 184[$$return$$]
+v=0
+o=- 1094199684727664219 3060688246994854032 IN IP4 192.168.114.200
+s=Session SDP
+c=IN IP4 192.168.114.200
+t=0 0
+m=audio 65400 RTP/AVP 8
+a=rtpmap:8 PCMA/8000
+a=ptime:20[$$return$$]]]>
+	</send>
+
+	<recv connection="3" timeout="4000" >
+    	<actions>
+      		<catch regexp="(ACK)\ssip:" assign_to="request"/>
+      		<compare first="[$request]" second="ACK">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+    	</actions> 
+   </recv>
+
+	<recv connection="2" timeout="10000" >
+    	<actions>
+      		<catch regexp="SIP/2.0\s*([0-9][0-9][0-9])" assign_to="response"/>
+      		<catch regexp='From:\s*([A-Za-z0-9_/=@",;\:\.\s\-\$\*]*&lt;[A-Za-z0-9_/=@",;\:\.\s\-\$\*]+&gt;[A-Za-z0-9_/=@",;\:\.\s\-\$\*]+)\r' assign_to="sip_from_A"/>
+      		<catch regexp='Call-ID:\s*([A-Za-z0-9_/=",\.\-\$\*]+)\r' assign_to="call_id_A"/>
+      		<catch regexp='To:[A-Za-z0-9_/=@",;\:\.\s\-\$*]*&lt;[A-Za-z0-9_/=@",;\:\.\s\-\$\*]+&gt;([A-Za-z0-9_/=,;\:\.\-\*]+)\r' assign_to="sip_to_tag_A"/>      		
+    		<compare first="[$response]" second="200">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+    	</actions> 
+   </recv>
+
+	<send connection="2" protocol="sip">
+		<![CDATA[
+ACK sip:[$$users.1.username]@[$$sock.5.ipaddr]:[$$sock.5.port] SIP/2.0
+Via: SIP/2.0/UDP [$$sock.4.ipaddr]:[$$sock.4.port];branch=[$$branch$$]
+From: [$sip_from_A]
+To: SIP-Recv <sip:[$$users.1.username]@[$$users.0.domain]>[$sip_to_tag_A]
+Call-ID: [$call_id_A]
+User-Agent: SIP-Tester
+CSeq: 102 ACK
+Max-Forwards: 70
+Content-Length: 0[$$return$$][$$return$$]]]>
+	</send>
+
+	<send connection="0">
+		<![CDATA[
+		5 (header=[[$$sock.0.ormNum], [$$sock.0.password]]; object_number=1, object_type="local", phone_number=[$$users.0.username], control_category="combined", line_group_number=1, priority="common", phone_type='local', linkset_number=65535)
+		]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="4000"/>
+		</actions>
+	</nop>
+
+	<recv connection="1" timeout="4000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				NO_MESSAGE
+				]]>
+			</validate>
+		</actions>
+	</recv> 
+	
+	<!-->
+	SIP release call
+	<-->
+	<send connection="2" protocol="sip">
+		<![CDATA[
+BYE sip:[$$users.1.username]@[$$sock.5.ipaddr]:[$$sock.5.port] SIP/2.0
+Via: SIP/2.0/UDP [$$sock.4.ipaddr]:[$$sock.4.port];branch=[$$branch$$]
+From: [$sip_from_A]
+To: SIP-Recv <sip:[$$users.1.username]@[$$users.0.domain]>[$sip_to_tag_A]
+Call-ID: [$call_id_A]
+User-Agent: SIP-Tester
+CSeq: 103 BYE
+Max-Forwards: 70
+Content-Length: 0[$$return$$][$$return$$]]]>
+	</send>
+
+	<recv connection="2" timeout="4000" >
+    	<actions>
+      		<catch regexp="SIP/2.0\s*([0-9][0-9][0-9])" assign_to="response"/>
+    		<compare first="[$response]" second="200">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+    	</actions> 
+   </recv>
+
+	<recv connection="3" timeout="4000" >
+    	<actions>
+      		<catch regexp="(BYE)\ssip:" assign_to="request"/>      		
+      		<catch regexp='Via:\s*([A-Za-z0-9_/=@",;\:\.\s\-\$\*]+)\r' assign_to="sip_via_B"/>
+      		<catch regexp='From:\s*([A-Za-z0-9_/=@",;\:\.\s\-\$\*]*&lt;[A-Za-z0-9_/=@",;\:\.\s\-\$\*]+&gt;[A-Za-z0-9_/=@",;\:\.\s\-\$\*]+)\r' assign_to="sip_from_B"/>
+      		<catch regexp='To:([A-Za-z0-9_/=@",;\:\.\s\-\$*]*&lt;[A-Za-z0-9_/=@",;\:\.\s\-\$\*]+&gt;[A-Za-z0-9_/=,;\:\.\-\*]+)\r' assign_to="sip_to_B"/>
+      		<catch regexp='CSeq:\s*([A-Za-z0-9_/=",\.\s\-\$\*]+)\r' assign_to="cseq_B"/>
+      		<compare first="[$request]" second="BYE">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+    	</actions> 
+   </recv>
+
+	<send connection="3" protocol="sip">
+		<![CDATA[
+SIP/2.0 200 OK
+Via: [$sip_via_B]
+From: [$sip_from_B]
+To: [$sip_to_B];tag=bside0001
+Call-ID: [$call_id_B]
+CSeq: [$cseq_B]
+Contact: <sip:[$$users.1.username]@[$$sock.6.ipaddr]:[$$sock.6.port]>
+User-Agent: SIP tester B side
+Content-Length: 0[$$return$$][$$return$$]]]>
+	</send>
+
+	<nop>
+		<actions>
+			<pause timeout="4000"/>
+		</actions>
+	</nop>
+
+	<recv connection="1" timeout="4000" >
+		<actions>
+			<validate rule="sorm" num="1">
+				<![CDATA[
+				NO_MESSAGE
+				]]>
+			</validate>
+		</actions>
+	</recv> 
 
 	<!-->
 	20.9
@@ -254,5 +1219,6 @@
 	</recv> 
 
 	<disconnect connection="0" />
+	<disconnect connection="1" />
 
 </scenario>

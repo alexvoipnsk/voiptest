@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<scenario  name="SIP_test">
+
+	<send connection="2" protocol="sip">
+		<![CDATA[
+REGISTER sip:[$$sock.5.ipaddr]:[$$sock.5.port] SIP/2.0
+Via: SIP/2.0/UDP [$$sock.4.ipaddr]:[$$sock.4.port];branch=[$$branch$$]
+From: SIP-Send <sip:[$$users.0.username]@[$$users.0.domain]>;tag=[$$tag$$]
+To: SIP-Send <sip:[$$users.0.username]@[$$users.0.domain]>
+Call-ID: [$$call_id$$]
+User-Agent: SIP-Tester
+CSeq: 1 REGISTER
+Contact: <sip:[$$users.0.username]@[$$sock.4.ipaddr]:[$$sock.4.port]>;expires=400
+Max-Forwards: 70
+Content-Length: 0[$$return$$][$$return$$]]]>
+	</send>
+
+	<recv connection="2" timeout="4000" >
+    	<actions>
+      		<catch regexp="SIP/2.0\s*([0-9][0-9][0-9])" assign_to="response"/>
+      		<catch regexp='WWW-Authenticate:\s*([A-Za-z]+)\s*([A-Za-z0-9_/=",\.\s\-\$\*]+)\r' assign_to="scheme,authentication"/>
+      		<catch regexp='Call-ID:\s*([A-Za-z0-9_/=",\.\-\$\*]+)\r' assign_to="callid"/>
+			<compare first="[$response],[$scheme]" second="401,Digest">
+				<exit status="failure" info="Test is unsuccessfully completed"/>
+			</compare>
+			<authenticate assign_to="auth">
+				<![CDATA[
+				authtype = Digest, authname = 23001, password = 23001pass, digest-uri-value = sip:10.24.146.206, method = "REGISTER", realm=10.24.146.206, nonce=3ea5673e5b7ee1102c2bc44883640fea, algorithm=MD5
+				]]>
+			</authenticate>
+		</actions>
+   </recv>
+
+	<send connection="2" protocol="sip">
+		<![CDATA[
+REGISTER sip:[$$sock.5.ipaddr]:[$$sock.5.port] SIP/2.0
+Via: SIP/2.0/UDP [$$sock.4.ipaddr]:[$$sock.4.port];branch=[$$branch$$]
+From: SIP-Send <sip:[$$users.0.username]@[$$users.0.domain]>;tag=[$$tag$$]
+To: SIP-Send <sip:[$$users.0.username]@[$$users.0.domain]>
+Call-ID: [$callid]
+User-Agent: SIP-Tester
+CSeq: 2 REGISTER
+[$auth] 
+Contact: <sip:[$$users.0.username]@[$$sock.4.ipaddr]:[$$sock.4.port]>;expires=400
+Max-Forwards: 70
+Content-Length: 0[$$return$$][$$return$$]]]>
+	</send>
+	
+</scenario>

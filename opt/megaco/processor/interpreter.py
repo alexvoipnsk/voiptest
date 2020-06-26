@@ -226,7 +226,7 @@ class ScenarioInterpreter:
 	def _handle_validate_sorm(self, message, data, number):
 		validator = self.SORM_validator._SORM_check_message_handler()
 		if data == "NO_MESSAGE":
-			if message == "NO_MESSAGE":
+			if (message == "NO_MESSAGE" or message == "NO MESSAGE"):
 				return (True, "No message received as scenario plan")
 			else:
 				return (False, "No message received but {0} was expected".format(message))

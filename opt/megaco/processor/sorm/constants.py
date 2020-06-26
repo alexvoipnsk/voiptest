@@ -174,6 +174,7 @@ class Payload(enum.Enum):
     SUBSCRIBER_SET_STATE    = 'SUBSCRIBER_SET_STATE' # 1.3
     VAS_COUNT               = 'VAS_COUNT'           # 1.5
     VAS_CODE                = 'VAS_CODE'            # 1.5, 2.* except 2.2.3
+    VAS_CODE_FILLER         = 'VAS_CODE_FILLER'     # 2.* except 2.2.3    
     INTRUSION_CODE          = 'INTRUSION_CODE'      # 1.6
     INTRUSION_DAY           = 'INTRUSION_DAY'       # 1.6
     INTRUSION_HOUR          = 'INTRUSION_HOUR'      # 1.6
@@ -460,7 +461,8 @@ class Message2_x(enum.IntEnum):
     PRIORITY                = 13
     OPERATION_CODE          = 14
     VAS_CODE                = 15
-    ADDITIONAL_CODE         = 16
+    VAS_CODE_FILLER         = 16
+    ADDITIONAL_CODE         = 17
 
 
 #~ Message2_1_1 = Message2_x # Same payload structure in accordance order 268 appendix 10
@@ -528,7 +530,7 @@ class PayloadFormat():
     Message1_12_head = '<1H3B9s2B'  # Unique case - message 1.12 have mandatory 53 bytes
     Message1_12_tail = '<{}s'       # and X bytes for message content (calculate from payload length)
 
-    Message2_x = '<2B9s2B9s1H8B3s1B'
+    Message2_x = '<2B9s2B9s1H9B1H1B'
     Message2_1_1 = Message2_x
     Message2_1_2 = Message2_x
     Message2_1_3 = Message2_x
