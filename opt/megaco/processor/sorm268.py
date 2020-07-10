@@ -104,7 +104,7 @@ class Message_Builder:
 		commBytes = command.CmdControlLineConnect({ const.Header.SORM_NUMBER: header[0], const.Header.PASSWORD: passwd, const.Payload.CALL_NUMBER: call_number, const.Payload.OBJECT_NUMBER: object_number, const.Payload.OBJECT_TYPE: type_object, const.Payload.LINE_GROUP_NUMBER: line_group_number})
 		return bytes(commBytes)
 
-	def _Build_command8(self, header, call_number, object_number, object_type, line_a_number, line_b_number=255):
+	def _Build_command8(self, header, call_number=65535, object_number=65535, object_type='ff', line_a_number=255, line_b_number=255):
 		self.check._checkHeader(header[0], header[1])
 		passwd = str(header[1])
 		self.check._checkLineNumber(line_a_number, line_b_number)
@@ -231,9 +231,12 @@ class Message_Check_Define:
 			raise SORM_Error("Invalid value 'PHONE_LENGTH': {0}. It must be 'INTEGER' in range [1-18]".format(phone_length))
 
 	def _checkCallNumber(self, call_number):
-		if type(call_number)!=int:
-			raise SORM_Error("Invalid value 'CALL_NUMBER': {0}. It must be 'INTEGER' in range [0-65534]".format(call_number))
-		if not(0<=call_number<=65535):
+		if type(call_number)==int:
+			if not(0<=call_number<=65535):
+				raise SORM_Error("Invalid value 'CALL_NUMBER': {0}. It must be 'INTEGER' in range [0-65534]".format(call_number))
+		elif type(call_number)==str:
+			call_number = call_number.encode()
+		else:
 			raise SORM_Error("Invalid value 'CALL_NUMBER': {0}. It must be 'INTEGER' in range [0-65534]".format(call_number))
 		return call_number
 
@@ -370,6 +373,58 @@ class Message_Check_Define:
 		else:
 			raise SORM_Error("Invalid value 'SERVICE': {0}. It must be 'STRING': 'cfu'/'cfb'/'cfnr'/'cfos'/'cf'/'condcf'/'cw'/'hold'/'ccbs'/'hole'/'3pty'/'mpty'/'conf'/'ct'/'cp'/'cc'".format(station_type))
 
+	def _connectionParamsDefine(self, conn_par):
+		if (conn_par=='out'):
+			return 17
+		elif (conn_par=='in'):
+			return 18
+		elif (conn_par=='mg'):
+			return 20
+		elif (conn_par=='mn'):
+			return 24
+		elif (conn_par=='local'):
+			return 28
+		elif (conn_par=='out_semi'):
+			return 33
+		elif (conn_par=='in_semi'):
+			return 34
+		elif (conn_par=='mg_semi'):
+			return 36
+		elif (conn_par=='mn_semi'):
+			return 40
+		elif (conn_par=='local_semi'):
+			return 44
+		else:
+			raise SORM_Error("Invalid value 'CALL_ATTRIBUTE': {0}. It must be 'STRING': 'out'/'in'/'mg'/'mn'/'local'/'out_semi'/'in_semi'/'mg_semi'/'mn_semi'/'local_semi'".format(conn_par))
+
+	def _selectionSignDefine(self, selection_sign):
+		if (selection_sign=='combined_a'):
+			return 1
+		elif (selection_sign=='separate_a'):
+			return 3
+		elif (selection_sign=='statistical_a'):
+			return 2
+		elif (selection_sign=='combined_b'):
+			return 4
+		elif (selection_sign=='separate_b'):
+			return 12
+		elif (selection_sign=='statistical_b'):
+			return 8
+		elif (selection_sign=='combined_tr'):
+			return 16
+		elif (selection_sign=='separate_tr'):
+			return 48
+		elif (selection_sign=='statistical_tr'):
+			return 32
+		elif (selection_sign=='combined_ss'):
+			return 64
+		elif (selection_sign=='separate_ss'):
+			return 192
+		elif (selection_sign=='statistical_ss'):
+			return 128
+		else:
+			raise SORM_Error("Invalid value 'SELECTION_SIGN': {0}. It must be 'STRING': 'combined_a(b,tr,ss)'/'separate_a(b,tr,ss)'/'statistical_a(b,tr,ss)'".format(selection_sign))
+
 class Message_Validator:
 
 	def __init__(self):
@@ -391,6 +446,8 @@ class Message_Validator:
 				 41 : self._checkMessage41,
 				 42 : self._checkMessage42,
 				 43 : self._checkMessage43,
+				 44 : self._checkMessage44,
+				 51 : self._checkMessage51,
 				 52 : self._checkMessage52,
 				 53 : self._checkMessage53,
 				 100 : self._checkNoMessage }
@@ -824,20 +881,23 @@ class Message_Validator:
 			result = False
 		return result, s
 
-	def _checkMessage41(self, payload, ormnum, object_number, object_type, operation_code, line_a_number, line_b_number=255, priority="common", calling_phone_number=-1, calling_phone_type='ff', called_phone_number=-1, 
-		                called_phone_type='ff', linkset_number=65535):
+	def _checkMessage41(self, payload, ormnum, object_number, object_type, operation_code, selection_sign, line_a_number, line_b_number=255, priority="common", calling_phone_number=-1, calling_phone_type='ff', called_phone_number=-1, 
+		                called_phone_type='ff', linkset_number=65535, vas_phase=0, call_attribute="local"):
 		calling_phone = self.check._checkPhoneNumber(calling_phone_number)
 		called_phone = self.check._checkPhoneNumber(called_phone_number)
 		calling_type_phone = self.check._phoneTypeDefine(calling_phone_type)
 		called_type_phone = self.check._phoneTypeDefine(called_phone_type)
+		callattribute = self.check._connectionParamsDefine(call_attribute)
+		sign = self.check._selectionSignDefine(selection_sign)
 		self.check._checkLinksetNumber(linkset_number)
 		prio = self.check._priorityDefine(priority)
 		self.check._checkObjectNumber(object_number)		
 		type_object = self.check._objectTypeDefine(object_type)
-		message2 = message_kpd2.Msg2ControlLineDisconnected({const.Header.SORM_NUMBER: ormnum, const.Payload.OPERATION_CODE: operation_code, const.Payload.CALLING_PHONE_NUMBER: calling_phone,
+		message2 = message_kpd2.Msg2CallSetup({const.Header.SORM_NUMBER: ormnum, const.Payload.OPERATION_CODE: operation_code, const.Payload.CALLING_PHONE_NUMBER: calling_phone,
                                   const.Payload.CALLING_PHONE_TYPE: calling_type_phone, const.Payload.CALLED_PHONE_NUMBER: called_phone, const.Payload.CALLED_PHONE_TYPE: called_type_phone,
                                   const.Payload.LINKSET_NUMBER: linkset_number, const.Payload.LINE_A_NUMBER: line_a_number, const.Payload.LINE_B_NUMBER: line_b_number,
-                                  const.Payload.PRIORITY: prio, const.Payload.OBJECT_NUMBER: object_number, const.Payload.OBJECT_TYPE: type_object})
+                                  const.Payload.PRIORITY: prio, const.Header.OBJECT_NUMBER: object_number, const.Header.OBJECT_TYPE: type_object,
+                                  const.Header.VAS_PHASE: vas_phase, const.Header.CALL_ATTRIBUTE: callattribute, const.Header.SELECTION_SIGN: sign})
 		message = bytes(message2)
 		s = 'Message 0x41 validation.'
 		result = True
@@ -846,7 +906,7 @@ class Message_Validator:
 				s += ' Wrong Message received: Expected length: 48, Received "{0}".'.format(len(payload))
 				result = False			
 			else:
-				if payload[2]!=82:
+				if payload[2]!=65:
 					s += ' Wrong Message received: Expected: 0x41, Received "{:02X}".'.format(payload[2])
 					result = False
 				else:
@@ -859,6 +919,15 @@ class Message_Validator:
 						result = False
 					if (message[6]!=payload[6]):
 						s += ' Wrong OBJECT_TYPE: Configured "{0}", received "{1}".'.format(message[6], payload[6])
+						result = False
+					if (message[9]!=payload[9]):
+						s += ' Wrong SELECTION_SIGN: Configured "{0}", received "{1}".'.format(message[9], payload[9])
+						result = False	
+					if (message[10]!=payload[10]):
+						s += ' Wrong CALL_ATTRIBUTE: Configured "{0}", received "{1}".'.format(message[10], payload[10])
+						result = False	
+					if (message[11]!=payload[11]):
+						s += ' Wrong VAS_PHASE: Configured "{0}", received "{1}".'.format(message[11], payload[11])
 						result = False					
 					if (message[12]!=payload[12]):
 						s += ' Wrong CALLING_PHONE_TYPE: Configured "{0}", received "{1}".'.format(message[12], payload[12])
@@ -869,43 +938,46 @@ class Message_Validator:
 					if (message[23]!=payload[23]):
 						s += ' Wrong CALLED_PHONE_TYPE: Configured "{0}", received "{1}".'.format(message[23], payload[23])
 						result = False
-					if (message[24:32]!=payload[24:32]):
-						s += ' Wrong CALLED_PHONE_NUMBER: Configured "{0}", received "{1}".'.format(message[24:32], payload[24:32])
+					if (message[25:33]!=payload[25:33]):
+						s += ' Wrong CALLED_PHONE_NUMBER: Configured "{0}", received "{1}".'.format(message[25:33], payload[25:33])
 						result = False	
-					if (message[33:34]!=payload[33:34]):
-						s += ' Wrong LINKSET_NUMBER: Configured "{0}", received "{1}".'.format(message[33:34], payload[33:34])
+					if (message[34:35]!=payload[34:35]):
+						s += ' Wrong LINKSET_NUMBER: Configured "{0}", received "{1}".'.format(message[34:35], payload[34:35])
 						result = False				
-					if (message[35]!=payload[35]):
-						s += ' Wrong LINE_A_NUMBER: Configured "{0}", received "{1}".'.format(message[35], payload[35])
-						result = False
 					if (message[36]!=payload[36]):
-						s += ' Wrong LINE_B_NUMBER: Configured "{0}", received "{1}".'.format(message[36], payload[36])
+						s += ' Wrong LINE_A_NUMBER: Configured "{0}", received "{1}".'.format(message[36], payload[36])
 						result = False
-					if (message[44]!=payload[44]):
-						s += ' Wrong OPERATION_CODE: Configured "{0}", received "{1}".'.format(message[44], payload[44])
+					if (message[37]!=payload[37]):
+						s += ' Wrong LINE_B_NUMBER: Configured "{0}", received "{1}".'.format(message[37], payload[37])
 						result = False
 					if (message[43]!=payload[43]):
-						s += ' Wrong PRIORITY: Configured "{0}", received "{1}".'.format(message[43], payload[43])
+						s += ' Wrong OPERATION_CODE: Configured "{0}", received "{1}".'.format(message[43], payload[43])
+						result = False
+					if (message[42]!=payload[42]):
+						s += ' Wrong PRIORITY: Configured "{0}", received "{1}".'.format(message[42], payload[42])
 						result = False
 		else:
 			s += ' ERROR: No message received'
 			result = False
 		return result, s
 
-	def _checkMessage42(self, payload, ormnum, object_number, object_type, operation_code, line_a_number, line_b_number=255, priority="common", calling_phone_number=-1, calling_phone_type='ff', called_phone_number=-1, 
-		                called_phone_type='ff', linkset_number=65535):
+	def _checkMessage42(self, payload, ormnum, object_number, object_type, operation_code, selection_sign, line_a_number, line_b_number=255, priority="common", calling_phone_number=-1, calling_phone_type='ff', called_phone_number=-1, 
+		                called_phone_type='ff', linkset_number=65535, vas_phase=0, call_attribute="local"):
 		calling_phone = self.check._checkPhoneNumber(calling_phone_number)
 		called_phone = self.check._checkPhoneNumber(called_phone_number)
 		calling_type_phone = self.check._phoneTypeDefine(calling_phone_type)
 		called_type_phone = self.check._phoneTypeDefine(called_phone_type)
+		callattribute = self.check._connectionParamsDefine(call_attribute)
+		sign = self.check._selectionSignDefine(selection_sign)
 		self.check._checkLinksetNumber(linkset_number)
 		prio = self.check._priorityDefine(priority)
 		self.check._checkObjectNumber(object_number)		
 		type_object = self.check._objectTypeDefine(object_type)
-		message2 = message_kpd2.Msg2ControlLineDisconnected({const.Header.SORM_NUMBER: ormnum, const.Payload.OPERATION_CODE: operation_code, const.Payload.CALLING_PHONE_NUMBER: calling_phone,
+		message2 = message_kpd2.Msg2CallAnswer({const.Header.SORM_NUMBER: ormnum, const.Payload.OPERATION_CODE: operation_code, const.Payload.CALLING_PHONE_NUMBER: calling_phone,
                                   const.Payload.CALLING_PHONE_TYPE: calling_type_phone, const.Payload.CALLED_PHONE_NUMBER: called_phone, const.Payload.CALLED_PHONE_TYPE: called_type_phone,
                                   const.Payload.LINKSET_NUMBER: linkset_number, const.Payload.LINE_A_NUMBER: line_a_number, const.Payload.LINE_B_NUMBER: line_b_number,
-                                  const.Payload.PRIORITY: prio, const.Payload.OBJECT_NUMBER: object_number, const.Payload.OBJECT_TYPE: type_object})
+                                  const.Payload.PRIORITY: prio, const.Header.OBJECT_NUMBER: object_number, const.Header.OBJECT_TYPE: type_object,
+                                  const.Header.VAS_PHASE: vas_phase, const.Header.CALL_ATTRIBUTE: callattribute, const.Header.SELECTION_SIGN: sign})
 		message = bytes(message2)
 		s = 'Message 0x42 validation.'
 		result = True
@@ -914,11 +986,11 @@ class Message_Validator:
 				s += ' Wrong Message received: Expected length: 48, Received "{0}".'.format(len(payload))
 				result = False			
 			else:
-				if payload[2]!=82:
+				if payload[2]!=66:
 					s += ' Wrong Message received: Expected: 0x42, Received "{:02X}".'.format(payload[2])
 					result = False
 				else:
-					s += ' Message 0x41 received.'		
+					s += ' Message 0x42 received.'		
 					if (message[1]!=payload[1]):
 						s += ' Wrong ORM Number: Configured "{0}", received "{1}".'.format(message[1], payload[1])
 						result = False
@@ -928,6 +1000,15 @@ class Message_Validator:
 					if (message[6]!=payload[6]):
 						s += ' Wrong OBJECT_TYPE: Configured "{0}", received "{1}".'.format(message[6], payload[6])
 						result = False					
+					if (message[9]!=payload[9]):
+						s += ' Wrong SELECTION_SIGN: Configured "{0}", received "{1}".'.format(message[9], payload[9])
+						result = False	
+					if (message[10]!=payload[10]):
+						s += ' Wrong CALL_ATTRIBUTE: Configured "{0}", received "{1}".'.format(message[10], payload[10])
+						result = False	
+					if (message[11]!=payload[11]):
+						s += ' Wrong VAS_PHASE: Configured "{0}", received "{1}".'.format(message[11], payload[11])
+						result = False
 					if (message[12]!=payload[12]):
 						s += ' Wrong CALLING_PHONE_TYPE: Configured "{0}", received "{1}".'.format(message[12], payload[12])
 						result = False
@@ -937,43 +1018,46 @@ class Message_Validator:
 					if (message[23]!=payload[23]):
 						s += ' Wrong CALLED_PHONE_TYPE: Configured "{0}", received "{1}".'.format(message[23], payload[23])
 						result = False
-					if (message[24:32]!=payload[24:32]):
-						s += ' Wrong CALLED_PHONE_NUMBER: Configured "{0}", received "{1}".'.format(message[24:32], payload[24:32])
+					if (message[25:33]!=payload[25:33]):
+						s += ' Wrong CALLED_PHONE_NUMBER: Configured "{0}", received "{1}".'.format(message[25:33], payload[25:33])
 						result = False	
-					if (message[33:34]!=payload[33:34]):
-						s += ' Wrong LINKSET_NUMBER: Configured "{0}", received "{1}".'.format(message[33:34], payload[33:34])
+					if (message[34:35]!=payload[34:35]):
+						s += ' Wrong LINKSET_NUMBER: Configured "{0}", received "{1}".'.format(message[34:35], payload[34:35])
 						result = False				
-					if (message[35]!=payload[35]):
-						s += ' Wrong LINE_A_NUMBER: Configured "{0}", received "{1}".'.format(message[35], payload[35])
-						result = False
 					if (message[36]!=payload[36]):
-						s += ' Wrong LINE_B_NUMBER: Configured "{0}", received "{1}".'.format(message[36], payload[36])
+						s += ' Wrong LINE_A_NUMBER: Configured "{0}", received "{1}".'.format(message[36], payload[36])
 						result = False
-					if (message[44]!=payload[44]):
-						s += ' Wrong OPERATION_CODE: Configured "{0}", received "{1}".'.format(message[44], payload[44])
+					if (message[37]!=payload[37]):
+						s += ' Wrong LINE_B_NUMBER: Configured "{0}", received "{1}".'.format(message[37], payload[37])
 						result = False
 					if (message[43]!=payload[43]):
-						s += ' Wrong PRIORITY: Configured "{0}", received "{1}".'.format(message[43], payload[43])
+						s += ' Wrong OPERATION_CODE: Configured "{0}", received "{1}".'.format(message[43], payload[43])
+						result = False
+					if (message[42]!=payload[42]):
+						s += ' Wrong PRIORITY: Configured "{0}", received "{1}".'.format(message[42], payload[42])
 						result = False
 		else:
 			s += ' ERROR: No message received'
 			result = False
 		return result, s
 
-	def _checkMessage43(self, payload, ormnum, object_number, object_type, operation_code, line_a_number, line_b_number=255, priority="common", calling_phone_number=-1, calling_phone_type='ff', called_phone_number=-1, 
-		                called_phone_type='ff', linkset_number=65535):
+	def _checkMessage43(self, payload, ormnum, object_number, object_type, operation_code, selection_sign, line_a_number, line_b_number=255, priority="common", calling_phone_number=-1, calling_phone_type='ff', called_phone_number=-1, 
+		                called_phone_type='ff', linkset_number=65535, vas_phase=0, call_attribute="local"):
 		calling_phone = self.check._checkPhoneNumber(calling_phone_number)
 		called_phone = self.check._checkPhoneNumber(called_phone_number)
 		calling_type_phone = self.check._phoneTypeDefine(calling_phone_type)
 		called_type_phone = self.check._phoneTypeDefine(called_phone_type)
+		callattribute = self.check._connectionParamsDefine(call_attribute)
+		sign = self.check._selectionSignDefine(selection_sign)
 		self.check._checkLinksetNumber(linkset_number)
 		prio = self.check._priorityDefine(priority)
 		self.check._checkObjectNumber(object_number)		
 		type_object = self.check._objectTypeDefine(object_type)
-		message2 = message_kpd2.Msg2ControlLineDisconnected({const.Header.SORM_NUMBER: ormnum, const.Payload.OPERATION_CODE: operation_code, const.Payload.CALLING_PHONE_NUMBER: calling_phone,
+		message2 = message_kpd2.Msg2CallHangup({const.Header.SORM_NUMBER: ormnum, const.Payload.OPERATION_CODE: operation_code, const.Payload.CALLING_PHONE_NUMBER: calling_phone,
                                   const.Payload.CALLING_PHONE_TYPE: calling_type_phone, const.Payload.CALLED_PHONE_NUMBER: called_phone, const.Payload.CALLED_PHONE_TYPE: called_type_phone,
                                   const.Payload.LINKSET_NUMBER: linkset_number, const.Payload.LINE_A_NUMBER: line_a_number, const.Payload.LINE_B_NUMBER: line_b_number,
-                                  const.Payload.PRIORITY: prio, const.Payload.OBJECT_NUMBER: object_number, const.Payload.OBJECT_TYPE: type_object})
+                                  const.Payload.PRIORITY: prio, const.Header.OBJECT_NUMBER: object_number, const.Header.OBJECT_TYPE: type_object,
+                                  const.Header.VAS_PHASE: vas_phase, const.Header.CALL_ATTRIBUTE: callattribute, const.Header.SELECTION_SIGN: sign})
 		message = bytes(message2)
 		s = 'Message 0x43 validation.'
 		result = True
@@ -982,11 +1066,11 @@ class Message_Validator:
 				s += ' Wrong Message received: Expected length: 48, Received "{0}".'.format(len(payload))
 				result = False			
 			else:
-				if payload[2]!=82:
+				if payload[2]!=67:
 					s += ' Wrong Message received: Expected: 0x43, Received "{:02X}".'.format(payload[2])
 					result = False
 				else:
-					s += ' Message 0x41 received.'		
+					s += ' Message 0x43 received.'		
 					if (message[1]!=payload[1]):
 						s += ' Wrong ORM Number: Configured "{0}", received "{1}".'.format(message[1], payload[1])
 						result = False
@@ -996,6 +1080,15 @@ class Message_Validator:
 					if (message[6]!=payload[6]):
 						s += ' Wrong OBJECT_TYPE: Configured "{0}", received "{1}".'.format(message[6], payload[6])
 						result = False					
+					if (message[9]!=payload[9]):
+						s += ' Wrong SELECTION_SIGN: Configured "{0}", received "{1}".'.format(message[9], payload[9])
+						result = False	
+					if (message[10]!=payload[10]):
+						s += ' Wrong CALL_ATTRIBUTE: Configured "{0}", received "{1}".'.format(message[10], payload[10])
+						result = False	
+					if (message[11]!=payload[11]):
+						s += ' Wrong VAS_PHASE: Configured "{0}", received "{1}".'.format(message[11], payload[11])
+						result = False
 					if (message[12]!=payload[12]):
 						s += ' Wrong CALLING_PHONE_TYPE: Configured "{0}", received "{1}".'.format(message[12], payload[12])
 						result = False
@@ -1005,23 +1098,179 @@ class Message_Validator:
 					if (message[23]!=payload[23]):
 						s += ' Wrong CALLED_PHONE_TYPE: Configured "{0}", received "{1}".'.format(message[23], payload[23])
 						result = False
-					if (message[24:32]!=payload[24:32]):
-						s += ' Wrong CALLED_PHONE_NUMBER: Configured "{0}", received "{1}".'.format(message[24:32], payload[24:32])
+					if (message[25:33]!=payload[25:33]):
+						s += ' Wrong CALLED_PHONE_NUMBER: Configured "{0}", received "{1}".'.format(message[25:33], payload[25:33])
 						result = False	
-					if (message[33:34]!=payload[33:34]):
-						s += ' Wrong LINKSET_NUMBER: Configured "{0}", received "{1}".'.format(message[33:34], payload[33:34])
+					if (message[34:35]!=payload[34:35]):
+						s += ' Wrong LINKSET_NUMBER: Configured "{0}", received "{1}".'.format(message[34:35], payload[34:35])
 						result = False				
-					if (message[35]!=payload[35]):
-						s += ' Wrong LINE_A_NUMBER: Configured "{0}", received "{1}".'.format(message[35], payload[35])
-						result = False
 					if (message[36]!=payload[36]):
-						s += ' Wrong LINE_B_NUMBER: Configured "{0}", received "{1}".'.format(message[36], payload[36])
+						s += ' Wrong LINE_A_NUMBER: Configured "{0}", received "{1}".'.format(message[36], payload[36])
 						result = False
-					if (message[44]!=payload[44]):
-						s += ' Wrong OPERATION_CODE: Configured "{0}", received "{1}".'.format(message[44], payload[44])
+					if (message[37]!=payload[37]):
+						s += ' Wrong LINE_B_NUMBER: Configured "{0}", received "{1}".'.format(message[37], payload[37])
 						result = False
 					if (message[43]!=payload[43]):
-						s += ' Wrong PRIORITY: Configured "{0}", received "{1}".'.format(message[43], payload[43])
+						s += ' Wrong OPERATION_CODE: Configured "{0}", received "{1}".'.format(message[43], payload[43])
+						result = False
+					if (message[42]!=payload[42]):
+						s += ' Wrong PRIORITY: Configured "{0}", received "{1}".'.format(message[42], payload[42])
+						result = False
+		else:
+			s += ' ERROR: No message received'
+			result = False
+		return result, s
+
+	def _checkMessage44(self, payload, ormnum, object_number, object_type, operation_code, selection_sign, line_a_number, line_b_number=255, priority="common", calling_phone_number=-1, calling_phone_type='ff', called_phone_number=-1, 
+		                called_phone_type='ff', linkset_number=65535, vas_phase=0, call_attribute="local"):
+		calling_phone = self.check._checkPhoneNumber(calling_phone_number)
+		called_phone = self.check._checkPhoneNumber(called_phone_number)
+		calling_type_phone = self.check._phoneTypeDefine(calling_phone_type)
+		called_type_phone = self.check._phoneTypeDefine(called_phone_type)
+		callattribute = self.check._connectionParamsDefine(call_attribute)
+		sign = self.check._selectionSignDefine(selection_sign)
+		self.check._checkLinksetNumber(linkset_number)
+		prio = self.check._priorityDefine(priority)
+		self.check._checkObjectNumber(object_number)		
+		type_object = self.check._objectTypeDefine(object_type)
+		message2 = message_kpd2.Msg2VASActivation({const.Header.SORM_NUMBER: ormnum, const.Payload.OPERATION_CODE: operation_code, const.Payload.CALLING_PHONE_NUMBER: calling_phone,
+                                  const.Payload.CALLING_PHONE_TYPE: calling_type_phone, const.Payload.CALLED_PHONE_NUMBER: called_phone, const.Payload.CALLED_PHONE_TYPE: called_type_phone,
+                                  const.Payload.LINKSET_NUMBER: linkset_number, const.Payload.LINE_A_NUMBER: line_a_number, const.Payload.LINE_B_NUMBER: line_b_number,
+                                  const.Payload.PRIORITY: prio, const.Header.OBJECT_NUMBER: object_number, const.Header.OBJECT_TYPE: type_object,
+                                  const.Header.VAS_PHASE: vas_phase, const.Header.CALL_ATTRIBUTE: callattribute, const.Header.SELECTION_SIGN: sign})
+		message = bytes(message2)
+		s = 'Message 0x44 validation.'
+		result = True
+		if payload:
+			if len(payload)!=48:
+				s += ' Wrong Message received: Expected length: 48, Received "{0}".'.format(len(payload))
+				result = False			
+			else:
+				if payload[2]!=68:
+					s += ' Wrong Message received: Expected: 0x43, Received "{:02X}".'.format(payload[2])
+					result = False
+				else:
+					s += ' Message 0x44 received.'		
+					if (message[1]!=payload[1]):
+						s += ' Wrong ORM Number: Configured "{0}", received "{1}".'.format(message[1], payload[1])
+						result = False
+					if (message[7:8]!=payload[7:8]):
+						s += ' Wrong OBJECT_NUMBER: Configured "{0}", received "{1}".'.format(message[7:8], payload[7:8])
+						result = False
+					if (message[6]!=payload[6]):
+						s += ' Wrong OBJECT_TYPE: Configured "{0}", received "{1}".'.format(message[6], payload[6])
+						result = False					
+					if (message[9]!=payload[9]):
+						s += ' Wrong SELECTION_SIGN: Configured "{0}", received "{1}".'.format(message[9], payload[9])
+						result = False	
+					if (message[10]!=payload[10]):
+						s += ' Wrong CALL_ATTRIBUTE: Configured "{0}", received "{1}".'.format(message[10], payload[10])
+						result = False	
+					if (message[11]!=payload[11]):
+						s += ' Wrong VAS_PHASE: Configured "{0}", received "{1}".'.format(message[11], payload[11])
+						result = False
+					if (message[12]!=payload[12]):
+						s += ' Wrong CALLING_PHONE_TYPE: Configured "{0}", received "{1}".'.format(message[12], payload[12])
+						result = False
+					if (message[14:22]!=payload[14:22]):
+						s += ' Wrong CALLING_PHONE_NUMBER: Configured "{0}", received "{1}".'.format(message[14:22], payload[14:22])
+						result = False		
+					if (message[23]!=payload[23]):
+						s += ' Wrong CALLED_PHONE_TYPE: Configured "{0}", received "{1}".'.format(message[23], payload[23])
+						result = False
+					if (message[25:33]!=payload[25:33]):
+						s += ' Wrong CALLED_PHONE_NUMBER: Configured "{0}", received "{1}".'.format(message[25:33], payload[25:33])
+						result = False	
+					if (message[34:35]!=payload[34:35]):
+						s += ' Wrong LINKSET_NUMBER: Configured "{0}", received "{1}".'.format(message[34:35], payload[34:35])
+						result = False				
+					if (message[36]!=payload[36]):
+						s += ' Wrong LINE_A_NUMBER: Configured "{0}", received "{1}".'.format(message[36], payload[36])
+						result = False
+					if (message[37]!=payload[37]):
+						s += ' Wrong LINE_B_NUMBER: Configured "{0}", received "{1}".'.format(message[37], payload[37])
+						result = False
+					if (message[43]!=payload[43]):
+						s += ' Wrong OPERATION_CODE: Configured "{0}", received "{1}".'.format(message[43], payload[43])
+						result = False
+					if (message[42]!=payload[42]):
+						s += ' Wrong PRIORITY: Configured "{0}", received "{1}".'.format(message[42], payload[42])
+						result = False
+		else:
+			s += ' ERROR: No message received'
+			result = False
+		return result, s
+
+	def _checkMessage51(self, payload, ormnum, object_number, object_type, operation_code, line_a_number, line_b_number=255, priority="high", calling_phone_number=-1, calling_phone_type='ff', called_phone_number=-1, 
+		                called_phone_type='ff', linkset_number=65535, vas_phase=0, call_attribute="local"):
+		calling_phone = self.check._checkPhoneNumber(calling_phone_number)
+		called_phone = self.check._checkPhoneNumber(called_phone_number)
+		calling_type_phone = self.check._phoneTypeDefine(calling_phone_type)
+		called_type_phone = self.check._phoneTypeDefine(called_phone_type)
+		callattribute = self.check._connectionParamsDefine(call_attribute)
+		self.check._checkLinksetNumber(linkset_number)
+		prio = self.check._priorityDefine(priority)
+		self.check._checkObjectNumber(object_number)		
+		type_object = self.check._objectTypeDefine(object_type)
+		message2 = message_kpd2.Msg2ControlLineConnected({const.Header.SORM_NUMBER: ormnum, const.Payload.OPERATION_CODE: operation_code, const.Payload.CALLING_PHONE_NUMBER: calling_phone,
+                                  const.Payload.CALLING_PHONE_TYPE: calling_type_phone, const.Payload.CALLED_PHONE_NUMBER: called_phone, const.Payload.CALLED_PHONE_TYPE: called_type_phone,
+                                  const.Payload.LINKSET_NUMBER: linkset_number, const.Payload.LINE_A_NUMBER: line_a_number, const.Payload.LINE_B_NUMBER: line_b_number,
+                                  const.Payload.PRIORITY: prio, const.Header.OBJECT_NUMBER: object_number, const.Header.OBJECT_TYPE: type_object,
+                                  const.Header.VAS_PHASE: vas_phase, const.Header.CALL_ATTRIBUTE: callattribute})
+		message = bytes(message2)
+		s = 'Message 0x51 validation.'
+		result = True
+		if payload:
+			if len(payload)!=48:
+				s += ' Wrong Message received: Expected length: 48, Received "{0}".'.format(len(payload))
+				result = False			
+			else:
+				if payload[2]!=81:
+					s += ' Wrong Message received: Expected: 0x51, Received "{:02X}".'.format(payload[2])
+					result = False
+				else:
+					s += ' Message 0x51 received.'		
+					if (message[1]!=payload[1]):
+						s += ' Wrong ORM Number: Configured "{0}", received "{1}".'.format(message[1], payload[1])
+						result = False
+					if (message[7:8]!=payload[7:8]):
+						s += ' Wrong OBJECT_NUMBER: Configured "{0}", received "{1}".'.format(message[7:8], payload[7:8])
+						result = False
+					if (message[6]!=payload[6]):
+						s += ' Wrong OBJECT_TYPE: Configured "{0}", received "{1}".'.format(message[6], payload[6])
+						result = False					
+					if (message[10]!=payload[10]):
+						s += ' Wrong CALL_ATTRIBUTE: Configured "{0}", received "{1}".'.format(message[10], payload[10])
+						result = False	
+					if (message[11]!=payload[11]):
+						s += ' Wrong VAS_PHASE: Configured "{0}", received "{1}".'.format(message[11], payload[11])
+						result = False	
+					if (message[12]!=payload[12]):
+						s += ' Wrong CALLING_PHONE_TYPE: Configured "{0}", received "{1}".'.format(message[12], payload[12])
+						result = False
+					if (message[14:22]!=payload[14:22]):
+						s += ' Wrong CALLING_PHONE_NUMBER: Configured "{0}", received "{1}".'.format(message[14:22], payload[14:22])
+						result = False		
+					if (message[23]!=payload[23]):
+						s += ' Wrong CALLED_PHONE_TYPE: Configured "{0}", received "{1}".'.format(message[23], payload[23])
+						result = False
+					if (message[25:33]!=payload[25:33]):
+						s += ' Wrong CALLED_PHONE_NUMBER: Configured "{0}", received "{1}".'.format(message[25:33], payload[25:33])
+						result = False	
+					if (message[34:35]!=payload[34:35]):
+						s += ' Wrong LINKSET_NUMBER: Configured "{0}", received "{1}".'.format(message[34:35], payload[34:35])
+						result = False				
+					if (message[36]!=payload[36]):
+						s += ' Wrong LINE_A_NUMBER: Configured "{0}", received "{1}".'.format(message[36], payload[36])
+						result = False
+					if (message[37]!=payload[37]):
+						s += ' Wrong LINE_B_NUMBER: Configured "{0}", received "{1}".'.format(message[37], payload[37])
+						result = False
+					if (message[43]!=payload[43]):
+						s += ' Wrong OPERATION_CODE: Configured "{0}", received "{1}".'.format(message[43], payload[43])
+						result = False
+					if (message[42]!=payload[42]):
+						s += ' Wrong PRIORITY: Configured "{0}", received "{1}".'.format(message[42], payload[42])
 						result = False
 		else:
 			s += ' ERROR: No message received'
@@ -1029,11 +1278,12 @@ class Message_Validator:
 		return result, s
 
 	def _checkMessage52(self, payload, ormnum, object_number, object_type, operation_code, line_a_number, line_b_number=255, priority="common", calling_phone_number=-1, calling_phone_type='ff', called_phone_number=-1, 
-		                called_phone_type='ff', linkset_number=65535):
+		                called_phone_type='ff', linkset_number=65535, vas_phase=0, call_attribute="local"):
 		calling_phone = self.check._checkPhoneNumber(calling_phone_number)
 		called_phone = self.check._checkPhoneNumber(called_phone_number)
 		calling_type_phone = self.check._phoneTypeDefine(calling_phone_type)
 		called_type_phone = self.check._phoneTypeDefine(called_phone_type)
+		callattribute = self.check._connectionParamsDefine(call_attribute)
 		self.check._checkLinksetNumber(linkset_number)
 		prio = self.check._priorityDefine(priority)
 		self.check._checkObjectNumber(object_number)		
@@ -1041,7 +1291,8 @@ class Message_Validator:
 		message2 = message_kpd2.Msg2ControlLineDisconnected({const.Header.SORM_NUMBER: ormnum, const.Payload.OPERATION_CODE: operation_code, const.Payload.CALLING_PHONE_NUMBER: calling_phone,
                                   const.Payload.CALLING_PHONE_TYPE: calling_type_phone, const.Payload.CALLED_PHONE_NUMBER: called_phone, const.Payload.CALLED_PHONE_TYPE: called_type_phone,
                                   const.Payload.LINKSET_NUMBER: linkset_number, const.Payload.LINE_A_NUMBER: line_a_number, const.Payload.LINE_B_NUMBER: line_b_number,
-                                  const.Payload.PRIORITY: prio, const.Payload.OBJECT_NUMBER: object_number, const.Payload.OBJECT_TYPE: type_object})
+                                  const.Payload.PRIORITY: prio, const.Header.OBJECT_NUMBER: object_number, const.Header.OBJECT_TYPE: type_object,
+                                  const.Header.VAS_PHASE: vas_phase, const.Header.CALL_ATTRIBUTE: callattribute})
 		message = bytes(message2)
 		s = 'Message 0x52 validation.'
 		result = True
@@ -1064,6 +1315,12 @@ class Message_Validator:
 					if (message[6]!=payload[6]):
 						s += ' Wrong OBJECT_TYPE: Configured "{0}", received "{1}".'.format(message[6], payload[6])
 						result = False					
+					if (message[10]!=payload[10]):
+						s += ' Wrong CALL_ATTRIBUTE: Configured "{0}", received "{1}".'.format(message[10], payload[10])
+						result = False	
+					if (message[11]!=payload[11]):
+						s += ' Wrong VAS_PHASE: Configured "{0}", received "{1}".'.format(message[11], payload[11])
+						result = False	
 					if (message[12]!=payload[12]):
 						s += ' Wrong CALLING_PHONE_TYPE: Configured "{0}", received "{1}".'.format(message[12], payload[12])
 						result = False
@@ -1073,23 +1330,23 @@ class Message_Validator:
 					if (message[23]!=payload[23]):
 						s += ' Wrong CALLED_PHONE_TYPE: Configured "{0}", received "{1}".'.format(message[23], payload[23])
 						result = False
-					if (message[24:32]!=payload[24:32]):
-						s += ' Wrong CALLED_PHONE_NUMBER: Configured "{0}", received "{1}".'.format(message[24:32], payload[24:32])
+					if (message[25:33]!=payload[25:33]):
+						s += ' Wrong CALLED_PHONE_NUMBER: Configured "{0}", received "{1}".'.format(message[25:33], payload[25:33])
 						result = False	
-					if (message[33:34]!=payload[33:34]):
-						s += ' Wrong LINKSET_NUMBER: Configured "{0}", received "{1}".'.format(message[33:34], payload[33:34])
+					if (message[34:35]!=payload[34:35]):
+						s += ' Wrong LINKSET_NUMBER: Configured "{0}", received "{1}".'.format(message[34:35], payload[34:35])
 						result = False				
-					if (message[35]!=payload[35]):
-						s += ' Wrong LINE_A_NUMBER: Configured "{0}", received "{1}".'.format(message[35], payload[35])
-						result = False
 					if (message[36]!=payload[36]):
-						s += ' Wrong LINE_B_NUMBER: Configured "{0}", received "{1}".'.format(message[36], payload[36])
+						s += ' Wrong LINE_A_NUMBER: Configured "{0}", received "{1}".'.format(message[36], payload[36])
 						result = False
-					if (message[44]!=payload[44]):
-						s += ' Wrong OPERATION_CODE: Configured "{0}", received "{1}".'.format(message[44], payload[44])
+					if (message[37]!=payload[37]):
+						s += ' Wrong LINE_B_NUMBER: Configured "{0}", received "{1}".'.format(message[37], payload[37])
 						result = False
 					if (message[43]!=payload[43]):
-						s += ' Wrong PRIORITY: Configured "{0}", received "{1}".'.format(message[43], payload[43])
+						s += ' Wrong OPERATION_CODE: Configured "{0}", received "{1}".'.format(message[43], payload[43])
+						result = False
+					if (message[42]!=payload[42]):
+						s += ' Wrong PRIORITY: Configured "{0}", received "{1}".'.format(message[42], payload[42])
 						result = False
 		else:
 			s += ' ERROR: No message received'
@@ -1166,7 +1423,7 @@ class Config_Executor:
 							raise SORM_Error("Configuration data is not valid. Symbol '(' in command")
 						elif _val == "," or _val ==";":
 							if param != '':
-								fin_string = temp_string.strip()
+								fin_string = temp_string
 								if fin_string:
 									try:
 										fin_string = int(temp_string.strip())

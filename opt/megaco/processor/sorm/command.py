@@ -447,8 +447,19 @@ class CmdControlLineConnect(_Command):
         self.fields.setdefault(Payload.LINE_GROUP_NUMBER,   Const.FILLBYTE)
 
     def _packPayload(self):
+        #if type(self.fields[Payload.CALL_NUMBER])==int:
+        #    callnum=bytes.fromhex(self.fields[Payload.CALL_NUMBER])
+        #    if len(callnum)==1:
+        #        callnum = b'0'+callnum
+        #else:
+        #    callnum=self.fields[Payload.CALL_NUMBER].encode()
+        if type(self.fields[Payload.CALL_NUMBER])!=int:
+            #callnum=struct.unpack("<H", self.fields[Payload.CALL_NUMBER].encode())
+            callnum=int.from_bytes(self.fields[Payload.CALL_NUMBER].encode(), "little")
+        else:
+            callnum=self.fields[Payload.CALL_NUMBER]
         payload = struct.pack(PayloadFormat.Command7,
-                              self.fields.get(Payload.CALL_NUMBER),
+                              callnum,
                               self.fields.get(Payload.OBJECT_TYPE),
                               self.fields.get(Payload.OBJECT_NUMBER),
                               self.fields.get(Payload.LINE_GROUP_NUMBER),
@@ -498,8 +509,19 @@ class CmdControlLineDisconnect(_Command):
         controlLineB = utils.mergeStreamAndLine(self.fields.get(Payload.LINE_B_STREAM_NUMBER),
                                                 self.fields.get(Payload.LINE_B_NUMBER)
                                                )
+        #if type(self.fields[Payload.CALL_NUMBER])==int:
+        #    callnum=bytes.fromhex(self.fields[Payload.CALL_NUMBER])
+        #    if len(callnum)==1:
+        #        callnum = b'0'+callnum
+        #else:
+        #    callnum=self.fields[Payload.CALL_NUMBER].encode()
+        if type(self.fields[Payload.CALL_NUMBER])!=int:
+            #callnum=struct.unpack("<H", self.fields[Payload.CALL_NUMBER].encode())
+            callnum=int.from_bytes(self.fields[Payload.CALL_NUMBER].encode(), "little")
+        else:
+            callnum=self.fields[Payload.CALL_NUMBER]
         payload = struct.pack(PayloadFormat.Command8,
-                              self.fields.get(Payload.CALL_NUMBER),
+                              callnum,
                               self.fields.get(Payload.OBJECT_TYPE),
                               self.fields.get(Payload.OBJECT_NUMBER), 
                               controlLineA,

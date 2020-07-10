@@ -469,7 +469,7 @@ class ScenarioInterpreter:
 		variable = instruction.assign_to
 		if instruction.tobyte is not None:
 			tobyte = int(instruction.tobyte)
-			if tobyte > int(instruction.frombyte):
+			if tobyte < int(instruction.frombyte):
 				self._test_log += strftime("(%d.%m.%Y) %Hh:%Mm:%Ss") + "\t[GetBytes]  ToByte is less than FromByte\n"
 				return False
 			else:

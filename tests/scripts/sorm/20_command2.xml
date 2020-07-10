@@ -1109,12 +1109,12 @@ Content-Length: 0[$$return$$][$$return$$]]]>
 		<actions>
 			<validate rule="sorm" num="1">
 				<![CDATA[
-				41 (ormnum=[$$sock.0.ormNum], object_number=1, object_type="local", operation_code=0, calling_phone_number=[$$users.0.username], calling_phone_type='local', called_phone_number=[$$users.1.username], called_phone_type='local', priority="common", line_a_number=1)
+				41 (ormnum=[$$sock.0.ormNum], object_number=1, object_type="local", operation_code=0, calling_phone_number=[$$users.0.username], calling_phone_type='local', selection_sign="combined_a", called_phone_number=[$$users.1.username], called_phone_type='local', priority="common", line_a_number=1)
 				]]>
 			</validate>
-			<validate rule="sorm" num="1">
+			<validate rule="sorm" num="2">
 				<![CDATA[
-				42 (ormnum=[$$sock.0.ormNum], object_number=1, object_type="local", operation_code=0, calling_phone_number=[$$users.0.username], calling_phone_type='local', called_phone_number=[$$users.1.username], called_phone_type='local', priority="common", line_a_number=1)
+				42 (ormnum=[$$sock.0.ormNum], object_number=1, object_type="local", operation_code=0, calling_phone_number=[$$users.0.username], calling_phone_type='local', selection_sign="combined_a", called_phone_number=[$$users.1.username], called_phone_type='local', priority="common", line_a_number=1)
 				]]>
 			</validate>
 		</actions>
@@ -1181,7 +1181,7 @@ Content-Length: 0[$$return$$][$$return$$]]]>
 		<actions>
 			<validate rule="sorm" num="1">
 				<![CDATA[
-				43 (ormnum=[$$sock.0.ormNum], object_number=1, object_type="local", operation_code=5, calling_phone_number=[$$users.0.username], calling_phone_type='local', called_phone_number=[$$users.1.username], called_phone_type='local', priority="common", line_a_number=1)
+				43 (ormnum=[$$sock.0.ormNum], object_number=1, object_type="local", selection_sign="combined_a", operation_code=5, calling_phone_number=[$$users.0.username], calling_phone_type='local', called_phone_number=[$$users.1.username], called_phone_type='local', priority="common", line_a_number=1)
 				]]>
 			</validate>
 		</actions>
