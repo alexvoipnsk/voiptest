@@ -54,7 +54,7 @@ class _Message1():
         self.fields.setdefault(Header.PREAMBLE,         Const.PREAMBLE)
         self.fields.setdefault(Header.SORM_NUMBER,      Const.DEFAULT_SORM_NUMBER)
         self.fields[Header.MESSAGE_CODE]                = messageCode
-        #self.fields[Header.PAYLOAD_LENGTH]              = 0 # Real payload length calculated while payload packed to bytes
+        self.fields[Header.PAYLOAD_LENGTH]              = 0 # Real payload length calculated while payload packed to bytes
         self.fields.setdefault(Header.MESSAGES_COUNT,   Const.ZEROBYTE)
         self.fields.setdefault(Header.MESSAGE_NUMBER,   Const.ZEROBYTE)
         self.fields.setdefault(Header.RESERVE,          Const.MSG1_RESERVE_BYTE)
@@ -282,10 +282,6 @@ class Msg1ObjectInfo(_Message1):
         self.fields.setdefault(Payload.LINE_GROUP_NUMBER,   Const.FILLBYTE)
         self.fields.setdefault(Payload.PRIORITY,            Const.FILLBYTE)
         self.fields.setdefault(Payload.SUBSCRIBER_SET_STATE, Const.FILLBYTE)
-        print("OOPPOO", self.fields[Payload.OBJECT_NUMBER], self.fields[Payload.OBJECT_TYPE], self.fields[Payload.PHONE_TYPE])
-        print("OOPPO1", self.fields[Payload.PHONE_NUMBER], self.fields[Payload.PHONE_LENGTH], self.fields[Payload.LINKSET_NUMBER])
-        print("OOPPO2", self.fields[Payload.CONTROL_CATEGORY], self.fields[Payload.LINE_GROUP_NUMBER], self.fields[Payload.PRIORITY])
-
 
     def _packPayload(self):
         payload = struct.pack(PayloadFormat.Message1_3,
@@ -301,7 +297,6 @@ class Msg1ObjectInfo(_Message1):
                               self.fields[Payload.SUBSCRIBER_SET_STATE],
                              )
         self.fields[Header.PAYLOAD_LENGTH] = len(payload)
-        print("uuu", payload)
         return payload
 
     def _unpackPayload(self, b):

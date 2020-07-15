@@ -3,20 +3,20 @@
 <scenario  name="sorm_test1">
 
 	<connect connection="0" mode="client" />
-
+	<connect connection="1" mode="client" />
 	<!-->
 	1.1
 	<-->
-	<recv connection="0" timeout="100000" >
+
+	<recv connection="0" timeout="20000" >
 		<actions>
 			<validate rule="sorm" num="1">
 				<![CDATA[
-				22 (ormnum=[$$sock.0.ormNum])
+				22 (ormnum=255)
 				]]>
 			</validate>
 		</actions>
 	</recv> 
-
 
 	<!-->
 	1.2
@@ -44,5 +44,6 @@
 	</recv> 
 
 	<disconnect connection="0" />
+	<disconnect connection="1" />
 
 </scenario>

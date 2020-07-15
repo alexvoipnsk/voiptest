@@ -1121,14 +1121,15 @@ class Message_Validator:
 			result = False
 		return result, s
 
-	def _checkMessage44(self, payload, ormnum, object_number, object_type, operation_code, selection_sign, line_a_number, line_b_number=255, priority="common", calling_phone_number=-1, calling_phone_type='ff', called_phone_number=-1, 
-		                called_phone_type='ff', linkset_number=65535, vas_phase=0, call_attribute="local"):
+	def _checkMessage44(self, payload, ormnum, object_number, object_type, operation_code, selection_sign, vas_code, line_a_number, line_b_number=255, priority="common", calling_phone_number=-1, calling_phone_type='ff', called_phone_number=-1, 
+		                called_phone_type='ff', linkset_number=65535, vas_phase=0, call_attribute="local", additional_code=255):
 		calling_phone = self.check._checkPhoneNumber(calling_phone_number)
 		called_phone = self.check._checkPhoneNumber(called_phone_number)
 		calling_type_phone = self.check._phoneTypeDefine(calling_phone_type)
 		called_type_phone = self.check._phoneTypeDefine(called_phone_type)
 		callattribute = self.check._connectionParamsDefine(call_attribute)
 		sign = self.check._selectionSignDefine(selection_sign)
+		ss = self.check._sservDefine(vas_code)
 		self.check._checkLinksetNumber(linkset_number)
 		prio = self.check._priorityDefine(priority)
 		self.check._checkObjectNumber(object_number)		
@@ -1137,7 +1138,8 @@ class Message_Validator:
                                   const.Payload.CALLING_PHONE_TYPE: calling_type_phone, const.Payload.CALLED_PHONE_NUMBER: called_phone, const.Payload.CALLED_PHONE_TYPE: called_type_phone,
                                   const.Payload.LINKSET_NUMBER: linkset_number, const.Payload.LINE_A_NUMBER: line_a_number, const.Payload.LINE_B_NUMBER: line_b_number,
                                   const.Payload.PRIORITY: prio, const.Header.OBJECT_NUMBER: object_number, const.Header.OBJECT_TYPE: type_object,
-                                  const.Header.VAS_PHASE: vas_phase, const.Header.CALL_ATTRIBUTE: callattribute, const.Header.SELECTION_SIGN: sign})
+                                  const.Header.VAS_PHASE: vas_phase, const.Header.CALL_ATTRIBUTE: callattribute, const.Header.SELECTION_SIGN: sign,
+                                  const.Payload.ADDITIONAL_CODE: additional_code, const.Payload.VAS_CODE: ss})
 		message = bytes(message2)
 		s = 'Message 0x44 validation.'
 		result = True
@@ -1195,6 +1197,12 @@ class Message_Validator:
 						result = False
 					if (message[42]!=payload[42]):
 						s += ' Wrong PRIORITY: Configured "{0}", received "{1}".'.format(message[42], payload[42])
+						result = False
+					if (message[44]!=payload[44]):
+						s += ' Wrong VAS_CODE: Configured "{0}", received "{1}".'.format(message[44], payload[44])
+						result = False
+					if (message[47]!=payload[47]):
+						s += ' Wrong ADDITIONAL_CODE: Configured "{0}", received "{1}".'.format(message[47], payload[47])
 						result = False
 		else:
 			s += ' ERROR: No message received'

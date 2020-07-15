@@ -15,13 +15,13 @@
     },
     {
       "id" : 2,
-      "name" : "SIP",
+      "name" : "SIP user1",
       "from_sock" : 4,
       "to_sock" : 5
     },
     {
       "id" : 3,
-      "name" : "SIP",
+      "name" : "SIP user2",
       "from_sock" : 6,
       "to_sock" : 5
     },
@@ -34,14 +34,26 @@
     {
       "id" : 5,
       "name" : "SIP-trunk",
-      "from_sock" : 4,
-      "to_sock" : 8
+      "from_sock" : 8,
+      "to_sock" : 5
+    },
+    {
+      "id" : 6,
+      "name" : "SIP user3",
+      "from_sock" : 9,
+      "to_sock" : 5
+    },
+    {
+      "id" : 7,
+      "name" : "SIP user4",
+      "from_sock" : 10,
+      "to_sock" : 5
     }
   ], 
   "sock": [ 
     {
       "id": 0,
-      "name" : "Computer",
+      "name" : "Computer kpd1",
       "ipaddr": "192.168.114.200",
       "port": 5084,
       "transport" : "tcp",
@@ -51,7 +63,7 @@
     },
     {
       "id": 1,
-      "name" : "SMG",
+      "name" : "SMG kpd1",
       "ipaddr": "192.168.114.202",
       "port": 1001,
       "transport" : "tcp",
@@ -60,7 +72,7 @@
     },
     {
       "id": 2,
-      "name" : "Computer",
+      "name" : "Computer kpd2",
       "ipaddr": "192.168.114.200",
       "port": 6089,
       "transport" : "tcp",
@@ -69,7 +81,7 @@
     },
     {
       "id": 3,
-      "name" : "SMG",
+      "name" : "SMG kpd2",
       "ipaddr": "192.168.114.202",
       "port": 1002,
       "transport" : "tcp",
@@ -78,7 +90,7 @@
     },
     {
       "id": 4,
-      "name" : "Computer Users",
+      "name" : "Computer Users1",
       "ipaddr": "192.168.114.200",
       "port": 5060,
       "transport" : "udp",
@@ -96,7 +108,7 @@
     },
     {
       "id": 6,
-      "name" : "Computer Users",
+      "name" : "Computer Users2",
       "ipaddr": "192.168.114.200",
       "port": 5062,
       "transport" : "udp",
@@ -105,7 +117,7 @@
     },
     {
       "id": 7,
-      "name" : "Registrator",
+      "name" : "Registrator 2",
       "ipaddr": "192.168.116.133",
       "port": 5065,
       "transport" : "udp",
@@ -120,6 +132,24 @@
       "transport" : "udp",
       "proto" : "sip",
       "profile" : 0
+    },
+    {
+      "id": 9,
+      "name" : "Computer Users3",
+      "ipaddr": "192.168.114.200",
+      "port": 5061,
+      "transport" : "udp",
+      "proto" : "sip",
+      "profile" : 0  
+    },
+    {
+      "id": 10,
+      "name" : "Computer Users4",
+      "ipaddr": "192.168.114.200",
+      "port": 5066,
+      "transport" : "udp",
+      "proto" : "sip",
+      "profile" : 0  
     }
   ], 
   "users": [ 
@@ -144,7 +174,8 @@
       "username" : "158",
       "authname" : "158",
       "password" : "123",
-      "domain" : "dima"  
+      "domain" : "dima",  
+      "servicelist" : ["cfu", "cw", "cp"]
     },
     {
       "id": 3,
@@ -155,6 +186,14 @@
       "id": 4,
       "username" : "734",
       "domain" : "dima"  
+    },
+    {
+      "id": 5,
+      "username" : "159",
+      "authname" : "159",
+      "password" : "123",
+      "domain" : "dima",  
+      "servicelist" : ["cfu", "cp"]
     }
   ], 
   "trunks": [ 
